@@ -519,7 +519,7 @@
         "Reaction": "No",
         "MysteriousBall": "No",
         "Safari": "No",
-        "Favourite": "No",
+        "Favourite": "Yes",
         "Reaction Link": ""
       },
       "41": {
@@ -14123,7 +14123,7 @@
       }
     }
   },
-  "Shkingman": {
+  "Shkinkman": {
     "shiny_count": 4,
     "shinies": {
       "1": {
