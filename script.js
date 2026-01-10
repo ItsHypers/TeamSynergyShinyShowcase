@@ -1,66 +1,150 @@
 // ---------- CONFIG ----------
-const JSON_VERSION = "v15"; // increment when shiny_database.json updates
+const JSON_VERSION = "v16"; // increment when shiny_database.json updates
 const JSON_FILE = "shiny_database.json";
 
+// ---------- CACHED DOM ----------
+const showcaseContainer = document.getElementById("showcase");
+const searchInput = document.getElementById("playerSearch");
+const starContainer = document.querySelector('.stars-container');
+
 // ---------- GET DATA ----------
+let cachedData = null;
+
 async function getData() {
+  if (cachedData) return cachedData;
+
   try {
-    const cacheBuster = Date.now(); // unique every load
-    const res = await fetch(`${JSON_FILE}?v=${JSON_VERSION}&t=${cacheBuster}`, {
-      cache: "no-store"
-    });
+    const cacheBuster = Date.now();
+    const res = await fetch(`${JSON_FILE}?v=${JSON_VERSION}&t=${cacheBuster}`, { cache: "no-store" });
 
     if (!res.ok) throw new Error("Failed to fetch JSON");
-    return await res.json();
+
+    cachedData = await res.json();
+    return cachedData;
   } catch (err) {
     console.error("Error loading shiny_database.json:", err);
     return {};
   }
 }
 
-// ---------- RENDER SHOWCASE WITH FILTER ----------
+// ---------- CREATE SHINY ITEM ----------
+function createShinyItem(s) {
+  const span = document.createElement("span");
+  const urlName = s.Pokemon.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+
+  const imgContainer = document.createElement("div");
+  imgContainer.className = "gif-container";
+
+  if (s["Reaction Link"]) {
+    imgContainer.style.cursor = "pointer";
+    imgContainer.onclick = () => window.open(s["Reaction Link"], "_blank");
+  }
+
+  const traitChecks = {
+    Alpha: ["alpha-pokemon", "glow-alphapokemon"],
+    "Secret Shiny": ["glow-pokemon"],
+    Favourite: ["favourite-pokemon"]
+  };
+
+  for (const [key, classes] of Object.entries(traitChecks)) {
+    if (s[key]?.toLowerCase() === "yes") {
+      imgContainer.classList.add(...classes);
+    }
+  }
+
+  const iconMap = {
+    "Secret Shiny": ["secretshiny.png", "secret-icon"],
+    Egg: ["egg.png", "egg-icon"],
+    Safari: ["safari.png", "safari-icon"],
+    Event: ["event.png", "event-icon"],
+    MysteriousBall: ["mysteriousball.gif", "mysteriousball-gif"],
+    Favourite: ["heart.png", "favourite-heart"]
+  };
+
+  for (const [key, [src, cls]] of Object.entries(iconMap)) {
+    if (s[key]?.toLowerCase() === "yes") {
+      const icon = document.createElement("img");
+      icon.src = src;
+      icon.className = cls;
+      imgContainer.appendChild(icon);
+    }
+  }
+
+  if (s["Reaction Link"]) {
+    const reactionIcon = document.createElement("img");
+    reactionIcon.src = "reaction.png";
+    reactionIcon.className = "reaction-icon";
+    reactionIcon.onclick = e => {
+      e.stopPropagation();
+      window.open(s["Reaction Link"], "_blank");
+    };
+    imgContainer.appendChild(reactionIcon);
+  }
+
+  const img = document.createElement("img");
+  img.src = `https://img.pokemondb.net/sprites/black-white/anim/shiny/${urlName}.gif`;
+  img.alt = s.Pokemon;
+  img.className = "shiny-gif";
+  if (s.Sold?.toLowerCase() === "yes") img.classList.add("sold-pokemon");
+
+  const particle = document.createElement("img");
+  particle.src = "sparkle.gif";
+  particle.className = "particle-gif";
+
+  imgContainer.append(img, particle);
+
+  const info = document.createElement("div");
+  info.className = "info-box";
+
+  const traitLabels = {
+    "Secret Shiny": "Secret Shiny",
+    Egg: "Egg",
+    Alpha: "Alpha",
+    Sold: "Sold/Fled",
+    Event: "Event",
+    MysteriousBall: "Mysterious Ball",
+    Safari: "Safari",
+    Favourite: "Favourite"
+  };
+
+  const traits = Object.keys(traitLabels)
+    .filter(t => s[t]?.toLowerCase() === "yes")
+    .map(t => traitLabels[t]);
+
+  info.innerHTML = `<strong>${s.Pokemon}</strong><br>${traits.length ? traits.join("<br>") : "None"}`;
+
+  span.append(imgContainer, info);
+  return span;
+}
+
+// ---------- RENDER SHOWCASE ----------
 async function renderShowcase(filter = "") {
   const data = await getData();
-  const container = document.getElementById("showcase");
-  container.innerHTML = "";
+  showcaseContainer.textContent = "";
 
-  // Sort players by shiny_count descending
-  const sortedPlayers = Object.entries(data).sort(
-    (a, b) => b[1].shiny_count - a[1].shiny_count
-  );
+  const fragment = document.createDocumentFragment();
+  const sortedPlayers = Object.entries(data).sort((a, b) => b[1].shiny_count - a[1].shiny_count);
+  const lowerFilter = filter.toLowerCase();
 
   sortedPlayers.forEach(([player, playerData], index) => {
-    // If filter is active and player does not match, skip
-    if (filter && !player.toLowerCase().includes(filter.toLowerCase())) return;
+    if (filter && !player.toLowerCase().includes(lowerFilter)) return;
 
     const card = document.createElement("div");
     card.className = "player-card";
-    // Top 5 players get "top-player" class
-    let playerClass;
-    if (index < 5) {
-      playerClass = "player-name top-player"; // gold
-    } else if (index < 20) {
-      playerClass = "player-name high-player"; // purple
-    } else {
-      playerClass = "player-name"; // default blue
-    }
 
+    const playerClass =
+      index < 5 ? "player-name top-player" :
+      index < 20 ? "player-name high-player" :
+      "player-name";
 
-    let trophyImg = "";
+    const trophyImg =
+      index === 0 ? '<img src="gold.png" class="player-trophy">' :
+      index === 1 ? '<img src="silver.png" class="player-trophy">' :
+      index === 2 ? '<img src="bronze.png" class="player-trophy">' : "";
 
-    // Add trophy for top 3 players
-    if (index === 0) {
-      trophyImg = '<img src="gold.png" alt="Gold Trophy" class="player-trophy">';
-    } else if (index === 1) {
-      trophyImg = '<img src="silver.png" alt="Silver Trophy" class="player-trophy">';
-    } else if (index === 2) {
-      trophyImg = '<img src="bronze.png" alt="Bronze Trophy" class="player-trophy">';
-    }
+    const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : '';
 
-    let sparkle = (index >= 3) ? ' <span class="sparkle">✨</span>' : '';
-
-
-        card.innerHTML = `
+    card.innerHTML = `
       <div class="${playerClass}">
         #${index + 1} ${player} (${playerData.shiny_count})${sparkle} ${trophyImg}
       </div>
@@ -69,163 +153,27 @@ async function renderShowcase(filter = "") {
     const shinyList = document.createElement("div");
     shinyList.className = "shiny-list";
 
-    Object.values(playerData.shinies).forEach(s => {
-      const span = document.createElement("span");
-      const urlName = s.Pokemon.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+    const shinyFragment = document.createDocumentFragment();
+    Object.values(playerData.shinies).forEach(s => shinyFragment.appendChild(createShinyItem(s)));
+    shinyList.appendChild(shinyFragment);
 
-      const imgContainer = document.createElement("div");
-      imgContainer.className = "gif-container";
-
-      // Make the whole box clickable if Reaction Link exists
-      if (s["Reaction Link"] && s["Reaction Link"].trim() !== "") {
-        imgContainer.style.cursor = "pointer";
-        imgContainer.addEventListener("click", () => {
-          window.open(s["Reaction Link"], "_blank"); // open in new tab
-        });
-      }
-
-      if (s.Alpha && s.Alpha.toLowerCase() === "yes") {
-        imgContainer.classList.add("alpha-pokemon");
-        imgContainer.classList.add("glow-alphapokemon");
-      }
-
-      if (s["Secret Shiny"] && s["Secret Shiny"].toLowerCase() === "yes") {
-        imgContainer.classList.add("glow-pokemon");
-        const secretIcon = document.createElement("img");
-        secretIcon.src = "secretshiny.png";
-        secretIcon.className = "secret-icon";
-        imgContainer.appendChild(secretIcon);
-      }
-
-      if (s["Egg"] && s["Egg"].toLowerCase() === "yes") {
-        const eggIcon = document.createElement("img");
-        eggIcon.src = "egg.png";
-        eggIcon.className = "egg-icon";
-        imgContainer.appendChild(eggIcon);
-      }
-
-      if (s["Safari"] && s["Safari"].toLowerCase() === "yes") {
-        const safariIcon = document.createElement("img");
-        safariIcon.src = "safari.png";
-        safariIcon.className = "safari-icon";
-        imgContainer.appendChild(safariIcon);
-      }
-      if (s["Event"] && s["Event"].toLowerCase() === "yes") {
-        const safariIcon = document.createElement("img");
-        safariIcon.src = "event.png";
-        safariIcon.className = "event-icon";
-        imgContainer.appendChild(safariIcon);
-      }
-
-      if (s["MysteriousBall"] && s["MysteriousBall"].toLowerCase() === "yes") {
-      const mysteriousBall = document.createElement("img");
-      mysteriousBall.src = "mysteriousball.gif"; // your GIF file
-      mysteriousBall.className = "mysteriousball-gif";
-      imgContainer.appendChild(mysteriousBall);
-    }
-
-    // Add favourite class if Pokémon is a Favourite
-    if (s.Favourite && s.Favourite.toLowerCase() === "yes") {
-      imgContainer.classList.add("favourite-pokemon");
-
-      // Add heart icon top-left
-      const heartIcon = document.createElement("img");
-      heartIcon.src = "heart.png"; // your heart PNG file
-      heartIcon.className = "favourite-heart";
-      imgContainer.appendChild(heartIcon);
-    }
-
-
-    if (s.Favourite && s.Favourite.toLowerCase() === "yes") {
-      imgContainer.classList.add("favourite-pokemon");
-    }
-
-
-      // Reaction PNG
-      if (s["Reaction Link"] && s["Reaction Link"].trim() !== "") {
-        const reactionIcon = document.createElement("img");
-        reactionIcon.src = "reaction.png";
-        reactionIcon.className = "reaction-icon";
-        reactionIcon.title = "React";
-        reactionIcon.addEventListener("click", e => {
-          e.stopPropagation();
-          window.open(s["Reaction Link"], "_blank");
-        });
-        imgContainer.appendChild(reactionIcon);
-      }
-
-      // Pokémon GIF
-      const img = document.createElement("img");
-      img.src = `https://img.pokemondb.net/sprites/black-white/anim/shiny/${urlName}.gif`;
-      img.alt = s.Pokemon;
-      img.className = "shiny-gif";
-
-      if (s.Sold && s.Sold.toLowerCase() === "yes") {
-        img.classList.add("sold-pokemon"); // apply grayscale to GIF itself
-      }
-
-      // Particle overlay
-      const particle = document.createElement("img");
-      particle.src = "sparkle.gif";
-      particle.className = "particle-gif";
-
-      imgContainer.appendChild(img);
-      imgContainer.appendChild(particle);
-
-      // Info box
-     const info = document.createElement("div");
-      info.className = "info-box";
-
-      // Start with Pokémon name
-      let infoContent = `<strong>${s.Pokemon}</strong><br>`;
-
-      // Map trait names to display labels
-      const traitLabels = {
-      "Secret Shiny": "Secret Shiny",
-      "Egg": "Egg",
-      "Alpha": "Alpha",
-      "Sold": "Sold/Fled",
-      "Event": "Event",
-      "Reaction": "Reaction",
-      "MysteriousBall": "Mysterious Ball",
-      "Safari": "Safari",
-      "Favourite": "Favourite"
-    };
-
-      // List all traits that are true
-      const traits = Object.keys(traitLabels);
-      const trueTraits = traits.filter(trait => s[trait] && s[trait].toLowerCase() === "yes");
-
-      // Add each true trait to the info box
-      infoContent += trueTraits.length > 0 ? trueTraits.map(t => traitLabels[t]).join("<br>") : "None";
-
-      info.innerHTML = infoContent;
-
-
-      span.appendChild(imgContainer);
-      span.appendChild(info);
-      shinyList.appendChild(span);
-    });
-    setupInfoBoxFlip();
     card.appendChild(shinyList);
-    container.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  showcaseContainer.appendChild(fragment);
+  setupInfoBoxFlip(); // only once per render
 }
 
 // ---------- SEARCH EVENT ----------
-document.getElementById("playerSearch").addEventListener("input", (e) => {
-  const filter = e.target.value;
-  renderShowcase(filter);
-  setupInfoBoxFlip();
+searchInput.addEventListener("input", (e) => {
+  renderShowcase(e.target.value);
 });
 
-// ---------- INITIAL RENDER ----------
-renderShowcase();
-
-renderShowcase().then(() => {
-  setupInfoBoxFlip();
-});
-
+// ---------- INIT ----------
+(async function init() {
+  await renderShowcase();
+})();
 
 // ---------- NAVIGATION MENU HANDLER ----------
 (function setupMenu() {
@@ -234,27 +182,21 @@ renderShowcase().then(() => {
 
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
-      // Remove active from all tabs
       tabs.forEach(t => t.classList.remove("active"));
-      // Add active to clicked tab
       tab.classList.add("active");
 
-      // Handle tab action
       const tabName = tab.textContent.trim().toLowerCase();
       handleTabClick(tabName);
     });
   });
 
-  // Function to handle tab clicks
   function handleTabClick(tabName) {
     switch(tabName) {
       case "shiny showcase":
         renderShowcase();
         break;
       case "shotm":
-        // Example: replace content with leaderboard placeholder
-        const container = document.getElementById("showcase");
-        container.innerHTML = `<div class="message">Shiny Hunter of the Month coming soon!</div>`;
+        showcaseContainer.innerHTML = `<div class="message">Shiny Hunter of the Month coming soon!</div>`;
         break;
       default:
         console.warn("No action defined for tab:", tabName);
@@ -262,76 +204,35 @@ renderShowcase().then(() => {
   }
 })();
 
+// ---------- SHOOTING STARS ----------
+let starCount = window.innerWidth < 600 ? 3 : window.innerWidth < 1024 ? 6 : 10;
 
-// ----------------------
-// SHOOTING STARS JS
-// ----------------------
+function randomBetween(min, max) { return Math.random() * (max - min) + min; }
 
-// Select the container
-// ----------------------
-// SHOOTING STARS JS
-// ----------------------
-
-// Select the container
-const starContainer = document.querySelector('.stars-container');
-
-// Determine number of stars based on screen width
-let starCount;
-  // Recalculate star count
-  if (window.innerWidth < 600) {
-    starCount = 3;
-  } else if (window.innerWidth < 1024) {
-    starCount = 6;
-  } else {
-    starCount = 10;
-  }
-
-// Utility function to generate random number between min and max
-function randomBetween(min, max) {
-  return Math.random() * (max - min) + min;
-}
-
-// Create a single star
 function createStar() {
   const star = document.createElement('div');
   star.classList.add('star');
 
-  // Random star size
-  const size = randomBetween(2, 6); // 2–6px
+  const size = randomBetween(2, 6);
   star.style.width = size + 'px';
   star.style.height = size + 'px';
   star.style.boxShadow = `0 0 ${size*2}px #fff, 0 0 ${size*3}px #fff, 0 0 ${size*5}px #fff`;
 
-  // Random starting position along top of screen
   star.style.top = randomBetween(0, 50) + 'px';
   star.style.left = randomBetween(0, window.innerWidth) + 'px';
-
-  // Random speed (px per frame)
   star.speed = randomBetween(0.5, 3);
-
-  // Random opacity
   star.opacity = randomBetween(0.4, 0.9);
   star.style.opacity = star.opacity;
-
-  // Random angle for downward diagonal movement
-  star.angle = randomBetween(240, 300); // 240°–300° downward
+  star.angle = randomBetween(240, 300);
   star.rad = star.angle * Math.PI / 180;
-
-  // Random tail length
   star.tailLength = randomBetween(100, 300);
   star.style.setProperty('--tail-length', star.tailLength + 'px');
-
-  // Tail rotation
   star.style.setProperty('--tail-rotate', `${star.angle}deg`);
 
-  // Append star to container
   starContainer.appendChild(star);
-
-  // Animate the star
   animateStar(star);
 }
 
-// Animate a star
 function animateStar(star) {
   function move() {
     const dx = Math.cos(star.rad) * star.speed;
@@ -340,18 +241,14 @@ function animateStar(star) {
     star.style.left = parseFloat(star.style.left) - dx + 'px';
     star.style.top = parseFloat(star.style.top) - dy + 'px';
 
-    // Flicker effect
     star.opacity += (Math.random() - 0.5) * 0.05;
     star.opacity = Math.max(0.3, Math.min(1, star.opacity));
     star.style.opacity = star.opacity;
 
-    // Reset if off-screen
-    if (
-      parseFloat(star.style.left) < -200 ||
-      parseFloat(star.style.top) > window.innerHeight + 200 ||
-      parseFloat(star.style.left) > window.innerWidth + 200 ||
-      parseFloat(star.style.top) < -200
-    ) {
+    if (parseFloat(star.style.left) < -200 ||
+        parseFloat(star.style.top) > window.innerHeight + 200 ||
+        parseFloat(star.style.left) > window.innerWidth + 200 ||
+        parseFloat(star.style.top) < -200) {
       resetStar(star);
     }
 
@@ -360,7 +257,6 @@ function animateStar(star) {
   requestAnimationFrame(move);
 }
 
-// Reset a star (reuse element)
 function resetStar(star) {
   star.style.top = randomBetween(0, 50) + 'px';
   star.style.left = randomBetween(0, window.innerWidth) + 'px';
@@ -370,59 +266,33 @@ function resetStar(star) {
 
   star.angle = randomBetween(240, 300);
   star.rad = star.angle * Math.PI / 180;
-
   star.tailLength = randomBetween(100, 300);
   star.style.setProperty('--tail-length', star.tailLength + 'px');
   star.style.setProperty('--tail-rotate', `${star.angle}deg`);
 
-  // Optional: random size on reset
   const size = randomBetween(2, 6);
   star.style.width = size + 'px';
   star.style.height = size + 'px';
   star.style.boxShadow = `0 0 ${size*2}px #fff, 0 0 ${size*3}px #fff, 0 0 ${size*5}px #fff`;
 }
 
-// ----------------------
-// CREATE STARS WITH TRICKLE-IN EFFECT
-// ----------------------
 for (let i = 0; i < starCount; i++) {
-  const delay = randomBetween(0, 3000); // each star appears within 3 seconds
-  setTimeout(() => {
-    createStar();
-  }, delay);
+  setTimeout(createStar, randomBetween(0, 3000));
 }
 
-// ----------------------
-// OPTIONAL: Handle window resize
-// ----------------------
 window.addEventListener('resize', () => {
-  // Remove all existing stars
   starContainer.innerHTML = '';
-
-  // Recalculate star count
-  if (window.innerWidth < 600) {
-    starCount = 3;
-  } else if (window.innerWidth < 1024) {
-    starCount = 6;
-  } else {
-    starCount = 10;
-  }
-
-  // Recreate stars with trickle-in effect
+  starCount = window.innerWidth < 600 ? 3 : window.innerWidth < 1024 ? 6 : 10;
   for (let i = 0; i < starCount; i++) {
-    const delay = randomBetween(0, 3000);
-    setTimeout(() => {
-      createStar();
-    }, delay);
+    setTimeout(createStar, randomBetween(0, 3000));
   }
 });
 
-
+// ---------- INFO BOX FLIP ----------
 function setupInfoBoxFlip() {
   const spans = document.querySelectorAll('.shiny-list span');
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-  // One global hide function for mobile
   const hideAllInfoBoxes = () => {
     spans.forEach(span => {
       const infoBox = span.querySelector('.info-box');
@@ -434,24 +304,22 @@ function setupInfoBoxFlip() {
     const infoBox = span.querySelector('.info-box');
     if (!infoBox) return;
 
-    infoBox.style.pointerEvents = 'none'; // never interactable
+    infoBox.style.pointerEvents = 'none';
     infoBox.style.display = 'block';
     infoBox.style.opacity = '0';
-    infoBox.style.transition = 'opacity 0.2s ease'; // smooth fade
+    infoBox.style.transition = 'opacity 0.2s ease';
 
     const showInfoBox = () => {
       const spanRect = span.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
-      infoBox.style.width = '220px'; // reset default width
+      infoBox.style.width = '220px';
       let boxWidth = infoBox.offsetWidth;
       let leftPos = span.offsetWidth + 8;
 
-      // Flip right/left
       if (spanRect.right + boxWidth + 8 > viewportWidth) {
         leftPos = -boxWidth - 8;
       }
 
-      // Mobile: shrink if overflowing
       if (isTouchDevice) {
         if (spanRect.left + leftPos + boxWidth > viewportWidth) {
           boxWidth = viewportWidth - spanRect.left - leftPos - 8;
@@ -471,23 +339,16 @@ function setupInfoBoxFlip() {
     };
 
     if (isTouchDevice) {
-      // Mobile: tap to show
-      span.addEventListener('click', (e) => {
-        e.stopPropagation();       // prevent document click
-        hideAllInfoBoxes();        // hide others
-        showInfoBox();             // show this one
+      span.addEventListener('click', e => {
+        e.stopPropagation();
+        hideAllInfoBoxes();
+        showInfoBox();
       });
     } else {
-      // Desktop: hover
       span.addEventListener('mouseenter', showInfoBox);
-      span.addEventListener('mouseleave', () => {
-        infoBox.style.opacity = '0';
-      });
+      span.addEventListener('mouseleave', () => infoBox.style.opacity = '0');
     }
   });
 
-  if (isTouchDevice) {
-    // One document click to hide all boxes
-    document.addEventListener('click', hideAllInfoBoxes);
-  }
+  if (isTouchDevice) document.addEventListener('click', hideAllInfoBoxes);
 }

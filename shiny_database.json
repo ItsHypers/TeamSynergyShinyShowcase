@@ -1439,7 +1439,7 @@
       }
     }
   },
-  "Kaidono": {
+  "KaiDono": {
     "shiny_count": 38,
     "shinies": {
       "1": {
@@ -1690,7 +1690,7 @@
         "Reaction Link": ""
       },
       "20": {
-        "Pokemon": "woobat",
+        "Pokemon": "wooper",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -3474,7 +3474,7 @@
         "Reaction": "No",
         "MysteriousBall": "No",
         "Safari": "No",
-        "Favourite": "No",
+        "Favourite": "Yes",
         "Reaction Link": ""
       },
       "12": {
@@ -3595,6 +3595,19 @@
         "Reaction Link": ""
       },
       "21": {
+        "Pokemon": "onix",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "Yes",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "22": {
         "Pokemon": "steelix",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -3607,7 +3620,7 @@
         "Favourite": "No",
         "Reaction Link": ""
       },
-      "22": {
+      "23": {
         "Pokemon": "ursaring",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -3620,7 +3633,7 @@
         "Favourite": "No",
         "Reaction Link": ""
       },
-      "23": {
+      "24": {
         "Pokemon": "woobat",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -3633,7 +3646,7 @@
         "Favourite": "No",
         "Reaction Link": ""
       },
-      "24": {
+      "25": {
         "Pokemon": "psyduck",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -3646,7 +3659,7 @@
         "Favourite": "No",
         "Reaction Link": ""
       },
-      "25": {
+      "26": {
         "Pokemon": "breloom",
         "Secret Shiny": "No",
         "Egg": "Yes",
@@ -3659,7 +3672,7 @@
         "Favourite": "No",
         "Reaction Link": ""
       },
-      "26": {
+      "27": {
         "Pokemon": "sharpedo",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -3672,7 +3685,7 @@
         "Favourite": "No",
         "Reaction Link": ""
       },
-      "27": {
+      "28": {
         "Pokemon": "bronzong",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -3685,7 +3698,7 @@
         "Favourite": "No",
         "Reaction Link": ""
       },
-      "28": {
+      "29": {
         "Pokemon": "spinda",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -3698,7 +3711,7 @@
         "Favourite": "No",
         "Reaction Link": ""
       },
-      "29": {
+      "30": {
         "Pokemon": "vanillish",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -3711,7 +3724,7 @@
         "Favourite": "No",
         "Reaction Link": ""
       },
-      "30": {
+      "31": {
         "Pokemon": "gligar",
         "Secret Shiny": "No",
         "Egg": "No",
