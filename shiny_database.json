@@ -17493,8 +17493,8 @@
       }
     }
   },
-  "Clutchthegod": {
-    "shiny_count": 13,
+  "ClutchTheGod": {
+    "shiny_count": 14,
     "shinies": {
       "1": {
         "Pokemon": "horsea",
@@ -17532,7 +17532,7 @@
         "Reaction": "No",
         "MysteriousBall": "No",
         "Safari": "No",
-        "Favourite": "No",
+        "Favourite": "Yes",
         "Reaction Link": ""
       },
       "4": {
@@ -17654,6 +17654,19 @@
       },
       "13": {
         "Pokemon": "graveler",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "14": {
+        "Pokemon": "magikarp",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
