@@ -422,11 +422,14 @@ function setupInfoBoxFlip() {
     const infoBox = span.querySelector('.info-box');
     if (!infoBox) return;
 
+    // Make sure info box does not capture mouse events
+    infoBox.style.pointerEvents = 'none';
+
     // Remove previous listeners to avoid duplicates
     span.onmouseenter = null;
     span.onmouseleave = null;
 
-    // On hover
+    // Show info box on hover
     span.addEventListener('mouseenter', () => {
       const spanRect = span.getBoundingClientRect();
       const boxWidth = infoBox.offsetWidth;
@@ -444,14 +447,11 @@ function setupInfoBoxFlip() {
       infoBox.style.top = '50%';
       infoBox.style.transform = 'translateY(-50%)';
       infoBox.style.opacity = '1';
-      infoBox.style.pointerEvents = 'auto';
     });
 
-    // On hover out
+    // Hide info box immediately when mouse leaves
     span.addEventListener('mouseleave', () => {
-      // Only fade out — do NOT reset left/top/transform
       infoBox.style.opacity = '0';
-      infoBox.style.pointerEvents = 'none';
     });
   });
 }
