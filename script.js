@@ -1,5 +1,5 @@
 // ---------- CONFIG ----------
-const JSON_VERSION = "v12"; // increment when shiny_database.json updates
+const JSON_VERSION = "v13"; // increment when shiny_database.json updates
 const JSON_FILE = "shiny_database.json";
 
 // ---------- GET DATA ----------
@@ -59,9 +59,13 @@ async function renderShowcase(filter = "") {
         });
       }
 
-      if (s.Alpha && s.Alpha.toLowerCase() === "yes") imgContainer.classList.add("alpha-pokemon");
+      if (s.Alpha && s.Alpha.toLowerCase() === "yes") {
+        imgContainer.classList.add("alpha-pokemon");
+        imgContainer.classList.add("glow-pokemon");
+      }
 
       if (s["Secret Shiny"] && s["Secret Shiny"].toLowerCase() === "yes") {
+        imgContainer.classList.add("glow-pokemon");
         const secretIcon = document.createElement("img");
         secretIcon.src = "secretshiny.png";
         secretIcon.className = "secret-icon";
