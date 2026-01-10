@@ -1,6 +1,6 @@
 {
   "Hyper": {
-    "shiny_count": 8,
+    "shiny_count": 12,
     "shinies": {
       "1": {
         "Pokemon": "staryu",
@@ -89,11 +89,55 @@
         "Reaction": "No",
         "MysteriousBall": "Yes",
         "Fossil": "No"
+      },
+      "9": {
+        "Pokemon": "staryu",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "10": {
+        "Pokemon": "staryu",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "11": {
+        "Pokemon": "staryu",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "12": {
+        "Pokemon": "staryu",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
       }
     }
   },
   "Baldbabybat": {
-    "shiny_count": 6,
+    "shiny_count": 7,
     "shinies": {
       "1": {
         "Pokemon": "rattata",
@@ -152,6 +196,17 @@
       },
       "6": {
         "Pokemon": "lickilicky",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "7": {
+        "Pokemon": "sentret",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
