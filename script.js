@@ -232,42 +232,74 @@ renderShowcase();
 })();
 
 
-const starContainer = document.querySelector('.stars-container');
-const starCount = 20;
+// ----------------------
+// SHOOTING STARS JS
+// ----------------------
 
-// Create all stars
-for (let i = 0; i < starCount; i++) {
-  createStar();
+// Select the container
+// ----------------------
+// SHOOTING STARS JS
+// ----------------------
+
+// Select the container
+const starContainer = document.querySelector('.stars-container');
+
+// Determine number of stars based on screen width
+let starCount;
+if (window.innerWidth < 600) {
+  starCount = 10; // mobile
+} else if (window.innerWidth < 1024) {
+  starCount = 20; // tablet
+} else {
+  starCount = 35; // desktop
 }
 
+// Utility function to generate random number between min and max
+function randomBetween(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+// Create a single star
 function createStar() {
   const star = document.createElement('div');
   star.classList.add('star');
-  resetStar(star);
-  starContainer.appendChild(star);
-  animateStar(star);
-}
 
-function resetStar(star) {
-  star.style.top = Math.random() * 50 + 'px';  // top of screen
-  star.style.left = Math.random() * window.innerWidth + 'px'; // random left
-  star.speed = Math.random() * 2 + 1;          // slower
-  star.opacity = Math.random() * 0.5 + 0.5;
+  // Random star size
+  const size = randomBetween(2, 6); // 2–6px
+  star.style.width = size + 'px';
+  star.style.height = size + 'px';
+  star.style.boxShadow = `0 0 ${size*2}px #fff, 0 0 ${size*3}px #fff, 0 0 ${size*5}px #fff`;
+
+  // Random starting position along top of screen
+  star.style.top = randomBetween(0, 50) + 'px';
+  star.style.left = randomBetween(0, window.innerWidth) + 'px';
+
+  // Random speed (px per frame)
+  star.speed = randomBetween(0.5, 3);
+
+  // Random opacity
+  star.opacity = randomBetween(0.4, 0.9);
   star.style.opacity = star.opacity;
 
-  // Random angle for diagonal movement
-  star.angle = Math.random() * (300 - 240) + 240; // 240°–300° downward diagonals
+  // Random angle for downward diagonal movement
+  star.angle = randomBetween(240, 300); // 240°–300° downward
   star.rad = star.angle * Math.PI / 180;
 
   // Random tail length
-  star.tailLength = Math.random() * 200 + 100;
+  star.tailLength = randomBetween(100, 300);
   star.style.setProperty('--tail-length', star.tailLength + 'px');
 
-  // Rotate tail to match star direction
+  // Tail rotation
   star.style.setProperty('--tail-rotate', `${star.angle}deg`);
+
+  // Append star to container
+  starContainer.appendChild(star);
+
+  // Animate the star
+  animateStar(star);
 }
 
-
+// Animate a star
 function animateStar(star) {
   function move() {
     const dx = Math.cos(star.rad) * star.speed;
@@ -281,8 +313,13 @@ function animateStar(star) {
     star.opacity = Math.max(0.3, Math.min(1, star.opacity));
     star.style.opacity = star.opacity;
 
-    // Reset if offscreen
-    if (parseFloat(star.style.left) < -200 || parseFloat(star.style.top) > window.innerHeight + 200) {
+    // Reset if off-screen
+    if (
+      parseFloat(star.style.left) < -200 ||
+      parseFloat(star.style.top) > window.innerHeight + 200 ||
+      parseFloat(star.style.left) > window.innerWidth + 200 ||
+      parseFloat(star.style.top) < -200
+    ) {
       resetStar(star);
     }
 
@@ -291,11 +328,59 @@ function animateStar(star) {
   requestAnimationFrame(move);
 }
 
+// Reset a star (reuse element)
+function resetStar(star) {
+  star.style.top = randomBetween(0, 50) + 'px';
+  star.style.left = randomBetween(0, window.innerWidth) + 'px';
+  star.speed = randomBetween(0.5, 3);
+  star.opacity = randomBetween(0.4, 0.9);
+  star.style.opacity = star.opacity;
 
-// Adjust stars on window resize
+  star.angle = randomBetween(240, 300);
+  star.rad = star.angle * Math.PI / 180;
+
+  star.tailLength = randomBetween(100, 300);
+  star.style.setProperty('--tail-length', star.tailLength + 'px');
+  star.style.setProperty('--tail-rotate', `${star.angle}deg`);
+
+  // Optional: random size on reset
+  const size = randomBetween(2, 6);
+  star.style.width = size + 'px';
+  star.style.height = size + 'px';
+  star.style.boxShadow = `0 0 ${size*2}px #fff, 0 0 ${size*3}px #fff, 0 0 ${size*5}px #fff`;
+}
+
+// ----------------------
+// CREATE STARS WITH TRICKLE-IN EFFECT
+// ----------------------
+for (let i = 0; i < starCount; i++) {
+  const delay = randomBetween(0, 3000); // each star appears within 3 seconds
+  setTimeout(() => {
+    createStar();
+  }, delay);
+}
+
+// ----------------------
+// OPTIONAL: Handle window resize
+// ----------------------
 window.addEventListener('resize', () => {
-  document.querySelectorAll('.star').forEach(star => {
-    if (parseFloat(star.style.top) > window.innerHeight) star.style.top = Math.random() * window.innerHeight + 'px';
-    if (parseFloat(star.style.left) > window.innerWidth) star.style.left = window.innerWidth + 'px';
-  });
+  // Remove all existing stars
+  starContainer.innerHTML = '';
+
+  // Recalculate star count
+  if (window.innerWidth < 600) {
+    starCount = 5;
+  } else if (window.innerWidth < 1024) {
+    starCount = 10;
+  } else {
+    starCount = 20;
+  }
+
+  // Recreate stars with trickle-in effect
+  for (let i = 0; i < starCount; i++) {
+    const delay = randomBetween(0, 3000);
+    setTimeout(() => {
+      createStar();
+    }, delay);
+  }
 });

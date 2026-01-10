@@ -474,8 +474,8 @@ body {
 /* Shooting star style */
 .star {
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: white;
   box-shadow: 0 0 6px #fff, 0 0 12px #fff, 0 0 20px #fff;
@@ -488,12 +488,42 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: var(--tail-length, 250px);
-  height: 8px;
+  width: var(--tail-length, 200px);
+  height: 5px;
   background: linear-gradient(90deg, white, rgba(255,255,255,0));
   transform-origin: left center;
   /* ONLY translate Y to center vertically, leave X at 0 so tail starts at star center */
   transform: translateY(-50%) rotate(var(--tail-rotate, 315deg));
   opacity: 0.6;
   pointer-events: none;
+}
+
+
+@media (max-width: 600px) {
+/* Shooting star style */
+.star {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 6px #fff, 0 0 12px #fff, 0 0 20px #fff;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.star::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--tail-length, 150px);
+  height: 2px;
+  background: linear-gradient(90deg, white, rgba(255,255,255,0));
+  transform-origin: left center;
+  /* ONLY translate Y to center vertically, leave X at 0 so tail starts at star center */
+  transform: translateY(-50%) rotate(var(--tail-rotate, 315deg));
+  opacity: 0.6;
+  pointer-events: none;
+}
 }
