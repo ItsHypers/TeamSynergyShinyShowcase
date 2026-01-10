@@ -252,3 +252,6 @@ h1 {
   100% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet, red); }
 }
 
+.shiny-list span:hover .info-box strong {
+  text-transform: capitalize;
+}
