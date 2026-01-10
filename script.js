@@ -1,11 +1,17 @@
+// ---------- CONFIG ----------
+const JSON_VERSION = "v1"; // increment this manually whenever shiny_database.json updates
+const JSON_FILE = "shiny_database.json";
+
 // ---------- GET DATA ----------
 async function getData() {
   try {
-    const res = await fetch("shiny_database.json"); // Relative path to JSON
+    // Append version query to force reload when JSON updates
+    const res = await fetch(`${JSON_FILE}?v=${JSON_VERSION}`);
+    if (!res.ok) throw new Error("Failed to fetch JSON");
     const data = await res.json();
     return data;
   } catch (err) {
-    console.error("Failed to fetch shiny_database.json", err);
+    console.error("Error loading shiny_database.json:", err);
     return {};
   }
 }
