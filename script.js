@@ -246,13 +246,14 @@ const starContainer = document.querySelector('.stars-container');
 
 // Determine number of stars based on screen width
 let starCount;
-if (window.innerWidth < 600) {
-  starCount = 10; // mobile
-} else if (window.innerWidth < 1024) {
-  starCount = 20; // tablet
-} else {
-  starCount = 35; // desktop
-}
+  // Recalculate star count
+  if (window.innerWidth < 600) {
+    starCount = 3;
+  } else if (window.innerWidth < 1024) {
+    starCount = 6;
+  } else {
+    starCount = 10;
+  }
 
 // Utility function to generate random number between min and max
 function randomBetween(min, max) {
@@ -369,11 +370,11 @@ window.addEventListener('resize', () => {
 
   // Recalculate star count
   if (window.innerWidth < 600) {
-    starCount = 5;
+    starCount = 3;
   } else if (window.innerWidth < 1024) {
-    starCount = 10;
+    starCount = 6;
   } else {
-    starCount = 20;
+    starCount = 10;
   }
 
   // Recreate stars with trickle-in effect
