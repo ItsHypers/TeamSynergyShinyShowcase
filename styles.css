@@ -10,36 +10,6 @@ h1 {
   margin-bottom: 20px;
 }
 
-.nav-btn {
-  display: block;
-  text-align: center;
-  margin-bottom: 20px;
-  color: #4a90e2;
-  text-decoration: none;
-}
-
-.manager {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.manager input {
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-}
-
-.manager button {
-  padding: 8px 14px;
-  background: #4a90e2;
-  border: none;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-}
-
 .player-card {
   background: #222;
   padding: 15px;
@@ -99,33 +69,7 @@ h1 {
   pointer-events: auto;
 }
 
-.info-box label {
-  font-size: 0.85rem;
-  margin-top: 6px;
+.info-box strong {
   display: block;
-}
-
-.info-box input,
-.info-box textarea {
-  width: 100%;
-  padding: 6px 8px;
-  margin-top: 4px;
-  border-radius: 6px;
-  border: none;
-  font-size: 0.9rem;
-}
-
-.info-box textarea {
-  resize: vertical;
-  height: 60px;
-}
-
-.info-box button {
-  margin-top: 8px;
-  background: #c94c4c;
-  color: white;
-  border: none;
-  padding: 6px 8px;
-  border-radius: 6px;
-  cursor: pointer;
+  margin-bottom: 6px;
 }

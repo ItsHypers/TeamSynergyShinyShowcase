@@ -1,0 +1,166 @@
+{
+  "Hyper": {
+    "shiny_count": 8,
+    "shinies": {
+      "1": {
+        "Pokemon": "staryu",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "2": {
+        "Pokemon": "pikachu",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "3": {
+        "Pokemon": "luvdisc",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "4": {
+        "Pokemon": "riolu",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "Yes",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "5": {
+        "Pokemon": "magby",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "6": {
+        "Pokemon": "venipede",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "7": {
+        "Pokemon": "rattata",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "8": {
+        "Pokemon": "spheal",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "Yes",
+        "Fossil": "No"
+      }
+    }
+  },
+  "Baldbabybat": {
+    "shiny_count": 6,
+    "shinies": {
+      "1": {
+        "Pokemon": "rattata",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "2": {
+        "Pokemon": "growlithe",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "3": {
+        "Pokemon": "ludicolo",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "4": {
+        "Pokemon": "bibarel",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "5": {
+        "Pokemon": "surskit",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "6": {
+        "Pokemon": "lickilicky",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      }
+    }
+  }
+}
