@@ -218,3 +218,39 @@ renderShowcase();
     container.appendChild(star);
   }
 })();
+
+
+// ---------- NAVIGATION MENU HANDLER ----------
+(function setupMenu() {
+  const nav = document.getElementById("top-nav");
+  const tabs = nav.querySelectorAll("li");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      // Remove active from all tabs
+      tabs.forEach(t => t.classList.remove("active"));
+      // Add active to clicked tab
+      tab.classList.add("active");
+
+      // Handle tab action
+      const tabName = tab.textContent.trim().toLowerCase();
+      handleTabClick(tabName);
+    });
+  });
+
+  // Function to handle tab clicks
+  function handleTabClick(tabName) {
+    switch(tabName) {
+      case "shiny showcase":
+        renderShowcase();
+        break;
+      case "shotm":
+        // Example: replace content with leaderboard placeholder
+        const container = document.getElementById("showcase");
+        container.innerHTML = `<div class="message">Shiny Hunter of the Month coming soon!</div>`;
+        break;
+      default:
+        console.warn("No action defined for tab:", tabName);
+    }
+  }
+})();
