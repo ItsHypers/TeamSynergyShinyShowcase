@@ -137,7 +137,7 @@
     }
   },
   "Baldbabybat": {
-    "shiny_count": 7,
+    "shiny_count": 13,
     "shinies": {
       "1": {
         "Pokemon": "rattata",
@@ -207,6 +207,72 @@
       },
       "7": {
         "Pokemon": "sentret",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "8": {
+        "Pokemon": "litwick",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "9": {
+        "Pokemon": "litwick",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "10": {
+        "Pokemon": "litwick",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "11": {
+        "Pokemon": "litwick",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "12": {
+        "Pokemon": "litwick",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Fossil": "No"
+      },
+      "13": {
+        "Pokemon": "litwick",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
