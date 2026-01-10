@@ -1,5 +1,5 @@
 // ---------- CONFIG ----------
-const JSON_VERSION = "v6"; // increment when shiny_database.json updates
+const JSON_VERSION = "v7"; // increment when shiny_database.json updates
 const JSON_FILE = "shiny_database.json";
 
 // ---------- GET DATA ----------
