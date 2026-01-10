@@ -1,6 +1,6 @@
 {
   "Hyper": {
-    "shiny_count": 12,
+    "shiny_count": 15,
     "shinies": {
       "1": {
         "Pokemon": "staryu",
@@ -11,7 +11,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "2": {
         "Pokemon": "pikachu",
@@ -22,7 +22,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "3": {
         "Pokemon": "luvdisc",
@@ -33,7 +33,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "4": {
         "Pokemon": "riolu",
@@ -44,7 +44,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "5": {
         "Pokemon": "magby",
@@ -55,7 +55,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "6": {
         "Pokemon": "venipede",
@@ -66,7 +66,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "7": {
         "Pokemon": "rattata",
@@ -77,7 +77,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "8": {
         "Pokemon": "spheal",
@@ -88,7 +88,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "Yes",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "9": {
         "Pokemon": "staryu",
@@ -99,7 +99,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "10": {
         "Pokemon": "staryu",
@@ -110,7 +110,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "11": {
         "Pokemon": "staryu",
@@ -121,7 +121,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "12": {
         "Pokemon": "staryu",
@@ -132,12 +132,46 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
+      },
+      "13": {
+        "Pokemon": "staryu",
+        "Secret Shiny": "Yes",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No"
+      },
+      "14": {
+        "Pokemon": "riolu",
+        "Secret Shiny": "Yes",
+        "Egg": "No",
+        "Alpha": "Yes",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "Yes"
+      },
+      "15": {
+        "Pokemon": "yanma",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "Yes",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Reaction Link": ""
       }
     }
   },
   "Baldbabybat": {
-    "shiny_count": 13,
+    "shiny_count": 20,
     "shinies": {
       "1": {
         "Pokemon": "rattata",
@@ -148,7 +182,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "2": {
         "Pokemon": "growlithe",
@@ -159,7 +193,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "3": {
         "Pokemon": "ludicolo",
@@ -170,7 +204,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "4": {
         "Pokemon": "bibarel",
@@ -181,7 +215,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "5": {
         "Pokemon": "surskit",
@@ -192,7 +226,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "6": {
         "Pokemon": "lickilicky",
@@ -203,10 +237,10 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "7": {
-        "Pokemon": "sentret",
+        "Pokemon": "furret",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -214,7 +248,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "8": {
         "Pokemon": "litwick",
@@ -225,7 +259,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "9": {
         "Pokemon": "litwick",
@@ -236,7 +270,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "10": {
         "Pokemon": "litwick",
@@ -247,7 +281,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "11": {
         "Pokemon": "litwick",
@@ -258,7 +292,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "12": {
         "Pokemon": "litwick",
@@ -269,7 +303,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
       },
       "13": {
         "Pokemon": "litwick",
@@ -280,7 +314,89 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Fossil": "No"
+        "Safari": "No"
+      },
+      "14": {
+        "Pokemon": "nidoqueen",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "Yes",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No"
+      },
+      "15": {
+        "Pokemon": "beldum",
+        "Secret Shiny": "No",
+        "Egg": "Yes",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No"
+      },
+      "16": {
+        "Pokemon": "hoothoot",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "Yes",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No"
+      },
+      "17": {
+        "Pokemon": "dragonite",
+        "Secret Shiny": "Yes",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "Yes",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "Yes"
+      },
+      "18": {
+        "Pokemon": "starly",
+        "Secret Shiny": "Yes",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "Yes",
+        "MysteriousBall": "No",
+        "Safari": "Yes",
+        "Favourite": "Yes",
+        "Reaction Link": "https://shinyboard.net/teams/S%C3%BFN?tab=showcase"
+      },
+      "19": {
+        "Pokemon": "jynx",
+        "Secret Shiny": "Yes",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "Yes",
+        "MysteriousBall": "Yes",
+        "Safari": "No",
+        "Reaction Link": "https://shinyboard.net/teams/S%C3%BFN?tab=showcase"
+      },
+      "20": {
+        "Pokemon": "umbreon",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
       }
     }
   }
