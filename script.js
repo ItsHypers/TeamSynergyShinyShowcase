@@ -46,7 +46,7 @@ async function renderShowcase(filter = "") {
     }
 
 
-   let trophyImg = "";
+    let trophyImg = "";
 
     // Add trophy for top 3 players
     if (index === 0) {
@@ -57,12 +57,14 @@ async function renderShowcase(filter = "") {
       trophyImg = '<img src="bronze.png" alt="Bronze Trophy" class="player-trophy">';
     }
 
-    card.innerHTML = `
+    let sparkle = (index >= 3) ? ' <span class="sparkle">✨</span>' : '';
+
+
+        card.innerHTML = `
       <div class="${playerClass}">
-        #${index + 1} ${player} (${playerData.shiny_count}) ${trophyImg}
+        #${index + 1} ${player} (${playerData.shiny_count})${sparkle} ${trophyImg}
       </div>
     `;
-
 
     const shinyList = document.createElement("div");
     shinyList.className = "shiny-list";

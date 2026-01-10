@@ -67,12 +67,21 @@ h1:hover {
   vertical-align: middle;
 }
 
-
 .player-card {
   background: #222;
-  padding: 15px;
+  padding: 20px 20px; 
   border-radius: 8px;
-  margin-bottom: 12px;
+  margin: 12px 10px; /* vertical 12px, horizontal 10px gap */
+  box-sizing: border-box;
+}
+
+.player-card div span.sparkle {
+  animation: sparkle-glow 1.5s infinite alternate;
+}
+
+@keyframes sparkle-glow {
+  from { text-shadow: 0 0 2px #edff49; }
+  to { text-shadow: 0 0 5px #fff67f; }
 }
 
 .player-name {
@@ -371,10 +380,6 @@ body {
   box-sizing: border-box;
 }
 
-.player-card {
-  width: 100%;
-  box-sizing: border-box;
-}
 
 
 /* Fix search bar alignment */
