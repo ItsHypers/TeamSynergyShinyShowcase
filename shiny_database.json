@@ -4516,7 +4516,7 @@
         "Reaction": "No",
         "MysteriousBall": "No",
         "Safari": "No",
-        "Favourite": "No",
+        "Favourite": "Yes",
         "Reaction Link": ""
       },
       "6": {
@@ -8254,7 +8254,7 @@
         "Reaction Link": ""
       },
       "19": {
-        "Pokemon": "vvenipede",
+        "Pokemon": "venipede",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -16555,7 +16555,7 @@
     }
   },
   "Dammers": {
-    "shiny_count": 2,
+    "shiny_count": 4,
     "shinies": {
       "1": {
         "Pokemon": "gastly",
@@ -16572,6 +16572,32 @@
       },
       "2": {
         "Pokemon": "ninetales",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "3": {
+        "Pokemon": "ditto",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "4": {
+        "Pokemon": "smeargle",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -17104,37 +17130,6 @@
       },
       "25": {
         "Pokemon": "cryogonal",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      }
-    }
-  },
-  "Drammers": {
-    "shiny_count": 2,
-    "shinies": {
-      "1": {
-        "Pokemon": "ditto",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "2": {
-        "Pokemon": "smeargle",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
