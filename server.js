@@ -7,7 +7,6 @@ app.use(cors());
 app.use(express.json());
 
 // ---------- MongoDB Connection ----------
-// Railway automatically provides MONGO_URL as an environment variable
 const MONGO_URI = process.env.MONGO_URL;
 if (!MONGO_URI) {
   console.error("MONGO_URL not set in environment variables");
@@ -54,11 +53,9 @@ app.post("/add", async (req, res) => {
 
   try {
     let doc = await Player.findOne({ name: player });
-    if (!doc) {
-      doc = new Player({ name: player, shinies: [] });
-    }
+    if (!doc) doc = new Player({ name: player, shinies: [] });
 
-    // Prevent duplicate shiny names
+    // Prevent duplicate
     if (doc.shinies.some(s => s.name.toLowerCase() === shiny.name.toLowerCase())) {
       return res.status(400).json({ error: "Duplicate shiny" });
     }

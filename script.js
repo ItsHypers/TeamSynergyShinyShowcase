@@ -1,4 +1,4 @@
-const API_URL = "teamsynergy.up.railway.app"; // Replace with your Railway URL
+const API_URL = "https://teamsynergy.up.railway.app"; // Replace with your Railway URL
 
 // ---------- GET DATA ----------
 async function getData() {
@@ -14,7 +14,7 @@ async function getData() {
   }
 }
 
-
+// ---------- ADD SHINY ----------
 async function addShiny() {
   const player = document.getElementById("playerName").value.trim();
   const shinyName = document.getElementById("shinyName").value.trim();
@@ -34,13 +34,12 @@ async function addShiny() {
     if (!res.ok) return alert(result.error);
 
     document.getElementById("shinyName").value = "";
-    await renderManager(); // re-render after adding
+    await renderManager();
   } catch (err) {
     console.error(err);
     alert("Error connecting to server");
   }
 }
-
 
 // ---------- UPDATE SHINY ----------
 async function updateShiny(player, index, field, value) {
@@ -69,7 +68,6 @@ async function renderManager() {
   const container = document.getElementById("managerList");
   if (!container) return;
   container.innerHTML = "";
-  // ...rest of rendering code
 
   for (const player in data) {
     const card = document.createElement("div");
