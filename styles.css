@@ -255,3 +255,41 @@ h1 {
 .shiny-list span:hover .info-box strong {
   text-transform: capitalize;
 }
+
+/* Main wrapper to center everything */
+#main-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Fix mobile overflow */
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Keep showcase centered */
+#showcase {
+  width: 100%;
+}
+
+/* Make sure cards don't overflow */
+.player-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fix search bar alignment */
+#searchBar {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 10px auto 20px auto;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+}

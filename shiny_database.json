@@ -785,7 +785,7 @@
     }
   },
   "Baldbabybat": {
-    "shiny_count": 52,
+    "shiny_count": 50,
     "shinies": {
       "1": {
         "Pokemon": "gothita",
@@ -1425,32 +1425,6 @@
         "Reaction Link": ""
       },
       "50": {
-        "Pokemon": "vanillish",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "51": {
-        "Pokemon": "barboach",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "52": {
         "Pokemon": "vanillish",
         "Secret Shiny": "No",
         "Egg": "No",
