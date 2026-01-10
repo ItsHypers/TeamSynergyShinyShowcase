@@ -18112,5 +18112,23 @@
         "Reaction Link": ""
       }
     }
+  },
+  "Rafetaga": {
+    "shiny_count": 1,
+    "shinies": {
+      "1": {
+        "Pokemon": "horsea",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      }
+    }
   }
 }
