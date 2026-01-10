@@ -5,6 +5,23 @@ body {
   padding: 30px;
 }
 
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: #111;
+}
+
+/* Main wrapper */
+#main-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
 h1 {
   text-align: center;
   margin-bottom: 20px;
@@ -271,16 +288,16 @@ body {
   overflow-x: hidden;
 }
 
-/* Keep showcase centered */
 #showcase {
   width: 100%;
+  box-sizing: border-box;
 }
 
-/* Make sure cards don't overflow */
 .player-card {
   width: 100%;
   box-sizing: border-box;
 }
+
 
 /* Fix search bar alignment */
 #searchBar {
@@ -301,9 +318,33 @@ body {
     0 0 24px rgba(200, 100, 255, 0.9);
 }
 
+.glow-alphapokemon {
+  box-shadow:
+    0 0 10px rgb(255, 0, 0),
+    0 0 18px rgba(255, 200, 0, 1.5),
+    0 0 24px rgba(200, 100, 255, 1.5);
+}
+
+.glow-alphapokemon:hover {
+  box-shadow:
+    0 0 10px rgba(255, 9, 9, 0.884),
+    0 0 18px rgba(255, 200, 0, 1.5),
+    0 0 24px rgba(200, 100, 255, 1.5);
+}
+
 .glow-pokemon:hover {
   box-shadow:
     0 0 14px gold,
     0 0 24px rgba(255, 220, 0, 1),
     0 0 32px rgba(220, 120, 255, 1);
+}
+
+@media (max-width: 600px) {
+  #main-container {
+    padding: 12px;
+  }
+
+  .gif-container:hover {
+    transform: scale(1.1); /* slightly smaller zoom on phones */
+  }
 }

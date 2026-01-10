@@ -61,7 +61,7 @@ async function renderShowcase(filter = "") {
 
       if (s.Alpha && s.Alpha.toLowerCase() === "yes") {
         imgContainer.classList.add("alpha-pokemon");
-        imgContainer.classList.add("glow-pokemon");
+        imgContainer.classList.add("glow-alphapokemon");
       }
 
       if (s["Secret Shiny"] && s["Secret Shiny"].toLowerCase() === "yes") {
