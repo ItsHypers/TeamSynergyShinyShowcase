@@ -196,3 +196,25 @@ document.getElementById("playerSearch").addEventListener("input", (e) => {
 // ---------- INITIAL RENDER ----------
 renderShowcase();
 
+// SHOOTING STARS GENERATOR
+(function createShootingStars() {
+  const container = document.getElementById("shooting-stars-background");
+
+  const starCount = 8; // number of shooting stars
+
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+
+    // randomize starting position outside the top-left corner
+    const startX = Math.random() * window.innerWidth * -0.5;
+    const startY = Math.random() * window.innerHeight * -0.5;
+
+    star.style.left = startX + "px";
+    star.style.top = startY + "px";
+    star.style.animationDuration = 1.2 + Math.random() * 1.8 + "s";
+    star.style.animationDelay = Math.random() * 8 + "s";
+
+    container.appendChild(star);
+  }
+})();
