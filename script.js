@@ -222,6 +222,10 @@ document.getElementById("playerSearch").addEventListener("input", (e) => {
 // ---------- INITIAL RENDER ----------
 renderShowcase();
 
+renderShowcase().then(() => {
+  setupInfoBoxFlip();
+});
+
 
 // ---------- NAVIGATION MENU HANDLER ----------
 (function setupMenu() {
@@ -412,46 +416,78 @@ window.addEventListener('resize', () => {
     }, delay);
   }
 });
-// ----------------------
-// ATTACH INFO BOX HOVER AFTER RENDER
-// ----------------------
+
+
 function setupInfoBoxFlip() {
   const spans = document.querySelectorAll('.shiny-list span');
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  // One global hide function for mobile
+  const hideAllInfoBoxes = () => {
+    spans.forEach(span => {
+      const infoBox = span.querySelector('.info-box');
+      if (infoBox) infoBox.style.opacity = '0';
+    });
+  };
 
   spans.forEach(span => {
     const infoBox = span.querySelector('.info-box');
     if (!infoBox) return;
 
-    // Make sure info box does not capture mouse events
-    infoBox.style.pointerEvents = 'none';
+    infoBox.style.pointerEvents = 'none'; // never interactable
+    infoBox.style.display = 'block';
+    infoBox.style.opacity = '0';
+    infoBox.style.transition = 'opacity 0.2s ease'; // smooth fade
 
-    // Remove previous listeners to avoid duplicates
-    span.onmouseenter = null;
-    span.onmouseleave = null;
-
-    // Show info box on hover
-    span.addEventListener('mouseenter', () => {
+    const showInfoBox = () => {
       const spanRect = span.getBoundingClientRect();
-      const boxWidth = infoBox.offsetWidth;
       const viewportWidth = window.innerWidth;
-
-      // Default: right
+      infoBox.style.width = '220px'; // reset default width
+      let boxWidth = infoBox.offsetWidth;
       let leftPos = span.offsetWidth + 8;
 
-      // Flip to left if overflowing right
+      // Flip right/left
       if (spanRect.right + boxWidth + 8 > viewportWidth) {
         leftPos = -boxWidth - 8;
+      }
+
+      // Mobile: shrink if overflowing
+      if (isTouchDevice) {
+        if (spanRect.left + leftPos + boxWidth > viewportWidth) {
+          boxWidth = viewportWidth - spanRect.left - leftPos - 8;
+          infoBox.style.width = boxWidth + 'px';
+        }
+        if (spanRect.left + leftPos < 0) {
+          boxWidth = boxWidth + (spanRect.left + leftPos);
+          infoBox.style.width = Math.max(150, boxWidth) + 'px';
+          leftPos = -spanRect.left + 8;
+        }
       }
 
       infoBox.style.left = leftPos + 'px';
       infoBox.style.top = '50%';
       infoBox.style.transform = 'translateY(-50%)';
       infoBox.style.opacity = '1';
-    });
+    };
 
-    // Hide info box immediately when mouse leaves
-    span.addEventListener('mouseleave', () => {
-      infoBox.style.opacity = '0';
-    });
+    if (isTouchDevice) {
+      // Mobile: tap to show
+      span.addEventListener('click', (e) => {
+        e.stopPropagation();       // prevent document click
+        hideAllInfoBoxes();        // hide others
+        showInfoBox();             // show this one
+      });
+    } else {
+      // Desktop: hover
+      span.addEventListener('mouseenter', showInfoBox);
+      span.addEventListener('mouseleave', () => {
+        infoBox.style.opacity = '0';
+      });
+    }
   });
+
+  if (isTouchDevice) {
+    // One document click to hide all boxes
+    document.addEventListener('click', hideAllInfoBoxes);
+  }
 }
