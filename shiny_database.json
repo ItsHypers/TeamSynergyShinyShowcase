@@ -12444,115 +12444,6 @@
       }
     }
   },
-  "Mishrakun": {
-    "shiny_count": 8,
-    "shinies": {
-      "1": {
-        "Pokemon": "bibarel",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "2": {
-        "Pokemon": "zubat",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "3": {
-        "Pokemon": "spearow",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "4": {
-        "Pokemon": "nidorino",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "5": {
-        "Pokemon": "pidove",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "6": {
-        "Pokemon": "starly",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "7": {
-        "Pokemon": "skarmory",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "Yes",
-        "Reaction Link": ""
-      },
-      "8": {
-        "Pokemon": "geodude",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      }
-    }
-  },
   "Armenr": {
     "shiny_count": 8,
     "shinies": {
@@ -15690,7 +15581,7 @@
         "Reaction Link": ""
       },
       "7": {
-        "Pokemon": "beedril",
+        "Pokemon": "beedrill",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -15859,7 +15750,7 @@
         "Reaction Link": ""
       },
       "20": {
-        "Pokemon": "tranquil",
+        "Pokemon": "tranquill",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -17414,10 +17305,114 @@
     }
   },
   "Mishrachan": {
-    "shiny_count": 1,
+    "shiny_count": 9,
     "shinies": {
       "1": {
         "Pokemon": "bibarel",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "2": {
+        "Pokemon": "bibarel",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "3": {
+        "Pokemon": "zubat",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "4": {
+        "Pokemon": "spearow",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "5": {
+        "Pokemon": "nidorino",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "6": {
+        "Pokemon": "pidove",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "7": {
+        "Pokemon": "starly",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "8": {
+        "Pokemon": "skarmory",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "Yes",
+        "Reaction Link": ""
+      },
+      "9": {
+        "Pokemon": "geodude",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
