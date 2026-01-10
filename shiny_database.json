@@ -2130,11 +2130,11 @@
         "Alpha": "No",
         "Sold": "No",
         "Event": "No",
-        "Reaction": "No",
+        "Reaction": "Yes",
         "MysteriousBall": "No",
         "Safari": "No",
         "Favourite": "Yes",
-        "Reaction Link": ""
+        "Reaction Link": "https://www.youtube.com/watch?v=ioG31sUvLvc"
       },
       "16": {
         "Pokemon": "persian",
