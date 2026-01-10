@@ -1,11 +1,15 @@
 // ---------- CONFIG ----------
-const JSON_VERSION = "v11"; // increment when shiny_database.json updates
+const JSON_VERSION = "v12"; // increment when shiny_database.json updates
 const JSON_FILE = "shiny_database.json";
 
 // ---------- GET DATA ----------
 async function getData() {
   try {
-    const res = await fetch(`${JSON_FILE}?v=${JSON_VERSION}`);
+    const cacheBuster = Date.now(); // unique every load
+    const res = await fetch(`${JSON_FILE}?v=${JSON_VERSION}&t=${cacheBuster}`, {
+      cache: "no-store"
+    });
+
     if (!res.ok) throw new Error("Failed to fetch JSON");
     return await res.json();
   } catch (err) {
