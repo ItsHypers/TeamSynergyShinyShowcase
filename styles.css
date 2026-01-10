@@ -60,6 +60,12 @@ h1:hover {
     0 0 18px rgba(74,144,226,0.25);
 }
 
+.player-trophy {
+  width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
 
 
 .player-card {
@@ -75,6 +81,11 @@ h1:hover {
   color: #4a90e2;
   text-align: center;
 }
+
+.player-name.high-player {
+  color: rgb(255, 84, 255); /* purple */
+}
+
 
 /* Gold color for top 5 players */
 .player-name.top-player {
@@ -222,6 +233,11 @@ h1:hover {
   display: block; /* show on hover */
 }
 
+.info-box strong {
+  display: block;
+  margin-bottom: 6px;
+  text-transform: capitalize; /* permanently capitalize */
+}
 /* ---------- INFO BOX ---------- */
 .info-box {
   position: absolute;
@@ -235,9 +251,11 @@ h1:hover {
   width: 220px;
   opacity: 0;
   pointer-events: none;
-  transition: 0.3s ease;
+  transition: 0.3s ease, left 0s; /* allow instant left change */
   z-index: 10;
 }
+
+
 
 .shiny-list span:hover .info-box {
   opacity: 1;

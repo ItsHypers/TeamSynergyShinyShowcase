@@ -376,7 +376,7 @@
         "Reaction": "No",
         "MysteriousBall": "No",
         "Safari": "No",
-        "Favourite": "Yes",
+        "Favourite": "no",
         "Reaction Link": ""
       },
       "30": {
@@ -784,7 +784,7 @@
       }
     }
   },
-  "Baldbabybat": {
+  "BaldBabyBat": {
     "shiny_count": 50,
     "shinies": {
       "1": {
@@ -2398,7 +2398,7 @@
       }
     }
   },
-  "Ttvxlejesse": {
+  "TTVxleJesse": {
     "shiny_count": 34,
     "shinies": {
       "1": {
@@ -3713,7 +3713,7 @@
       }
     }
   },
-  "Redwoodgamer": {
+  "RedWoodGamer": {
     "shiny_count": 27,
     "shinies": {
       "1": {
@@ -5480,7 +5480,7 @@
       }
     }
   },
-  "Mirommo": {
+  "MiroMMO": {
     "shiny_count": 33,
     "shinies": {
       "1": {
@@ -7208,7 +7208,7 @@
       }
     }
   },
-  "Itsturn": {
+  "ItsTurn": {
     "shiny_count": 21,
     "shinies": {
       "1": {
@@ -8507,7 +8507,7 @@
       }
     }
   },
-  "Nxmdxco": {
+  "NxmDXCO": {
     "shiny_count": 17,
     "shinies": {
       "1": {
@@ -9798,7 +9798,7 @@
       }
     }
   },
-  "Ezrascarlet": {
+  "Erzascarlet": {
     "shiny_count": 14,
     "shinies": {
       "1": {
@@ -9985,7 +9985,7 @@
       }
     }
   },
-  "Mrbanger": {
+  "MrBanger": {
     "shiny_count": 12,
     "shinies": {
       "1": {
@@ -10146,7 +10146,7 @@
       }
     }
   },
-  "Lostmonarch": {
+  "LostMonarch": {
     "shiny_count": 13,
     "shinies": {
       "1": {
@@ -10668,7 +10668,7 @@
       }
     }
   },
-  "Steamyrayvaughn": {
+  "SteamyRayVaughn": {
     "shiny_count": 15,
     "shinies": {
       "1": {
@@ -10868,7 +10868,7 @@
       }
     }
   },
-  "Garyownes": {
+  "GaryOwnes": {
     "shiny_count": 13,
     "shinies": {
       "1": {
@@ -11042,7 +11042,7 @@
       }
     }
   },
-  "Livelybaileigh": {
+  "LivelyBaileigh": {
     "shiny_count": 10,
     "shinies": {
       "1": {
@@ -11486,7 +11486,7 @@
       }
     }
   },
-  "Thebigh": {
+  "TheBigH": {
     "shiny_count": 9,
     "shinies": {
       "1": {
@@ -11865,7 +11865,7 @@
       }
     }
   },
-  "Csixtythree": {
+  "CSixtyThree": {
     "shiny_count": 15,
     "shinies": {
       "1": {
@@ -12322,7 +12322,7 @@
       }
     }
   },
-  "Biggrnwhoopycush": {
+  "BigGrnWhoopyCush": {
     "shiny_count": 8,
     "shinies": {
       "1": {
@@ -12649,7 +12649,7 @@
       }
     }
   },
-  "Pwcc": {
+  "PWCC": {
     "shiny_count": 11,
     "shinies": {
       "1": {
@@ -12958,7 +12958,7 @@
       }
     }
   },
-  "Thegrimestreaper": {
+  "TheGrimestReaper": {
     "shiny_count": 7,
     "shinies": {
       "1": {
@@ -13975,7 +13975,7 @@
       }
     }
   },
-  "IAmTkTV": {
+  "IAmTKTV": {
     "shiny_count": 9,
     "shinies": {
       "1": {

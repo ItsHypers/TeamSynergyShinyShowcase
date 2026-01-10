@@ -36,9 +36,33 @@ async function renderShowcase(filter = "") {
     const card = document.createElement("div");
     card.className = "player-card";
     // Top 5 players get "top-player" class
-    const playerClass = index < 5 ? "player-name top-player" : "player-name";
+    let playerClass;
+    if (index < 5) {
+      playerClass = "player-name top-player"; // gold
+    } else if (index < 20) {
+      playerClass = "player-name high-player"; // purple
+    } else {
+      playerClass = "player-name"; // default blue
+    }
 
-    card.innerHTML = `<div class="${playerClass}">#${index + 1} ${player} (${playerData.shiny_count})</div>`;
+
+   let trophyImg = "";
+
+    // Add trophy for top 3 players
+    if (index === 0) {
+      trophyImg = '<img src="gold.png" alt="Gold Trophy" class="player-trophy">';
+    } else if (index === 1) {
+      trophyImg = '<img src="silver.png" alt="Silver Trophy" class="player-trophy">';
+    } else if (index === 2) {
+      trophyImg = '<img src="bronze.png" alt="Bronze Trophy" class="player-trophy">';
+    }
+
+    card.innerHTML = `
+      <div class="${playerClass}">
+        #${index + 1} ${player} (${playerData.shiny_count}) ${trophyImg}
+      </div>
+    `;
+
 
     const shinyList = document.createElement("div");
     shinyList.className = "shiny-list";
@@ -180,7 +204,7 @@ async function renderShowcase(filter = "") {
       span.appendChild(info);
       shinyList.appendChild(span);
     });
-
+    setupInfoBoxFlip();
     card.appendChild(shinyList);
     container.appendChild(card);
   });
@@ -190,6 +214,7 @@ async function renderShowcase(filter = "") {
 document.getElementById("playerSearch").addEventListener("input", (e) => {
   const filter = e.target.value;
   renderShowcase(filter);
+  setupInfoBoxFlip();
 });
 
 // ---------- INITIAL RENDER ----------
@@ -385,3 +410,46 @@ window.addEventListener('resize', () => {
     }, delay);
   }
 });
+// ----------------------
+// ATTACH INFO BOX HOVER AFTER RENDER
+// ----------------------
+function setupInfoBoxFlip() {
+  const spans = document.querySelectorAll('.shiny-list span');
+
+  spans.forEach(span => {
+    const infoBox = span.querySelector('.info-box');
+    if (!infoBox) return;
+
+    // Remove previous listeners to avoid duplicates
+    span.onmouseenter = null;
+    span.onmouseleave = null;
+
+    // On hover
+    span.addEventListener('mouseenter', () => {
+      const spanRect = span.getBoundingClientRect();
+      const boxWidth = infoBox.offsetWidth;
+      const viewportWidth = window.innerWidth;
+
+      // Default: right
+      let leftPos = span.offsetWidth + 8;
+
+      // Flip to left if overflowing right
+      if (spanRect.right + boxWidth + 8 > viewportWidth) {
+        leftPos = -boxWidth - 8;
+      }
+
+      infoBox.style.left = leftPos + 'px';
+      infoBox.style.top = '50%';
+      infoBox.style.transform = 'translateY(-50%)';
+      infoBox.style.opacity = '1';
+      infoBox.style.pointerEvents = 'auto';
+    });
+
+    // On hover out
+    span.addEventListener('mouseleave', () => {
+      // Only fade out — do NOT reset left/top/transform
+      infoBox.style.opacity = '0';
+      infoBox.style.pointerEvents = 'none';
+    });
+  });
+}
