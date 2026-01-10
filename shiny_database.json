@@ -376,7 +376,7 @@
         "Reaction": "No",
         "MysteriousBall": "No",
         "Safari": "No",
-        "Favourite": "Yes",
+        "Favourite": "No",
         "Reaction Link": ""
       },
       "30": {
@@ -1304,7 +1304,7 @@
         "Reaction": "No",
         "MysteriousBall": "No",
         "Safari": "No",
-        "Favourite": "No",
+        "Favourite": "Yes",
         "Reaction Link": ""
       },
       "41": {
@@ -1978,7 +1978,7 @@
         "MysteriousBall": "No",
         "Safari": "No",
         "Favourite": "No",
-        "Reaction Link": "www.youtube.com/watch?v=WKkdHhzbFE0&list=PLYbUZSTJjAAGm5nVmklzrc87-LNUGnZqW&index=11"
+        "Reaction Link": "https://www.youtube.com/watch?v=WKkdHhzbFE0&list=PLYbUZSTJjAAGm5nVmklzrc87-LNUGnZqW&index=11"
       },
       "4": {
         "Pokemon": "golett",
@@ -1991,7 +1991,7 @@
         "MysteriousBall": "No",
         "Safari": "No",
         "Favourite": "No",
-        "Reaction Link": "www.youtube.com/watch?v=-UiVYdWIyFA&list=PLYbUZSTJjAAGm5nVmklzrc87-LNUGnZqW&index=10"
+        "Reaction Link": "https://www.youtube.com/watch?v=-UiVYdWIyFA&list=PLYbUZSTJjAAGm5nVmklzrc87-LNUGnZqW&index=10"
       },
       "5": {
         "Pokemon": "torkoal",
@@ -2017,7 +2017,7 @@
         "MysteriousBall": "No",
         "Safari": "No",
         "Favourite": "No",
-        "Reaction Link": "www.youtube.com/watch?v=ToZ31gHSxqk&list=PLYbUZSTJjAAGm5nVmklzrc87-LNUGnZqW&index=9"
+        "Reaction Link": "https://www.youtube.com/watch?v=ToZ31gHSxqk&list=PLYbUZSTJjAAGm5nVmklzrc87-LNUGnZqW&index=9"
       },
       "7": {
         "Pokemon": "smeargle",
@@ -2043,7 +2043,7 @@
         "MysteriousBall": "No",
         "Safari": "No",
         "Favourite": "No",
-        "Reaction Link": "www.youtube.com/watch?v=WRFJehGvMzM&list=PLYbUZSTJjAAGm5nVmklzrc87-LNUGnZqW&index=8"
+        "Reaction Link": "https://www.youtube.com/watch?v=WRFJehGvMzM&list=PLYbUZSTJjAAGm5nVmklzrc87-LNUGnZqW&index=8"
       },
       "9": {
         "Pokemon": "horsea",
