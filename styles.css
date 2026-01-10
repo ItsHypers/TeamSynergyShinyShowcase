@@ -5,78 +5,13 @@ body {
 }
 
 html, body {
-  width: 100%;
-  height: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  background: #0a0a0f; /* fallback dark color */
-  font-family: Arial, sans-serif;
-  color: #fff;
-}
-
-/* SHOOTING STARS BACKGROUND */
-#shooting-stars-background {
-  position: fixed;
-  top: 0;
-  left: 0;
+  min-height: 100%;   /* allows content to scroll naturally */
   width: 100%;
-  height: 100%;
-  z-index: 0; /* behind everything */
-  overflow: hidden;
-  background: #0a0a0f;
-  pointer-events: none;
+  overflow-x: hidden; /* prevent horizontal scroll from stars */
 }
 
-/* Static stars */
-#shooting-stars-background::before,
-#shooting-stars-background::after {
-  content: "";
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: white;
-  box-shadow:
-    20vw 15vh white, 50vw 40vh white, 80vw 10vh white,
-    30vw 70vh white, 60vw 80vh white, 10vw 50vh white,
-    90vw 60vh white, 45vw 25vh white, 70vw 55vh white,
-    15vw 85vh white, 85vw 35vh white;
-  animation: twinkle 3s infinite ease-in-out;
-  opacity: 0.8;
-}
-
-/* Shooting stars */
-.star {
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  width: 2px;
-  height: 2px;
-  background: white;
-  box-shadow: 0 0 6px 2px white;
-  transform: translate3d(0, 0, 0);
-  animation: shoot linear infinite;
-  opacity: 0;
-}
-
-/* Twinkle animation for static stars */
-@keyframes twinkle {
-  0% { opacity: 0.3; }
-  50% { opacity: 1; }
-  100% { opacity: 0.3; }
-}
-
-/* Shooting star animation */
-@keyframes shoot {
-  0% {
-    opacity: 1;
-    transform: translate(0, 0) rotate(-30deg) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(100vw, 100vh) rotate(-30deg) scale(1.2);
-  }
-}
 
 
 #main-container,
@@ -84,7 +19,9 @@ html, body {
 h1,
 .message,
 .pagebreak,
-.search-bar {
+.search-bar,
+ul,
+li {
   position: relative; /* make z-index work */
   z-index: 1;         /* higher than the shooting stars */
 }
@@ -122,6 +59,9 @@ h1 {
   color: gold;
 }
 
+.player-name.high-player {
+  color: rgb(255, 84, 255);
+}
 .shiny-list {
   display: flex;
   flex-wrap: wrap;
@@ -296,16 +236,36 @@ h1 {
 
 .search-bar {
   text-align: center;
-  margin: 15px 0;
+  margin: 20px 0;
 }
 
 .search-bar input {
-  padding: 8px 12px;
-  width: 200px;
-  border-radius: 6px;
-  border: none;
+  width: 250px;                 /* decent width */
+  padding: 10px 40px 10px 15px; /* room for icon on the right */
+  border-radius: 25px;          /* rounded pill shape */
+  border: 2px solid #444;       /* subtle border */
+  background: #1a1a1a;          /* dark input background */
+  color: #fff;
   font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
+
+.search-bar input::placeholder {
+  color: #888;                  /* lighter placeholder */
+}
+
+.search-bar input:focus {
+  border-color: #4a90e2;        /* nice blue highlight */
+  box-shadow: 0 4px 12px rgba(74,144,226,0.5); /* glow */
+  background: #222;             /* slight background shift */
+}
+
+.search-bar input:hover {
+  border-color: #666;           /* subtle hover effect */
+}
+
 
 
 /* Rainbow border animation for Favourite Pokémon on hover */
@@ -482,4 +442,58 @@ body {
   color: #e2e2e2;
   text-align:center;
   font-size: 30px;
+}
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* prevents background from affecting scroll */
+  z-index: 0;
+  background: url('bg0.jpg') center/cover no-repeat;
+  animation: bgZoom 50s linear infinite;
+  transform-origin: center;
+}
+.stars-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* crucial! */
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes bgZoom {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Shooting star style */
+.star {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 6px #fff, 0 0 12px #fff, 0 0 20px #fff;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.star::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--tail-length, 250px);
+  height: 8px;
+  background: linear-gradient(90deg, white, rgba(255,255,255,0));
+  transform-origin: left center;
+  /* ONLY translate Y to center vertically, leave X at 0 so tail starts at star center */
+  transform: translateY(-50%) rotate(var(--tail-rotate, 315deg));
+  opacity: 0.6;
+  pointer-events: none;
 }

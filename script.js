@@ -35,11 +35,10 @@ async function renderShowcase(filter = "") {
 
     const card = document.createElement("div");
     card.className = "player-card";
-
     // Top 5 players get "top-player" class
     const playerClass = index < 5 ? "player-name top-player" : "player-name";
 
-    card.innerHTML = `<div class="${playerClass}">#${index + 1} ${player} (${playerData.shiny_count} shinies)</div>`;
+    card.innerHTML = `<div class="${playerClass}">#${index + 1} ${player} (${playerData.shiny_count})</div>`;
 
     const shinyList = document.createElement("div");
     shinyList.className = "shiny-list";
@@ -196,29 +195,6 @@ document.getElementById("playerSearch").addEventListener("input", (e) => {
 // ---------- INITIAL RENDER ----------
 renderShowcase();
 
-// SHOOTING STARS GENERATOR
-(function createShootingStars() {
-  const container = document.getElementById("shooting-stars-background");
-
-  const starCount = 8; // number of shooting stars
-
-  for (let i = 0; i < starCount; i++) {
-    const star = document.createElement("div");
-    star.className = "star";
-
-    // randomize starting position outside the top-left corner
-    const startX = Math.random() * window.innerWidth * -0.5;
-    const startY = Math.random() * window.innerHeight * -0.5;
-
-    star.style.left = startX + "px";
-    star.style.top = startY + "px";
-    star.style.animationDuration = 1.2 + Math.random() * 1.8 + "s";
-    star.style.animationDelay = Math.random() * 8 + "s";
-
-    container.appendChild(star);
-  }
-})();
-
 
 // ---------- NAVIGATION MENU HANDLER ----------
 (function setupMenu() {
@@ -254,3 +230,72 @@ renderShowcase();
     }
   }
 })();
+
+
+const starContainer = document.querySelector('.stars-container');
+const starCount = 20;
+
+// Create all stars
+for (let i = 0; i < starCount; i++) {
+  createStar();
+}
+
+function createStar() {
+  const star = document.createElement('div');
+  star.classList.add('star');
+  resetStar(star);
+  starContainer.appendChild(star);
+  animateStar(star);
+}
+
+function resetStar(star) {
+  star.style.top = Math.random() * 50 + 'px';  // top of screen
+  star.style.left = Math.random() * window.innerWidth + 'px'; // random left
+  star.speed = Math.random() * 2 + 1;          // slower
+  star.opacity = Math.random() * 0.5 + 0.5;
+  star.style.opacity = star.opacity;
+
+  // Random angle for diagonal movement
+  star.angle = Math.random() * (300 - 240) + 240; // 240°–300° downward diagonals
+  star.rad = star.angle * Math.PI / 180;
+
+  // Random tail length
+  star.tailLength = Math.random() * 200 + 100;
+  star.style.setProperty('--tail-length', star.tailLength + 'px');
+
+  // Rotate tail to match star direction
+  star.style.setProperty('--tail-rotate', `${star.angle}deg`);
+}
+
+
+function animateStar(star) {
+  function move() {
+    const dx = Math.cos(star.rad) * star.speed;
+    const dy = Math.sin(star.rad) * star.speed;
+
+    star.style.left = parseFloat(star.style.left) - dx + 'px';
+    star.style.top = parseFloat(star.style.top) - dy + 'px';
+
+    // Flicker effect
+    star.opacity += (Math.random() - 0.5) * 0.05;
+    star.opacity = Math.max(0.3, Math.min(1, star.opacity));
+    star.style.opacity = star.opacity;
+
+    // Reset if offscreen
+    if (parseFloat(star.style.left) < -200 || parseFloat(star.style.top) > window.innerHeight + 200) {
+      resetStar(star);
+    }
+
+    requestAnimationFrame(move);
+  }
+  requestAnimationFrame(move);
+}
+
+
+// Adjust stars on window resize
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.star').forEach(star => {
+    if (parseFloat(star.style.top) > window.innerHeight) star.style.top = Math.random() * window.innerHeight + 'px';
+    if (parseFloat(star.style.left) > window.innerWidth) star.style.left = window.innerWidth + 'px';
+  });
+});
