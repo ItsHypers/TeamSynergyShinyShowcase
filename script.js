@@ -2,14 +2,19 @@ const API_URL = "teamsynergy.up.railway.app"; // Replace with your Railway URL
 
 // ---------- GET DATA ----------
 async function getData() {
-  const res = await fetch(`${API_URL}/players`);
-  const data = await res.json();
-  const formatted = {};
-  data.forEach(p => formatted[p.name] = p.shinies);
-  return formatted;
+  try {
+    const res = await fetch(`${API_URL}/players`);
+    const data = await res.json();
+    const formatted = {};
+    data.forEach(p => formatted[p.name] = p.shinies);
+    return formatted;
+  } catch (err) {
+    console.error("Failed to fetch players", err);
+    return {};
+  }
 }
 
-// ---------- ADD SHINY ----------
+
 async function addShiny() {
   const player = document.getElementById("playerName").value.trim();
   const shinyName = document.getElementById("shinyName").value.trim();
@@ -18,18 +23,24 @@ async function addShiny() {
 
   const shiny = { name: shinyName, level: "", ability: "", notes: "" };
 
-  const res = await fetch(`${API_URL}/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ player, shiny })
-  });
+  try {
+    const res = await fetch(`${API_URL}/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ player, shiny })
+    });
+    const result = await res.json();
 
-  const result = await res.json();
-  if (!res.ok) return alert(result.error);
+    if (!res.ok) return alert(result.error);
 
-  document.getElementById("shinyName").value = "";
-  renderManager();
+    document.getElementById("shinyName").value = "";
+    await renderManager(); // re-render after adding
+  } catch (err) {
+    console.error(err);
+    alert("Error connecting to server");
+  }
 }
+
 
 // ---------- UPDATE SHINY ----------
 async function updateShiny(player, index, field, value) {
@@ -58,6 +69,7 @@ async function renderManager() {
   const container = document.getElementById("managerList");
   if (!container) return;
   container.innerHTML = "";
+  // ...rest of rendering code
 
   for (const player in data) {
     const card = document.createElement("div");
