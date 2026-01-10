@@ -1,4 +1,4 @@
-const API_URL = "https://your-backend.up.railway.app"; // Replace with your Railway URL
+const API_URL = "teamsynergy.up.railway.app"; // Replace with your Railway URL
 
 // ---------- GET DATA ----------
 async function getData() {
