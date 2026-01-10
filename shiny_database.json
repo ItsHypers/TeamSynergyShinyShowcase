@@ -3710,6 +3710,19 @@
         "Safari": "No",
         "Favourite": "No",
         "Reaction Link": ""
+      },
+      "30": {
+        "Pokemon": "gligar",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "Yes",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -5791,7 +5804,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Safari": "No",
+        "Safari": "Yes",
         "Favourite": "No",
         "Reaction Link": ""
       },
