@@ -278,17 +278,31 @@ async function initShowcase() {
     if (isTouchDevice) document.addEventListener('click', hideAllInfoBoxes);
   }
 
-  // ---------- HASH ROUTING ----------
-  async function handleHash() {
-    const hash = window.location.hash.slice(1); // remove #
-    if (hash.startsWith("player/")) {
-      const playerName = hash.split("/")[1];
-      await loadPlayerPage(playerName);
-    } else {
-      document.body.classList.remove("player-page-active");
-      renderShowcase();
+// ---------- HASH ROUTING ----------
+async function handleHash() {
+  const data = await getData(); // ensure JSON loaded first
+  const hash = window.location.hash.slice(1); // remove #
+  const showcase = document.getElementById("showcase");
+
+  if (hash.startsWith("player/")) {
+    const playerName = hash.split("/")[1];
+    const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
+    if (realKey) {
+      await loadPlayerPage(realKey); // show player
+    } else if (showcase) {
+      showcase.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
     }
+  } else {
+    document.body.classList.remove("player-page-active");
+    renderShowcase();
   }
+}
+
+// Ensure JSON loads before handling hash
+getData().then(() => {
+  window.addEventListener("hashchange", handleHash);
+  handleHash(); // initial page load
+});
 
   // ---------- PLAYER LINK CLICK NAV ----------
   document.addEventListener("click", e => {
