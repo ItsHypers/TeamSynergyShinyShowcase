@@ -303,4 +303,4 @@ async function initShowcase() {
   await getData();          // ensure JSON ready
   window.addEventListener("hashchange", handleHash);
   handleHash();             // initial page load
-}
+} 
