@@ -318,3 +318,4 @@ getData().then(() => {
   window.addEventListener("hashchange", handleHash);
   handleHash();             // initial page load
 } 
+ 
