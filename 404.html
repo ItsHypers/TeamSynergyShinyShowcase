@@ -1,17 +1,26 @@
-<!-- 404.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Synergy MMO</title>
+  <meta charset="UTF-8">
+  <title>Shiny Showcase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Use absolute paths for all assets -->
   <link rel="stylesheet" href="/styles.css" />
-  <script type="module" src="/spa.js"></script>
-  <script type="module" src="/showcase.js"></script>
+  <link rel="icon" type="image/png" href="/favicon.png" />
 </head>
 <body>
-  <div id="top-nav">…</div>
+  <div id="top-nav"></div>
   <div id="main-container">
     <div id="showcase"></div>
   </div>
+
+  <!-- JS files -->
+  <script type="module" src="/spa.js"></script>
+  <script type="module" src="/showcase.js"></script>
+
+  <noscript>
+    <p style="color:white; text-align:center;">JavaScript is required to use this site.</p>
+  </noscript>
 </body>
 </html>
