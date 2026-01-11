@@ -15,4 +15,4 @@ if __name__ == "__main__":
     PORT = 8000
     server = HTTPServer(("localhost", PORT), SPAHandler)
     print(f"Serving SPA on http://localhost:{PORT}")
-    server.serve_forever()
+    server.serve_forever() 
