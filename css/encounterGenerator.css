@@ -1,0 +1,117 @@
+/* ---------- Encounter Counter Page ---------- */
+.encounter-page {
+  max-width: 500px;
+  width: 90%;
+  margin: 60px auto; /* centers horizontally and vertically */
+  padding: 30px 25px;
+  background: #1a1a1a;
+  border-radius: 25px;
+  box-shadow: 0 0 15px rgba(93,177,255,0.3), 0 0 30px rgba(255,118,118,0.2);
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: left;
+  box-sizing: border-box;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+
+/* Heading */
+.encounter-page h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 26px;
+  color: #f25dff;
+  text-shadow: 0 0 8px #e45dff, 0 0 16px rgba(223, 93, 255, 0.5);
+}
+
+/* Form groups */
+.encounter-page .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  gap: 8px;
+}
+
+/* Labels */
+.encounter-page .form-group label {
+  font-weight: 600;
+  color: #ffaade;
+  text-shadow: 0 0 3px rgba(209, 93, 255, 0.5);
+  margin-bottom: 5px;
+}
+
+/* Inputs */
+.encounter-page .form-group input[type="text"],
+.encounter-page .form-group input[type="number"],
+.encounter-page .form-group input[type="file"] {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: 2px solid #444;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* Inputs focus */
+.encounter-page .form-group input:focus {
+  border-color: #f25dff;
+  box-shadow: 0 0 12px #ff85e1, 0 0 24px rgba(93,177,255,0.3);
+  background: #222;
+}
+
+/* ---------- Generate button (purple theme) ---------- */
+.encounter-page #generateZip {
+  display: block;
+  width: 100%;
+  margin-top: 25px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background: #b85dff; /* main purple */
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 0 10px #b85dff, 0 0 20px rgba(184,93,255,0.3);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.encounter-page #generateZip:hover:not(:disabled) {
+  box-shadow: 0 0 15px #e45dff, 0 0 30px rgba(228,93,255,0.5);
+  background: #d17fff; /* slightly lighter purple on hover */
+}
+
+.encounter-page #generateZip:disabled {
+  background-color: #444;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* File input button (purple theme) */
+.encounter-page input[type="file"]::-webkit-file-upload-button {
+  padding: 8px 16px;
+  background-color: #b85dff;
+  border: none;
+  border-radius: 25px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.encounter-page input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: #d17fff;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .encounter-page {
+    padding: 25px 20px;
+  }
+}

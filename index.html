@@ -6,38 +6,41 @@
   <meta charset="UTF-8">
   <title>Team Synergy!</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/encounterGenerator.css">
+  <link rel="icon" href="images/favicon.png" type="image/png">
 </head>
+
 <body>
   <!-- NAVIGATION BAR -->
-<nav id="top-nav">
-  <ul>
-    <li class="active">Shiny Showcase</li>
-    <li>SHOTM</li>
-  </ul>
-</nav>
+  <nav id="top-nav">
+    <ul>
+      <li>Shiny Showcase</li>
+      <li>SHOTM</li>
+      <li>Counter Generator</li>
+    </ul>
+  </nav>
 
-<section class="background"></section>
-<div class="stars-container"></div>
+  <section class="background"></section>
+  <div class="stars-container"></div>
 
+  <!-- SPA page container -->
+  <div id="main-container"></div>
 
+  <!-- JS files -->
+  <script src="js/jszip.min.js"></script>
+  <script src="js/showcase.js"></script>
+  <script src="js/counter_generator.js"></script>
+  <script src="js/spa.js"></script>
+  <script src="script.js"></script>
 
-<div id="main-container"></div>
-  <h1>Team Synergy Shiny Showcase!</h1>
-  <img src="pagebreak.png" alt="Page Break" class="pagebreak">
-
-  <div class="search-bar">
-    <input type="text" id="playerSearch" placeholder="Search for a player...">
-  </div>
-
-  <div id="showcase"></div>
-</div>
-<script src="script.js"></script>
-<script>
-  // Auto-update when tab becomes active
-  window.addEventListener("focus", () => {
-    renderShowcase();
-  });
-</script>
+  <!-- Google tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MLCN9F0GQE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-MLCN9F0GQE');
+  </script>
 </body>
+
 </html>

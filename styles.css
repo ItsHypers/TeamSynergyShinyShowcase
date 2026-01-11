@@ -26,14 +26,16 @@ li {
   z-index: 1;         /* higher than the shooting stars */
 }
 
-/* Main wrapper */
-#main-container {
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px;
+/* ---------- Shiny Showcase Container ---------- */
+#main-container #showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;         /* space between cards */
+  width: 100%;        /* container stretches full width */
   box-sizing: border-box;
+  padding: 0 20px;    /* small horizontal padding */
 }
+
 
 h1 {
   text-align: center;
@@ -66,13 +68,25 @@ h1:hover {
   margin-left: 6px;
   vertical-align: middle;
 }
-
 .player-card {
   background: #222;
-  padding: 20px 20px; 
+  padding: 20px;
   border-radius: 8px;
-  margin: 12px 10px; /* vertical 12px, horizontal 10px gap */
+  width: 100%;        /* card fills container width */
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 90%;
+  margin: auto;
+}
+
+@media (min-width: 4000px) { /* Adjust 1200px to your desired breakpoint */
+  .player-card {
+    max-width: 3000px; /* Adjust 800px to your desired maximum width */
+    margin-left: auto; /* Center the card if it's narrower than its container */
+    margin-right: auto;
+  }
 }
 
 .player-card div span.sparkle {
@@ -85,10 +99,14 @@ h1:hover {
 }
 
 .player-name {
-  font-size: 1.2rem;
-  margin-bottom: 8px;
-  color: #4a90e2;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   text-align: center;
+  justify-content: center;
 }
 
 .player-name.high-player {
@@ -360,13 +378,6 @@ h1:hover {
   text-transform: capitalize;
 }
 
-/* Main wrapper to center everything */
-#main-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-}
 
 /* Fix mobile overflow */
 body {
@@ -375,10 +386,6 @@ body {
   overflow-x: hidden;
 }
 
-#showcase {
-  width: 100%;
-  box-sizing: border-box;
-}
 
 
 
@@ -496,7 +503,7 @@ body {
   height: 100%;
   overflow: hidden; /* prevents background from affecting scroll */
   z-index: 0;
-  background: url('bg0.jpg') center/cover no-repeat;
+  background: url('/images/Shiny Showcase/bg0.jpg') center/cover no-repeat;
   animation: bgZoom 50s linear infinite;
   transform-origin: center;
 }

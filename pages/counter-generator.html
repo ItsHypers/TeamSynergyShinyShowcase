@@ -1,0 +1,27 @@
+<div id="encounter-counter-page" class="encounter-page">
+  <h2>Upload a Zip File</h2>
+
+  <div class="form-group">
+    <label for="zipFileInput">Zip File:</label>
+    <input type="file" id="zipFileInput" accept=".zip">
+  </div>
+
+  <div class="form-group">
+    <label for="zipName">Theme Name:</label>
+    <input type="text" id="zipName" placeholder="Custom Theme.zip" value="Custom Theme">
+  </div>
+
+  <div class="form-group">
+    <label for="minimisedFile">Minimised Image (optional):</label>
+    <input type="file" id="minimisedFile" accept="image/*">
+  </div>
+
+  <div class="form-group">
+    <label for="frameDuration">Frame Duration (ms)</label>
+    <input type="number" id="frameDuration" value="100" min="1" step="1">
+  </div>
+
+  <div id="zipStatus"></div>
+
+  <button id="generateZip" disabled>Generate XML & Zip</button>
+</div>
