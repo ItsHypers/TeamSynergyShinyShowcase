@@ -181,12 +181,17 @@ async function initShowcase() {
 
     const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
     if (!realKey) {
-      showcase.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>
-                            <p style="color:white;">Check spelling or try again.</p>`;
+      if (showcase) {
+        showcase.innerHTML = `
+          <h2 style="color:white;">Player "${playerName}" not found</h2>
+          <p style="color:white;">Check spelling or try again.</p>
+        `;
+      }
       return;
     }
 
     const playerData = data[realKey];
+
     showcase.innerHTML = `
       <div class="player-page">
         <button class="back-button">← Back to Showcase</button>
@@ -198,7 +203,7 @@ async function initShowcase() {
 
     const backBtn = showcase.querySelector(".back-button");
     backBtn.addEventListener("click", () => {
-      window.location.hash = "";
+      window.location.hash = ""; // back to showcase
       document.body.classList.remove("player-page-active");
       renderShowcase();
     });
@@ -277,11 +282,20 @@ async function initShowcase() {
   }
 
   // ---------- HASH ROUTING ----------
-  function handleHash() {
+  async function handleHash() {
+    const data = await getData(); // ensure JSON loaded first
     const hash = window.location.hash.slice(1); // remove #
     if (hash.startsWith("player/")) {
       const playerName = hash.split("/")[1];
-      loadPlayerPage(playerName);
+      const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
+      if (realKey) {
+        loadPlayerPage(realKey);
+      } else {
+        const showcase = document.getElementById("showcase");
+        if (showcase) {
+          showcase.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
+        }
+      }
     } else {
       document.body.classList.remove("player-page-active");
       renderShowcase();
