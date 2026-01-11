@@ -1,11 +1,9 @@
-// ---------- SPA.JS ----------
-
-// Container for page content
+// ---------- SPA NAV + PLAYER HANDLING ----------
 const pageContainer = document.getElementById("main-container");
 const nav = document.getElementById("top-nav");
 const tabs = nav.querySelectorAll("li");
 
-// ---------- Set active nav tab ----------
+// ---------- Set active tab ----------
 function setActiveTab(tabName) {
   tabs.forEach(t => {
     const name = t.textContent.trim().toLowerCase().replace(/\s+/g, "-");
@@ -13,74 +11,99 @@ function setActiveTab(tabName) {
   });
 }
 
-// ---------- Load page by name ----------
+// ---------- Load page ----------
 async function loadPage(tabName) {
+  if (!tabName) tabName = "shiny-showcase";
+
   try {
-    if (!tabName || tabName === "shiny-showcase") {
+    // Remove any player page styles
+    document.body.classList.remove("player-page-active");
+
+    if (tabName === "shiny-showcase") {
       const res = await fetch("/pages/shiny-showcase.html");
       if (!res.ok) throw new Error("Shiny Showcase page not found");
       pageContainer.innerHTML = await res.text();
       if (typeof initShowcase === "function") initShowcase();
-      setActiveTab("shiny-showcase");
-
     } else if (tabName === "counter-generator") {
       const res = await fetch("/pages/counter-generator.html");
       if (!res.ok) throw new Error("Counter Generator page not found");
       pageContainer.innerHTML = await res.text();
       if (typeof initEncounterCounter === "function") initEncounterCounter();
-      setActiveTab("counter-generator");
-
     } else if (tabName === "shotm") {
       pageContainer.innerHTML = `<div class="message">Shiny Hunter of the Month coming soon!</div>`;
-      setActiveTab("shotm");
-
-    } else if (tabName.startsWith("player/")) {
-      const playerName = tabName.split("/")[1];
-      if (typeof initShowcase === "function") initShowcase(); // make sure initShowcase is ready
-
-      await loadPlayerPage(playerName); // SPA function from showcase.js
-      document.body.classList.add("player-page-active");
-      setActiveTab(""); // no nav tab for player pages
-
     } else {
       pageContainer.innerHTML = `<div class="message">Page not found.</div>`;
-      setActiveTab("");
     }
   } catch (err) {
     console.error(err);
     pageContainer.innerHTML = `<div class="message">Error loading page.</div>`;
-    setActiveTab("");
   }
+
+  setActiveTab(tabName);
 }
 
 // ---------- Nav tab clicks ----------
 tabs.forEach(tab => {
-  tab.addEventListener("click", () => {
+  tab.addEventListener("click", (e) => {
+    e.preventDefault();
+
     const tabName = tab.textContent.trim().toLowerCase().replace(/\s+/g, "-");
-    history.pushState({}, "", `#${tabName}`);
+
+    // Force root path + hash to avoid combining with /player/...
+    const newUrl = `/${tabName === "shiny-showcase" ? "" : ""}#${tabName}`;
+    history.pushState({}, "", newUrl);
+
     loadPage(tabName);
-    document.body.classList.remove("player-page-active"); // remove player page class
   });
 });
 
-// ---------- Player link clicks ----------
-document.addEventListener("click", (e) => {
-  const link = e.target.closest("a.player-link");
-  if (!link) return;
-  e.preventDefault();
-  const player = link.dataset.player;
-  history.pushState({}, "", `#/player/${player.toLowerCase()}`);
-  loadPage(`player/${player.toLowerCase()}`);
-});
+// ---------- SPA hash handling ----------
+window.addEventListener("hashchange", () => {
+  const hash = window.location.hash.replace("#", "") || "shiny-showcase";
 
-// ---------- Back/forward buttons ----------
-window.addEventListener("popstate", () => {
-  const hash = window.location.hash.replace("#", "");
+  // If on /player/ path, remove player-page-active
+  if (window.location.pathname.startsWith("/player/")) {
+    document.body.classList.remove("player-page-active");
+  }
+
   loadPage(hash);
 });
 
 // ---------- Initial load ----------
 document.addEventListener("DOMContentLoaded", () => {
-  const initialHash = window.location.hash.replace("#", "") || "shiny-showcase";
-  loadPage(initialHash);
+  // If the URL path is /player/<name>, load player page
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+
+  if (pathParts[0] === "player" && pathParts[1]) {
+    if (typeof initShowcase === "function") {
+      const playerName = pathParts[1];
+      document.body.classList.add("player-page-active");
+      initShowcase().then(() => {
+        // SPA function will detect /player/<name> and load that page
+        if (typeof loadPlayerPage === "function") loadPlayerPage(playerName);
+      });
+    }
+  } else {
+    const initialPage = window.location.hash.replace("#", "") || "shiny-showcase";
+    loadPage(initialPage);
+  }
+});
+
+// ---------- Handle browser back/forward ----------
+window.addEventListener("popstate", () => {
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+
+  if (pathParts[0] === "player" && pathParts[1]) {
+    if (typeof initShowcase === "function") {
+      const playerName = pathParts[1];
+      document.body.classList.add("player-page-active");
+      initShowcase().then(() => {
+        if (typeof loadPlayerPage === "function") loadPlayerPage(playerName);
+      });
+    }
+  } else {
+    const page = window.location.hash.replace("#", "") || "shiny-showcase";
+    document.body.classList.remove("player-page-active");
+    loadPage(page);
+  }
 });
