@@ -1,6 +1,3 @@
-// ---------- script.js ----------
-
-// ---------- UTILITY FUNCTIONS ----------
 
 /**
  * Returns a random number between min and max
@@ -12,13 +9,9 @@ function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-// ---------- STAR BACKGROUND EFFECT ----------
 let starContainer = document.querySelector('.stars-container');
 let starCount = window.innerWidth < 600 ? 3 : window.innerWidth < 1024 ? 6 : 10;
 
-/**
- * Creates a single star element and animates it
- */
 function createStar() {
   if (!starContainer) return;
 
