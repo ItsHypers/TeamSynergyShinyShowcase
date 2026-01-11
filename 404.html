@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <script>
+    // Get the full path the user tried to access
+    const attemptedPath = window.location.pathname + window.location.search + window.location.hash;
+
+    // Replace with index.html and preserve the path in a query param
+    // GitHub Pages serves this 404.html for any "missing" file
+    window.location.replace("/index.html?redirect=" + encodeURIComponent(attemptedPath));
+  </script>
+</head>
+<body style="background:#111; color:white; font-family:Arial,sans-serif; display:flex; justify-content:center; align-items:center; height:100vh;">
+  <div>
+    <h1>Redirecting...</h1>
+    <p>If you are not redirected automatically, <a href="/index.html" style="color:#4a90e2;">click here</a>.</p>
+  </div>
+</body>
+</html>

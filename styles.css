@@ -89,6 +89,14 @@ h1:hover {
   }
 }
 
+@media (max-width: 800px) {
+/* Shooting star style */
+  .player-card {
+    max-width: 95%; /* Adjust 800px to your desired maximum width */
+    margin-left: auto; /* Center the card if it's narrower than its container */
+    margin-right: auto;
+  }
+}
 .player-card div span.sparkle {
   animation: sparkle-glow 1.5s infinite alternate;
 }
@@ -132,6 +140,22 @@ h1:hover {
 .shiny-list span {
   display: inline-block;
   position: relative;
+}
+
+.player-page {
+  text-align: center;
+  color: white;
+  padding: 2rem;
+}
+
+.large-shinies .shiny-gif {
+  width: 120px;
+  height: 120px;
+}
+
+.big-shiny-wrapper {
+  transform: scale(1.2);
+  margin: 12px;
 }
 
 /* ---------- GIF CONTAINER ---------- */
@@ -306,6 +330,7 @@ h1:hover {
   margin: 20px 0;
 }
 
+
 .search-bar input {
   width: 250px;                 /* decent width */
   padding: 10px 40px 10px 15px; /* room for icon on the right */
@@ -333,6 +358,15 @@ h1:hover {
   border-color: #666;           /* subtle hover effect */
 }
 
+/* Default: search bar visible */
+#searchbar {
+  display: block;
+}
+
+/* Hide search bar when on a player page */
+body.player-page-active #searchbar {
+  display: none;
+}
 
 
 /* Rainbow border animation for Favourite Pokémon on hover */

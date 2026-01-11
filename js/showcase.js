@@ -4,7 +4,22 @@ async function initShowcase() {
   const searchInput = document.getElementById("playerSearch");
   const starContainer = document.querySelector('.stars-container');
 
-  if (!showcaseContainer || !searchInput) return; // safety check
+  if (!showcaseContainer) return;
+
+    // At the very start of your showcase.js init
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectPath = urlParams.get('redirect');
+
+  if (redirectPath) {
+    // remove the query param so SPA behaves normally afterwards
+    history.replaceState({}, "", redirectPath);
+
+    // Extract player name if path is /player/NAME
+    if (redirectPath.startsWith("/player/")) {
+      const playerName = redirectPath.split("/")[2];
+      loadPlayerPage(playerName);
+    }
+  }
 
   // ---------- DATA ----------
   const JSON_FILE = "shiny_database.json";
@@ -139,11 +154,15 @@ async function initShowcase() {
 
       const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : '';
 
-      card.innerHTML = `
-        <div class="${playerClass}">
-          #${index + 1} ${player} (${playerData.shiny_count})${sparkle} ${trophyImg}
-        </div>
-      `;
+      const playerLink = `
+      <a href="/player/${player.toLowerCase()}" 
+        class="${playerClass} player-link"
+        data-player="${player.toLowerCase()}">
+        #${index + 1} ${player} (${playerData.shiny_count})${sparkle} ${trophyImg}
+      </a>
+    `;
+
+    card.innerHTML = playerLink;
 
       const shinyList = document.createElement("div");
       shinyList.className = "shiny-list";
@@ -157,6 +176,11 @@ async function initShowcase() {
     setupInfoBoxFlip();
   }
 
+  const path = window.location.pathname;
+  if (path.startsWith("/player/")) {
+    const player = path.split("/")[2];
+    loadPlayerPage(player);
+  }
   // ---------- SEARCH ----------
   searchInput.addEventListener("input", (e) => {
     renderShowcase(e.target.value);
@@ -311,4 +335,81 @@ async function initShowcase() {
       setTimeout(createStar, randomBetween(0, 3000));
     }
   });
+
+// ---------- SPA PLAYER ROUTING ----------
+document.addEventListener("click", (e) => {
+  const link = e.target.closest("a.player-link");
+  if (!link) return;
+
+  e.preventDefault();
+  const player = link.dataset.player;
+  navigateToPlayer(player);
+});
+
+function navigateToPlayer(player) {
+  history.pushState({}, "", `/player/${player}`);
+  loadPlayerPage(player);
+}
+
+window.addEventListener("popstate", () => {
+  const path = window.location.pathname;
+  if (path.startsWith("/player/")) {
+    document.body.classList.add("player-page-active");
+    const player = path.split("/")[2];
+    loadPlayerPage(player);
+  }
+})
+
+async function loadPlayerPage(playerName) {
+  const searchBar = document.getElementById("searchbar"); // define it here
+  const showcaseContainer = document.getElementById("showcase");
+  const data = await getData(); // use your cached JSON loader
+  document.body.classList.add("player-page-active");
+  if (searchBar) searchBar.style.display = "none"; // hide explicitly
+  // Find the real key in JSON regardless of case
+  const realKey = Object.keys(data).find(
+    key => key.toLowerCase() === playerName.toLowerCase()
+  );
+
+  if (!realKey) {
+    showcaseContainer.innerHTML = `
+      <h2 style="color:white;">Player "${playerName}" not found</h2>
+      <p style="color:white;">Check spelling or try again.</p>
+    `;
+    return;
+  }
+
+  const playerData = data[realKey];
+
+  showcaseContainer.innerHTML = `
+  <div class="player-page">
+    <button class="back-button">← Back to Showcase</button>
+    <h1>${realKey}'s Shiny Collection ✨</h1>
+    <p>Total Shinies: ${playerData.shiny_count}</p>
+    <div class="shiny-list large-shinies"></div>
+  </div>
+`;
+const backBtn = showcaseContainer.querySelector(".back-button");
+backBtn.addEventListener("click", () => {
+  const searchBar = document.getElementById("searchbar"); // define it here
+  history.pushState({}, "", "/");
+  document.body.classList.remove("player-page-active");
+  if (searchBar) searchBar.style.display = "block"; // now works
+  renderShowcase();
+});
+
+
+
+
+
+  const shinyList = showcaseContainer.querySelector(".shiny-list");
+
+  Object.values(playerData.shinies).forEach(s => {
+    const shiny = createShinyItem(s);
+    shiny.classList.add("big-shiny-wrapper");
+    shinyList.appendChild(shiny);
+  });
+
+  setupInfoBoxFlip();
+}
 }
