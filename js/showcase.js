@@ -264,10 +264,11 @@ async function initShowcase() {
   const currentPath = window.location.pathname;
   if (currentPath.startsWith("/player/")) {
     const player = currentPath.split("/")[2].toLowerCase();
-    loadPlayerPage(player);
+    getData().then(() => loadPlayerPage(player)); // wait for data before loading
   } else {
     renderShowcase();
   }
+
 
   // ---------- INFO BOX FLIP ----------
   function setupInfoBoxFlip() {
