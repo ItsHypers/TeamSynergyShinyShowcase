@@ -4,19 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redirecting...</title>
-  <script>
-    // Get the full path the user tried to access
-    const attemptedPath = window.location.pathname + window.location.search + window.location.hash;
-
-    // Replace with index.html and preserve the path in a query param
-    // GitHub Pages serves this 404.html for any "missing" file
-    window.location.replace("/index.html?redirect=" + encodeURIComponent(attemptedPath));
-  </script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/css/encounterGenerator.css">
+  <link rel="icon" href="/images/favicon.png" type="image/png">
 </head>
 <body style="background:#111; color:white; font-family:Arial,sans-serif; display:flex; justify-content:center; align-items:center; height:100vh;">
-  <div>
+  <div id="loading-screen">
     <h1>Redirecting...</h1>
     <p>If you are not redirected automatically, <a href="/index.html" style="color:#4a90e2;">click here</a>.</p>
   </div>
+
+  <!-- SPA container -->
+  <div id="main-container" style="display:none;"></div>
+
+  <!-- JS files -->
+  <script src="/js/jszip.min.js"></script>
+  <script src="/js/showcase.js"></script>
+  <script src="/js/counter_generator.js"></script>
+  <script src="/js/spa.js"></script>
+  <script src="/script.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const loadingScreen = document.getElementById("loading-screen");
+      const pageContainer = document.getElementById("main-container");
+
+      // Get the full attempted path
+      const attemptedPath = window.location.pathname + window.location.search + window.location.hash;
+
+      // Determine if this is a player page
+      if (attemptedPath.startsWith("/player/")) {
+        const playerName = attemptedPath.split("/")[2];
+
+        // Show the SPA container
+        loadingScreen.style.display = "none";
+        pageContainer.style.display = "block";
+
+        // Load main showcase page first
+        if (typeof loadPage === "function") {
+          await loadPage("shiny-showcase");
+        }
+
+        // Then load the player page
+        if (typeof loadPlayerPage === "function") {
+          loadPlayerPage(playerName);
+        }
+
+      } else {
+        // Regular SPA route via hash
+        loadingScreen.style.display = "none";
+        pageContainer.style.display = "block";
+        const initialPage = window.location.hash.replace("#", "") || "shiny-showcase";
+        loadPage(initialPage);
+      }
+
+      // Activate nav tabs and handle clicks
+      const navTabs = document.querySelectorAll("#top-nav li");
+      navTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          const tabName = tab.textContent.trim().toLowerCase().replace(/\s+/g, "-");
+          window.location.hash = tabName;
+        });
+      });
+
+      // Handle hash changes
+      window.addEventListener("hashchange", () => {
+        const page = window.location.hash.replace("#", "") || "shiny-showcase";
+        loadPage(page);
+      });
+    });
+  </script>
 </body>
 </html>

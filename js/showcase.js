@@ -1,29 +1,30 @@
 // ---------- INIT SHOWCASE ----------
 async function initShowcase() {
+  const pageContainer = document.getElementById("main-container");
   const showcaseContainer = document.getElementById("showcase");
   const searchInput = document.getElementById("playerSearch");
   const starContainer = document.querySelector('.stars-container');
 
-  if (!showcaseContainer) return;
+  if (!pageContainer || !showcaseContainer) return;
 
-    // At the very start of your showcase.js init
+  // Handle GitHub Pages redirect query
   const urlParams = new URLSearchParams(window.location.search);
   const redirectPath = urlParams.get('redirect');
 
   if (redirectPath) {
-    // remove the query param so SPA behaves normally afterwards
+    // Replace query param in URL
     history.replaceState({}, "", redirectPath);
 
-    // Extract player name if path is /player/NAME
+    // If redirect is to a player
     if (redirectPath.startsWith("/player/")) {
       const playerName = redirectPath.split("/")[2];
-      loadPlayerPage(playerName);
+      navigateToPlayer(playerName);
     }
   }
 
   // ---------- DATA ----------
   const JSON_FILE = "shiny_database.json";
-  const JSON_VERSION = "v17"; // increment if your JSON updates
+  const JSON_VERSION = "v17"; // increment if JSON updates
   let cachedData = null;
 
   async function getData() {
@@ -58,7 +59,6 @@ async function initShowcase() {
       "Secret Shiny": ["glow-pokemon"],
       Favourite: ["favourite-pokemon"]
     };
-
     for (const [key, classes] of Object.entries(traitChecks)) {
       if (s[key]?.toLowerCase() === "yes") imgContainer.classList.add(...classes);
     }
@@ -71,7 +71,6 @@ async function initShowcase() {
       MysteriousBall: ["/images/Shiny Showcase/mysteriousball.gif", "mysteriousball-gif"],
       Favourite: ["/images/Shiny Showcase/heart.png", "favourite-heart"]
     };
-
     for (const [key, [src, cls]] of Object.entries(iconMap)) {
       if (s[key]?.toLowerCase() === "yes") {
         const icon = document.createElement("img");
@@ -161,14 +160,13 @@ async function initShowcase() {
         #${index + 1} ${player} (${playerData.shiny_count})${sparkle} ${trophyImg}
       </a>
     `;
-
-    card.innerHTML = playerLink;
+      card.innerHTML = playerLink;
 
       const shinyList = document.createElement("div");
       shinyList.className = "shiny-list";
-
       Object.values(playerData.shinies).forEach(s => shinyList.appendChild(createShinyItem(s)));
       card.appendChild(shinyList);
+
       fragment.appendChild(card);
     });
 
@@ -176,18 +174,100 @@ async function initShowcase() {
     setupInfoBoxFlip();
   }
 
-  const path = window.location.pathname;
-  if (path.startsWith("/player/")) {
-    const player = path.split("/")[2];
-    loadPlayerPage(player);
-  }
   // ---------- SEARCH ----------
-  searchInput.addEventListener("input", (e) => {
-    renderShowcase(e.target.value);
+  if (searchInput) {
+    searchInput.addEventListener("input", e => renderShowcase(e.target.value));
+  }
+
+  // ---------- SPA PLAYER NAV ----------
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest("a.player-link");
+    if (!link) return;
+
+    e.preventDefault();
+    const player = link.dataset.player.toLowerCase();
+    navigateToPlayer(player);
   });
 
+  function navigateToPlayer(player) {
+    history.pushState({}, "", `/player/${player}`);
+    loadPlayerPage(player);
+  }
+
+  window.addEventListener("popstate", () => {
+    const path = window.location.pathname;
+    if (path.startsWith("/player/")) {
+      const player = path.split("/")[2].toLowerCase();
+      loadPlayerPage(player);
+    } else {
+      document.body.classList.remove("player-page-active");
+      renderShowcase();
+    }
+  });
+
+  async function loadPlayerPage(playerName) {
+    // Ensure #showcase exists
+    let showcase = document.getElementById("showcase");
+    if (!showcase) {
+      const res = await fetch("/pages/shiny-showcase.html");
+      if (!res.ok) {
+        pageContainer.innerHTML = `<div class="message">Error loading showcase page.</div>`;
+        return;
+      }
+      pageContainer.innerHTML = await res.text();
+      showcase = document.getElementById("showcase");
+    }
+
+    const data = await getData();
+
+    document.body.classList.add("player-page-active");
+
+    const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
+
+    if (!realKey) {
+      showcase.innerHTML = `
+        <h2 style="color:white;">Player "${playerName}" not found</h2>
+        <p style="color:white;">Check spelling or try again.</p>
+      `;
+      return;
+    }
+
+    const playerData = data[realKey];
+
+    showcase.innerHTML = `
+      <div class="player-page">
+        <button class="back-button">← Back to Showcase</button>
+        <h1>${realKey}'s Shiny Collection ✨</h1>
+        <p>Total Shinies: ${playerData.shiny_count}</p>
+        <div class="shiny-list large-shinies"></div>
+      </div>
+    `;
+
+    const backBtn = showcase.querySelector(".back-button");
+    backBtn.addEventListener("click", () => {
+      history.pushState({}, "", "/");
+      document.body.classList.remove("player-page-active");
+      renderShowcase();
+    });
+
+    const shinyList = showcase.querySelector(".shiny-list");
+    Object.values(playerData.shinies).forEach(s => {
+      const shiny = createShinyItem(s);
+      shiny.classList.add("big-shiny-wrapper");
+      shinyList.appendChild(shiny);
+    });
+
+    setupInfoBoxFlip();
+  }
+
   // ---------- INIT ----------
-  await renderShowcase();
+  const currentPath = window.location.pathname;
+  if (currentPath.startsWith("/player/")) {
+    const player = currentPath.split("/")[2].toLowerCase();
+    loadPlayerPage(player);
+  } else {
+    renderShowcase();
+  }
 
   // ---------- INFO BOX FLIP ----------
   function setupInfoBoxFlip() {
@@ -251,204 +331,4 @@ async function initShowcase() {
 
     if (isTouchDevice) document.addEventListener('click', hideAllInfoBoxes);
   }
-
-  // ---------- STARS ----------
-  let starCount = window.innerWidth < 600 ? 3 : window.innerWidth < 1024 ? 6 : 10;
-
-  function randomBetween(min, max) { return Math.random() * (max - min) + min; }
-
-  function createStar() {
-    const star = document.createElement('div');
-    star.classList.add('star');
-
-    const size = randomBetween(2, 6);
-    star.style.width = size + 'px';
-    star.style.height = size + 'px';
-    star.style.boxShadow = `0 0 ${size*2}px #fff, 0 0 ${size*3}px #fff, 0 0 ${size*5}px #fff`;
-
-    star.style.top = randomBetween(0, 50) + 'px';
-    star.style.left = randomBetween(0, window.innerWidth) + 'px';
-    star.speed = randomBetween(0.5, 3);
-    star.opacity = randomBetween(0.4, 0.9);
-    star.style.opacity = star.opacity;
-    star.angle = randomBetween(240, 300);
-    star.rad = star.angle * Math.PI / 180;
-    star.tailLength = randomBetween(100, 300);
-    star.style.setProperty('--tail-length', star.tailLength + 'px');
-    star.style.setProperty('--tail-rotate', `${star.angle}deg`);
-
-    starContainer.appendChild(star);
-    animateStar(star);
-  }
-
-  function animateStar(star) {
-    function move() {
-      const dx = Math.cos(star.rad) * star.speed;
-      const dy = Math.sin(star.rad) * star.speed;
-
-      star.style.left = parseFloat(star.style.left) - dx + 'px';
-      star.style.top = parseFloat(star.style.top) - dy + 'px';
-
-      star.opacity += (Math.random() - 0.5) * 0.05;
-      star.opacity = Math.max(0.3, Math.min(1, star.opacity));
-      star.style.opacity = star.opacity;
-
-      if (parseFloat(star.style.left) < -200 ||
-          parseFloat(star.style.top) > window.innerHeight + 200 ||
-          parseFloat(star.style.left) > window.innerWidth + 200 ||
-          parseFloat(star.style.top) < -200) {
-        resetStar(star);
-      }
-
-      requestAnimationFrame(move);
-    }
-    requestAnimationFrame(move);
-  }
-
-  function resetStar(star) {
-    star.style.top = randomBetween(0, 50) + 'px';
-    star.style.left = randomBetween(0, window.innerWidth) + 'px';
-    star.speed = randomBetween(0.5, 3);
-    star.opacity = randomBetween(0.4, 0.9);
-    star.style.opacity = star.opacity;
-
-    star.angle = randomBetween(240, 300);
-    star.rad = star.angle * Math.PI / 180;
-    star.tailLength = randomBetween(100, 300);
-    star.style.setProperty('--tail-length', star.tailLength + 'px');
-    star.style.setProperty('--tail-rotate', `${star.angle}deg`);
-
-    const size = randomBetween(2, 6);
-    star.style.width = size + 'px';
-    star.style.height = size + 'px';
-    star.style.boxShadow = `0 0 ${size*2}px #fff, 0 0 ${size*3}px #fff, 0 0 ${size*5}px #fff`;
-  }
-
-  for (let i = 0; i < starCount; i++) {
-    setTimeout(createStar, randomBetween(0, 3000));
-  }
-
-  window.addEventListener('resize', () => {
-    starContainer.innerHTML = '';
-    starCount = window.innerWidth < 600 ? 3 : window.innerWidth < 1024 ? 6 : 10;
-    for (let i = 0; i < starCount; i++) {
-      setTimeout(createStar, randomBetween(0, 3000));
-    }
-  });
-
-// ---------- SPA PLAYER ROUTING ----------
-document.addEventListener("click", (e) => {
-  const link = e.target.closest("a.player-link");
-  if (!link) return;
-
-  e.preventDefault();
-  const player = link.dataset.player.toLowerCase(); // always lowercase
-  navigateToPlayer(player);
-});
-
-function navigateToPlayer(player) {
-  history.pushState({}, "", `/player/${player}`);
-  loadPlayerPage(player);
-}
-
-window.addEventListener("popstate", () => {
-  const path = window.location.pathname;
-  if (path.startsWith("/player/")) {
-    const player = path.split("/")[2].toLowerCase();
-    loadPlayerPage(player);
-  } else {
-    // if going back to root
-    document.body.classList.remove("player-page-active");
-    renderShowcase();
-  }
-});
-
-async function loadPlayerPage(playerName) {
-  // First, load the showcase page into main-container if not already loaded
-  const pageContainer = document.getElementById("main-container");
-  const showcaseContainer = pageContainer.querySelector("#showcase");
-
-  if (!showcaseContainer) {
-    // Load shiny-showcase page HTML first
-    const res = await fetch("/pages/shiny-showcase.html");
-    if (!res.ok) {
-      pageContainer.innerHTML = `<div class="message">Error loading showcase page.</div>`;
-      return;
-    }
-    pageContainer.innerHTML = await res.text();
-  }
-
-  // Now #showcase exists
-  const showcase = document.getElementById("showcase");
-
-  const data = await getData(); // your cached JSON loader
-
-  document.body.classList.add("player-page-active");
-
-  const realKey = Object.keys(data).find(
-    key => key.toLowerCase() === playerName.toLowerCase()
-  );
-
-  if (!realKey) {
-    showcase.innerHTML = `
-      <h2 style="color:white;">Player "${playerName}" not found</h2>
-      <p style="color:white;">Check spelling or try again.</p>
-    `;
-    return;
-  }
-
-  const playerData = data[realKey];
-
-  showcase.innerHTML = `
-    <div class="player-page">
-      <button class="back-button">← Back to Showcase</button>
-      <h1>${realKey}'s Shiny Collection ✨</h1>
-      <p>Total Shinies: ${playerData.shiny_count}</p>
-      <div class="shiny-list large-shinies"></div>
-    </div>
-  `;
-
-  const backBtn = showcase.querySelector(".back-button");
-  backBtn.addEventListener("click", () => {
-    history.pushState({}, "", "/#shiny-showcase");
-    document.body.classList.remove("player-page-active");
-    loadPage("shiny-showcase");
-  });
-
-  const shinyList = showcase.querySelector(".shiny-list");
-  Object.values(playerData.shinies).forEach(s => {
-    const shiny = createShinyItem(s);
-    shiny.classList.add("big-shiny-wrapper");
-    shinyList.appendChild(shiny);
-  });
-
-  setupInfoBoxFlip();
-}
-
-
-// ---------- INIT ON PAGE LOAD ----------
-const currentPath = window.location.pathname; // renamed from "path"
-if (currentPath.startsWith("/player/")) {
-  const player = currentPath.split("/")[2].toLowerCase();
-  loadPlayerPage(player);
-} else {
-  renderShowcase();
-}
-document.querySelectorAll("#top-nav li").forEach(item => {
-  item.addEventListener("click", e => {
-    const route = item.dataset.route;
-    
-    // Handle SPA navigation
-    history.pushState({}, "", route);
-
-    if (route === "/") {
-      document.body.classList.remove("player-page-active");
-      renderShowcase();
-    } else {
-      // Optional: handle other routes
-      loadOtherPage(route);
-    }
-  });
-});
-
 }
