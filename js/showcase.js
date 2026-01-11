@@ -164,65 +164,54 @@ async function initShowcase() {
   }
 
   // ---------- PLAYER PAGE ----------
-async function loadPlayerPage(playerName) {
-  // Ensure #showcase exists
-  let showcase = document.getElementById("showcase");
-  if (!showcase) {
-    const res = await fetch("/pages/shiny-showcase.html");
-    if (!res.ok) {
-      pageContainer.innerHTML = `<div class="message">Error loading showcase page.</div>`;
+  async function loadPlayerPage(playerName) {
+    let showcase = document.getElementById("showcase");
+    if (!showcase) {
+      const res = await fetch("/pages/shiny-showcase.html");
+      if (!res.ok) {
+        pageContainer.innerHTML = `<div class="message">Error loading showcase page.</div>`;
+        return;
+      }
+      pageContainer.innerHTML = await res.text();
+      showcase = document.getElementById("showcase");
+    }
+
+    const data = await getData();
+    document.body.classList.add("player-page-active");
+
+    const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
+    if (!realKey) {
+      showcase.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>
+                            <p style="color:white;">Check spelling or try again.</p>`;
       return;
     }
-    pageContainer.innerHTML = await res.text();
 
-    // Re-select showcase after injecting HTML
-    showcase = document.getElementById("showcase");
+    const playerData = data[realKey];
+    showcase.innerHTML = `
+      <div class="player-page">
+        <button class="back-button">← Back to Showcase</button>
+        <h1>${realKey}'s Shiny Collection ✨</h1>
+        <p>Total Shinies: ${playerData.shiny_count}</p>
+        <div class="shiny-list large-shinies"></div>
+      </div>
+    `;
 
-    // Re-init the showcase (only for rendering all shinies)
-    if (typeof initShowcase === "function") await initShowcase();
+    const backBtn = showcase.querySelector(".back-button");
+    backBtn.addEventListener("click", () => {
+      window.location.hash = "";
+      document.body.classList.remove("player-page-active");
+      renderShowcase();
+    });
+
+    const shinyList = showcase.querySelector(".shiny-list");
+    Object.values(playerData.shinies).forEach(s => {
+      const shiny = createShinyItem(s);
+      shiny.classList.add("big-shiny-wrapper");
+      shinyList.appendChild(shiny);
+    });
+
+    setupInfoBoxFlip();
   }
-
-  const data = await getData();
-  document.body.classList.add("player-page-active");
-
-  const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
-  if (!realKey) {
-    if (showcase) {
-      showcase.innerHTML = `
-        <h2 style="color:white;">Player "${playerName}" not found</h2>
-        <p style="color:white;">Check spelling or try again.</p>
-      `;
-    }
-    return;
-  }
-
-  const playerData = data[realKey];
-
-  showcase.innerHTML = `
-    <div class="player-page">
-      <button class="back-button">← Back to Showcase</button>
-      <h1>${realKey}'s Shiny Collection ✨</h1>
-      <p>Total Shinies: ${playerData.shiny_count}</p>
-      <div class="shiny-list large-shinies"></div>
-    </div>
-  `;
-
-  const backBtn = showcase.querySelector(".back-button");
-  backBtn.addEventListener("click", () => {
-    window.location.hash = ""; // back to showcase
-    document.body.classList.remove("player-page-active");
-    renderShowcase();
-  });
-
-  const shinyList = showcase.querySelector(".shiny-list");
-  Object.values(playerData.shinies).forEach(s => {
-    const shiny = createShinyItem(s);
-    shiny.classList.add("big-shiny-wrapper");
-    shinyList.appendChild(shiny);
-  });
-
-  setupInfoBoxFlip();
-}
 
   // ---------- INFO BOX FLIP ----------
   function setupInfoBoxFlip() {
