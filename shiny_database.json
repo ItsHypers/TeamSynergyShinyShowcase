@@ -16746,6 +16746,32 @@
         "Safari": "No",
         "Favourite": "No",
         "Reaction Link": ""
+      },
+      "5": {
+        "Pokemon": "litwick",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "Yes",
+        "Reaction Link": ""
+      },
+      "6": {
+        "Pokemon": "darumaka",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
       }
     }
   },
