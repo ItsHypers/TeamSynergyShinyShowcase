@@ -3,19 +3,14 @@ async function initShowcase() {
   const pageContainer = document.getElementById("main-container");
   const showcaseContainer = document.getElementById("showcase");
   const searchInput = document.getElementById("playerSearch");
-  const starContainer = document.querySelector('.stars-container');
 
   if (!pageContainer || !showcaseContainer) return;
 
-  // Handle GitHub Pages redirect query
+  // ---------- Handle GitHub Pages redirect ----------
   const urlParams = new URLSearchParams(window.location.search);
   const redirectPath = urlParams.get('redirect');
-
   if (redirectPath) {
-    // Replace query param in URL
     history.replaceState({}, "", redirectPath);
-
-    // If redirect is to a player
     if (redirectPath.startsWith("/player/")) {
       const playerName = redirectPath.split("/")[2];
       navigateToPlayer(playerName);
@@ -23,7 +18,7 @@ async function initShowcase() {
   }
 
   // ---------- DATA ----------
-  const JSON_FILE = "shiny_database.json";
+  const JSON_FILE = "./shiny_database.json";
   const JSON_VERSION = "v17"; // increment if JSON updates
   let cachedData = null;
 
@@ -154,12 +149,12 @@ async function initShowcase() {
       const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : '';
 
       const playerLink = `
-      <a href="/player/${player.toLowerCase()}" 
-        class="${playerClass} player-link"
-        data-player="${player.toLowerCase()}">
-        #${index + 1} ${player} (${playerData.shiny_count})${sparkle} ${trophyImg}
-      </a>
-    `;
+        <a href="/player/${player.toLowerCase()}" 
+          class="${playerClass} player-link"
+          data-player="${player.toLowerCase()}">
+          #${index + 1} ${player} (${playerData.shiny_count})${sparkle} ${trophyImg}
+        </a>
+      `;
       card.innerHTML = playerLink;
 
       const shinyList = document.createElement("div");
@@ -180,13 +175,11 @@ async function initShowcase() {
   }
 
   // ---------- SPA PLAYER NAV ----------
-  document.addEventListener("click", (e) => {
+  document.addEventListener("click", e => {
     const link = e.target.closest("a.player-link");
     if (!link) return;
-
     e.preventDefault();
-    const player = link.dataset.player.toLowerCase();
-    navigateToPlayer(player);
+    navigateToPlayer(link.dataset.player);
   });
 
   function navigateToPlayer(player) {
@@ -197,7 +190,7 @@ async function initShowcase() {
   window.addEventListener("popstate", () => {
     const path = window.location.pathname;
     if (path.startsWith("/player/")) {
-      const player = path.split("/")[2].toLowerCase();
+      const player = path.split("/")[2];
       loadPlayerPage(player);
     } else {
       document.body.classList.remove("player-page-active");
@@ -205,8 +198,8 @@ async function initShowcase() {
     }
   });
 
+  // ---------- LOAD PLAYER PAGE ----------
   async function loadPlayerPage(playerName) {
-    // Ensure #showcase exists
     let showcase = document.getElementById("showcase");
     if (!showcase) {
       const res = await fetch("/pages/shiny-showcase.html");
@@ -219,10 +212,8 @@ async function initShowcase() {
     }
 
     const data = await getData();
-
+    const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName);
     document.body.classList.add("player-page-active");
-
-    const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
 
     if (!realKey) {
       showcase.innerHTML = `
@@ -233,7 +224,6 @@ async function initShowcase() {
     }
 
     const playerData = data[realKey];
-
     showcase.innerHTML = `
       <div class="player-page">
         <button class="back-button">← Back to Showcase</button>
@@ -263,29 +253,34 @@ async function initShowcase() {
   // ---------- INIT ----------
   const currentPath = window.location.pathname;
   if (currentPath.startsWith("/player/")) {
-    const player = currentPath.split("/")[2].toLowerCase();
-    getData().then(() => loadPlayerPage(player)); // wait for data before loading
+    const player = currentPath.split("/")[2];
+    const data = await getData();
+    const realKey = Object.keys(data).find(k => k.toLowerCase() === player);
+    if (realKey) {
+      loadPlayerPage(realKey);
+    } else {
+      showcaseContainer.innerHTML = `
+        <h2 style="color:white;">Player "${player}" not found</h2>
+        <p style="color:white;">Check spelling or try again.</p>
+      `;
+    }
   } else {
     renderShowcase();
   }
-
 
   // ---------- INFO BOX FLIP ----------
   function setupInfoBoxFlip() {
     const spans = document.querySelectorAll('.shiny-list span');
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    const hideAllInfoBoxes = () => {
-      spans.forEach(span => {
-        const infoBox = span.querySelector('.info-box');
-        if (infoBox) infoBox.style.opacity = '0';
-      });
-    };
+    const hideAllInfoBoxes = () => spans.forEach(span => {
+      const infoBox = span.querySelector('.info-box');
+      if (infoBox) infoBox.style.opacity = '0';
+    });
 
     spans.forEach(span => {
       const infoBox = span.querySelector('.info-box');
       if (!infoBox) return;
-
       infoBox.style.pointerEvents = 'none';
       infoBox.style.display = 'block';
       infoBox.style.opacity = '0';

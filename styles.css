@@ -344,6 +344,18 @@ h1:hover {
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
+.back-button{
+  width: 250px;                 /* decent width */
+  padding: 10px 40px 10px 15px; /* room for icon on the right */
+  border-radius: 25px;          /* rounded pill shape */
+  border: 2px solid #444;       /* subtle border */
+  background: #1a1a1a;          /* dark input background */
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
 .search-bar input::placeholder {
   color: #888;                  /* lighter placeholder */
 }
