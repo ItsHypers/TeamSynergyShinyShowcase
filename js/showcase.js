@@ -166,6 +166,8 @@ async function initShowcase() {
   // ---------- PLAYER PAGE ----------
   async function loadPlayerPage(playerName) {
     let showcase = document.getElementById("showcase");
+
+    // If #showcase doesn't exist (page reload or direct link)
     if (!showcase) {
       const res = await fetch("/pages/shiny-showcase.html");
       if (!res.ok) {
@@ -181,12 +183,7 @@ async function initShowcase() {
 
     const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
     if (!realKey) {
-      if (showcase) {
-        showcase.innerHTML = `
-          <h2 style="color:white;">Player "${playerName}" not found</h2>
-          <p style="color:white;">Check spelling or try again.</p>
-        `;
-      }
+      showcase.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
       return;
     }
 
@@ -201,9 +198,9 @@ async function initShowcase() {
       </div>
     `;
 
-    const backBtn = showcase.querySelector(".back-button");
-    backBtn.addEventListener("click", () => {
-      window.location.hash = ""; // back to showcase
+    // Back button
+    showcase.querySelector(".back-button").addEventListener("click", () => {
+      window.location.hash = "";
       document.body.classList.remove("player-page-active");
       renderShowcase();
     });
@@ -283,35 +280,27 @@ async function initShowcase() {
 
   // ---------- HASH ROUTING ----------
   async function handleHash() {
-    const data = await getData(); // ensure JSON loaded first
     const hash = window.location.hash.slice(1); // remove #
     if (hash.startsWith("player/")) {
       const playerName = hash.split("/")[1];
-      const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
-      if (realKey) {
-        loadPlayerPage(realKey);
-      } else {
-        const showcase = document.getElementById("showcase");
-        if (showcase) {
-          showcase.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
-        }
-      }
+      await loadPlayerPage(playerName);
     } else {
       document.body.classList.remove("player-page-active");
       renderShowcase();
     }
   }
 
-  window.addEventListener("hashchange", handleHash);
-  handleHash(); // run on initial load
-
   // ---------- PLAYER LINK CLICK NAV ----------
   document.addEventListener("click", e => {
     const link = e.target.closest("a.player-link");
     if (!link) return;
-
     e.preventDefault();
     const player = link.dataset.player;
     window.location.hash = `player/${player}`;
   });
+
+  // ---------- INITIAL LOAD ----------
+  await getData();          // ensure JSON ready
+  window.addEventListener("hashchange", handleHash);
+  handleHash();             // initial page load
 }
