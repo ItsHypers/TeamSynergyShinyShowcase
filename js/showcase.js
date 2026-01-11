@@ -342,7 +342,7 @@ document.addEventListener("click", (e) => {
   if (!link) return;
 
   e.preventDefault();
-  const player = link.dataset.player;
+  const player = link.dataset.player.toLowerCase(); // always lowercase
   navigateToPlayer(player);
 });
 
@@ -354,19 +354,20 @@ function navigateToPlayer(player) {
 window.addEventListener("popstate", () => {
   const path = window.location.pathname;
   if (path.startsWith("/player/")) {
-    document.body.classList.add("player-page-active");
-    const player = path.split("/")[2];
+    const player = path.split("/")[2].toLowerCase();
     loadPlayerPage(player);
+  } else {
+    // if going back to root
+    document.body.classList.remove("player-page-active");
+    renderShowcase();
   }
-})
+});
 
 async function loadPlayerPage(playerName) {
-  const searchBar = document.getElementById("searchbar"); // define it here
   const showcaseContainer = document.getElementById("showcase");
-  const data = await getData(); // use your cached JSON loader
-  document.body.classList.add("player-page-active");
-  if (searchBar) searchBar.style.display = "none"; // hide explicitly
-  // Find the real key in JSON regardless of case
+  const data = await getData(); // your cached JSON loader
+
+  // normalize JSON keys to lowercase
   const realKey = Object.keys(data).find(
     key => key.toLowerCase() === playerName.toLowerCase()
   );
@@ -376,31 +377,29 @@ async function loadPlayerPage(playerName) {
       <h2 style="color:white;">Player "${playerName}" not found</h2>
       <p style="color:white;">Check spelling or try again.</p>
     `;
+    document.body.classList.add("player-page-active");
     return;
   }
 
   const playerData = data[realKey];
 
+  document.body.classList.add("player-page-active");
   showcaseContainer.innerHTML = `
-  <div class="player-page">
-    <button class="back-button">← Back to Showcase</button>
-    <h1>${realKey}'s Shiny Collection ✨</h1>
-    <p>Total Shinies: ${playerData.shiny_count}</p>
-    <div class="shiny-list large-shinies"></div>
-  </div>
-`;
-const backBtn = showcaseContainer.querySelector(".back-button");
-backBtn.addEventListener("click", () => {
-  const searchBar = document.getElementById("searchbar"); // define it here
-  history.pushState({}, "", "/");
-  document.body.classList.remove("player-page-active");
-  if (searchBar) searchBar.style.display = "block"; // now works
-  renderShowcase();
-});
+    <div class="player-page">
+      <button class="back-button">← Back to Showcase</button>
+      <h1>${realKey}'s Shiny Collection ✨</h1>
+      <p>Total Shinies: ${playerData.shiny_count}</p>
+      <div class="shiny-list large-shinies"></div>
+    </div>
+  `;
 
-
-
-
+  const backBtn = showcaseContainer.querySelector(".back-button");
+  backBtn.addEventListener("click", () => {
+    history.pushState({}, "", "/");          // reset URL
+    document.body.classList.remove("player-page-active");
+    renderShowcase();                        // re-render main showcase
+    window.scrollTo(0, 0);                   // optional: scroll to top
+  });
 
   const shinyList = showcaseContainer.querySelector(".shiny-list");
 
@@ -412,4 +411,30 @@ backBtn.addEventListener("click", () => {
 
   setupInfoBoxFlip();
 }
+
+// ---------- INIT ON PAGE LOAD ----------
+const currentPath = window.location.pathname; // renamed from "path"
+if (currentPath.startsWith("/player/")) {
+  const player = currentPath.split("/")[2].toLowerCase();
+  loadPlayerPage(player);
+} else {
+  renderShowcase();
+}
+document.querySelectorAll("#top-nav li").forEach(item => {
+  item.addEventListener("click", e => {
+    const route = item.dataset.route;
+    
+    // Handle SPA navigation
+    history.pushState({}, "", route);
+
+    if (route === "/") {
+      document.body.classList.remove("player-page-active");
+      renderShowcase();
+    } else {
+      // Optional: handle other routes
+      loadOtherPage(route);
+    }
+  });
+});
+
 }
