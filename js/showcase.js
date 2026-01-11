@@ -364,27 +364,42 @@ window.addEventListener("popstate", () => {
 });
 
 async function loadPlayerPage(playerName) {
-  const showcaseContainer = document.getElementById("showcase");
+  // First, load the showcase page into main-container if not already loaded
+  const pageContainer = document.getElementById("main-container");
+  const showcaseContainer = pageContainer.querySelector("#showcase");
+
+  if (!showcaseContainer) {
+    // Load shiny-showcase page HTML first
+    const res = await fetch("/pages/shiny-showcase.html");
+    if (!res.ok) {
+      pageContainer.innerHTML = `<div class="message">Error loading showcase page.</div>`;
+      return;
+    }
+    pageContainer.innerHTML = await res.text();
+  }
+
+  // Now #showcase exists
+  const showcase = document.getElementById("showcase");
+
   const data = await getData(); // your cached JSON loader
 
-  // normalize JSON keys to lowercase
+  document.body.classList.add("player-page-active");
+
   const realKey = Object.keys(data).find(
     key => key.toLowerCase() === playerName.toLowerCase()
   );
 
   if (!realKey) {
-    showcaseContainer.innerHTML = `
+    showcase.innerHTML = `
       <h2 style="color:white;">Player "${playerName}" not found</h2>
       <p style="color:white;">Check spelling or try again.</p>
     `;
-    document.body.classList.add("player-page-active");
     return;
   }
 
   const playerData = data[realKey];
 
-  document.body.classList.add("player-page-active");
-  showcaseContainer.innerHTML = `
+  showcase.innerHTML = `
     <div class="player-page">
       <button class="back-button">← Back to Showcase</button>
       <h1>${realKey}'s Shiny Collection ✨</h1>
@@ -393,16 +408,14 @@ async function loadPlayerPage(playerName) {
     </div>
   `;
 
-  const backBtn = showcaseContainer.querySelector(".back-button");
+  const backBtn = showcase.querySelector(".back-button");
   backBtn.addEventListener("click", () => {
-    history.pushState({}, "", "/");          // reset URL
+    history.pushState({}, "", "/#shiny-showcase");
     document.body.classList.remove("player-page-active");
-    renderShowcase();                        // re-render main showcase
-    window.scrollTo(0, 0);                   // optional: scroll to top
+    loadPage("shiny-showcase");
   });
 
-  const shinyList = showcaseContainer.querySelector(".shiny-list");
-
+  const shinyList = showcase.querySelector(".shiny-list");
   Object.values(playerData.shinies).forEach(s => {
     const shiny = createShinyItem(s);
     shiny.classList.add("big-shiny-wrapper");
@@ -411,6 +424,7 @@ async function loadPlayerPage(playerName) {
 
   setupInfoBoxFlip();
 }
+
 
 // ---------- INIT ON PAGE LOAD ----------
 const currentPath = window.location.pathname; // renamed from "path"
