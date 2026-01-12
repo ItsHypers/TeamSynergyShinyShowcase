@@ -1,6 +1,6 @@
 async function initShowcase() {
   const pageContainer = document.getElementById("main-container");
-  const showcaseContainer = document.getElementById("showcase");
+  const showcaseContainer = () => document.getElementById("showcase"); // dynamic getter
   const searchInput = document.getElementById("playerSearch");
 
   if (!pageContainer) return;
@@ -113,8 +113,10 @@ async function initShowcase() {
 
   // ---------- RENDER SHOWCASE ----------
   async function renderShowcase(filter = "") {
-    if (!showcaseContainer) return;
-    showcaseContainer.textContent = "";
+    const container = showcaseContainer();
+    if (!container) return;
+
+    container.textContent = "";
 
     const fragment = document.createDocumentFragment();
     const sortedPlayers = Object.entries(data).sort((a, b) => b[1].shiny_count - a[1].shiny_count);
@@ -155,25 +157,26 @@ async function initShowcase() {
       fragment.appendChild(card);
     });
 
-    showcaseContainer.appendChild(fragment);
+    container.appendChild(fragment);
     setupInfoBoxFlip();
   }
 
   // ---------- PLAYER PAGE ----------
   async function loadPlayerPage(playerName) {
-    if (!showcaseContainer) return;
+    const container = showcaseContainer();
+    if (!container) return;
 
     document.body.classList.add("player-page-active");
 
     const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
     if (!realKey) {
-      showcaseContainer.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
+      container.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
       return;
     }
 
     const playerData = data[realKey];
 
-    showcaseContainer.innerHTML = `
+    container.innerHTML = `
       <div class="player-page">
         <button class="back-button">← Back to Showcase</button>
         <h1>${realKey}'s Shiny Collection ✨</h1>
@@ -182,12 +185,11 @@ async function initShowcase() {
       </div>
     `;
 
-    // Back button
-    showcaseContainer.querySelector(".back-button").addEventListener("click", () => {
+    container.querySelector(".back-button").addEventListener("click", () => {
       window.location.hash = "";
     });
 
-    const shinyList = showcaseContainer.querySelector(".shiny-list");
+    const shinyList = container.querySelector(".shiny-list");
     Object.values(playerData.shinies).forEach(s => {
       const shiny = createShinyItem(s);
       shiny.classList.add("big-shiny-wrapper");
@@ -197,7 +199,7 @@ async function initShowcase() {
     setupInfoBoxFlip();
   }
 
-  // ---------- INFO BOX FLIP ----------
+  // ---------- INFO BOX ----------
   function setupInfoBoxFlip() {
     const spans = document.querySelectorAll('.shiny-list span');
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -266,6 +268,20 @@ async function initShowcase() {
 
     if (hash.startsWith("player/")) {
       const playerName = hash.split("/")[1];
+
+      // Ensure showcase HTML exists
+      if (!showcaseContainer()) {
+        try {
+          const res = await fetch("/pages/shiny-showcase.html");
+          if (!res.ok) throw new Error("Failed to load showcase page");
+          pageContainer.innerHTML = await res.text();
+        } catch (err) {
+          console.error(err);
+          pageContainer.innerHTML = `<div class="message">Error loading showcase page</div>`;
+          return;
+        }
+      }
+
       await loadPlayerPage(playerName);
     } else {
       document.body.classList.remove("player-page-active");
@@ -273,7 +289,10 @@ async function initShowcase() {
     }
   }
 
-  // ---------- PLAYER LINK CLICK NAV ----------
+  // Expose handleHash globally for spa.js
+  window.handleHash = handleHash;
+
+  // ---------- PLAYER LINK NAV ----------
   document.addEventListener("click", e => {
     const link = e.target.closest("a.player-link");
     if (!link) return;
@@ -281,9 +300,6 @@ async function initShowcase() {
     const player = link.dataset.player;
     window.location.hash = `player/${player}`;
   });
-
-  // Expose handleHash globally so spa.js can call it
-  window.handleHash = handleHash;
 
   // ---------- INITIAL LOAD ----------
   handleHash();
