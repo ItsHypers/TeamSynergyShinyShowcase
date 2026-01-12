@@ -83,10 +83,28 @@ h1:hover {
   }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 600px) {
+  #showcase{
+    max-width: 100%;
+  }
+  #main-container {
+    padding: 12px;
+  }
 
+  .shiny-list{
+    justify-content: center;
+  }
+
+  .gif-container:hover {
+    transform: scale(1.1); 
+  }
+  
+  .gif-container{
+    max-width: 40px;
+    max-height: 40px;
+  }
   .player-card {
-    max-width: 95%; 
+    max-width: 100%; 
     margin-left: auto; 
     margin-right: auto;
   }
@@ -477,19 +495,6 @@ body {
     0 0 32px rgba(220, 120, 255, 1);
 }
 
-@media (max-width: 600px) {
-  #main-container {
-    padding: 12px;
-  }
-
-  .shiny-list{
-    justify-content: center;
-  }
-
-  .gif-container:hover {
-    transform: scale(1.1); 
-  }
-}
 
 #top-nav {
   position: fixed;
