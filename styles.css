@@ -93,10 +93,6 @@ h1:hover {
     max-width: 7px;
     max-height: 7px;
   }
-
-}
-
-@media (max-width: 900px) {
   #showcase{
     max-width: 100%;
   }
@@ -123,6 +119,7 @@ h1:hover {
   }
 
 }
+
 .player-card div span.sparkle {
   animation: sparkle-glow 1.5s infinite alternate;
 }
