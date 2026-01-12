@@ -1,23 +1,20 @@
 function initEncounterCounter() {
-  // Only run if the encounter counter page exists
   const page = document.getElementById("encounter-counter-page");
   if (!page) return;
 
   console.log("Initializing Encounter Counter page...");
 
-  // ----- DOM elements -----
-  const input = page.querySelector('#zipFileInput');
-  const minimisedInput = page.querySelector('#minimisedFile');
-  const generateBtn = page.querySelector('#generateZip');
-  const zipNameInput = page.querySelector('#zipName');
-  const durationInput = page.querySelector('#frameDuration');
-  const zipStatus = page.querySelector('#zipStatus');
+  const input = page.querySelector("#zipFileInput");
+  const minimisedInput = page.querySelector("#minimisedFile");
+  const generateBtn = page.querySelector("#generateZip");
+  const zipNameInput = page.querySelector("#zipName");
+  const durationInput = page.querySelector("#frameDuration");
+  const zipStatus = page.querySelector("#zipStatus");
 
   let frameFiles = [];
 
   generateBtn.disabled = true;
 
-  // ----- Counter theme XML bottom section -----
   const counterThemeBottom = `
   <theme name="encounter-counter-expanded" ref="encounter-counter">
       <param name="background"><image>encounter_counter_anim</image></param>
@@ -25,8 +22,11 @@ function initEncounterCounter() {
   </themes>
   `;
 
-  // ----- Generate counter XML -----
-  function generateCounterXML(files, minimisedFileName = null, frameDuration = 100) {
+  function generateCounterXML(
+    files,
+    minimisedFileName = null,
+    frameDuration = 100,
+  ) {
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<themes>\n\n`;
 
     if (minimisedFileName) {
@@ -36,16 +36,15 @@ function initEncounterCounter() {
     }
 
     files.forEach((file, index) => {
-      const frameNumber = String(index + 1).padStart(5, '0');
+      const frameNumber = String(index + 1).padStart(5, "0");
       xml += `<images file="anim/${file}" filter="nearest">\n`;
       xml += `    <area name="bg-${frameNumber}" xywh="*"/>\n`;
       xml += `</images>\n\n`;
     });
 
-    // Add animation frames
     xml += `    <images>\n        <animation name="encounter_counter_anim" timeSource="enabled">\n\n`;
     files.forEach((_, index) => {
-      const frameNumber = String(index + 1).padStart(5, '0');
+      const frameNumber = String(index + 1).padStart(5, "0");
       xml += `<frame ref="bg-${frameNumber}" duration="${frameDuration}"/>\n`;
     });
     xml += `        </animation>\n    </images>\n\n`;
@@ -54,14 +53,12 @@ function initEncounterCounter() {
     return xml;
   }
 
-  // ----- Theme XML content -----
   const themeXMLContent = `<themes>
 <constantDef name="main-theme-color"><color>#6a889b</color></constantDef>
 <constantDef name="main-color"><color>#5db1ff</color></constantDef>
 <include filename="custom-counter.xml"/>
 </themes>`;
 
-  // ----- info.xml content -----
   function generateInfoXML(themeName) {
     return `<?xml version="1.0" encoding="UTF-8"?>
 <resource name="${themeName}" version="1.0" description="Animated Custom encounter counter" author="Hyper" weblink="https://forums.pokemmo.com/index.php?/topic/190960-hypers-custom-encounter-counters/">
@@ -71,8 +68,7 @@ function initEncounterCounter() {
 </resource>`;
   }
 
-  // ----- Handle ZIP file upload -----
-  input.addEventListener('change', async (event) => {
+  input.addEventListener("change", async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -90,24 +86,23 @@ function initEncounterCounter() {
         zipStatus.textContent = `Zip file read successfully! ${frameFiles.length} files detected.`;
         generateBtn.disabled = false;
       } else {
-        zipStatus.textContent = 'Zip file read, but it contains no files.';
+        zipStatus.textContent = "Zip file read, but it contains no files.";
         generateBtn.disabled = true;
       }
-
     } catch (err) {
-      console.error('Error reading zip file:', err);
-      zipStatus.textContent = 'Error reading zip file. Please try again.';
+      console.error("Error reading zip file:", err);
+      zipStatus.textContent = "Error reading zip file. Please try again.";
       generateBtn.disabled = true;
     }
   });
 
-  // ----- Generate ZIP button click -----
-  generateBtn.addEventListener('click', async () => {
+  generateBtn.addEventListener("click", async () => {
     if (!frameFiles.length) return;
 
     const frameDuration = parseInt(durationInput.value, 10) || 100;
     const outputZipName = zipNameInput.value.trim() || "custom-counter.zip";
-    const themeName = zipNameInput.value.replace(/\.zip$/i, '') || "custom-counter";
+    const themeName =
+      zipNameInput.value.replace(/\.zip$/i, "") || "custom-counter";
 
     const zip = new JSZip();
     const defaultFolder = `data/themes/default`;
@@ -115,8 +110,11 @@ function initEncounterCounter() {
     const minimisedFile = minimisedInput.files[0];
     const minimisedFileName = minimisedFile ? minimisedFile.name : null;
 
-    // Generate XML files
-    const counterXML = generateCounterXML(frameFiles, minimisedFileName, frameDuration);
+    const counterXML = generateCounterXML(
+      frameFiles,
+      minimisedFileName,
+      frameDuration,
+    );
     zip.file(`${defaultFolder}/custom-counter.xml`, counterXML);
     zip.file(`${defaultFolder}/theme.xml`, themeXMLContent);
 
@@ -127,7 +125,7 @@ function initEncounterCounter() {
 
     uploadedZip.forEach((relativePath, zipEntry) => {
       if (!zipEntry.dir) {
-        const p = zipEntry.async("blob").then(content => {
+        const p = zipEntry.async("blob").then((content) => {
           animFolder.file(relativePath, content);
           if (!firstFileAdded) {
             zip.file(`icon.png`, content);
@@ -147,8 +145,8 @@ function initEncounterCounter() {
 
     await Promise.all(animPromises);
 
-    zip.generateAsync({ type: "blob" }).then(content => {
-      const a = document.createElement('a');
+    zip.generateAsync({ type: "blob" }).then((content) => {
+      const a = document.createElement("a");
       a.href = URL.createObjectURL(content);
       a.download = outputZipName;
       a.click();
@@ -158,5 +156,4 @@ function initEncounterCounter() {
   console.log("Encounter Counter JS initialized for this page.");
 }
 
-// ----- Run init after page injection -----
 initEncounterCounter();
