@@ -83,7 +83,20 @@ h1:hover {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
+
+  .secret-icon, .egg-icon, .reaction-icon, .safari-icon, .mysteriousball-gif {
+    max-width: 10px;
+    max-height: 10px;
+  }
+  .favourite-heart{
+    max-width: 7px;
+    max-height: 7px;
+  }
+
+}
+
+@media (max-width: 900px) {
   #showcase{
     max-width: 100%;
   }
@@ -107,15 +120,6 @@ h1:hover {
     max-width: 100%; 
     margin-left: auto; 
     margin-right: auto;
-  }
-
-  .secret-icon, .egg-icon, .reaction-icon, .safari-icon, .mysteriousball-gif {
-    max-width: 10px;
-    max-height: 10px;
-  }
-  .favourite-heart{
-    max-width: 7px;
-    max-height: 7px;
   }
 
 }
