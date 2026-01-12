@@ -1,6 +1,7 @@
+// ---------- INIT SHOWCASE ----------
 async function initShowcase() {
   const pageContainer = document.getElementById("main-container");
-  const showcaseContainer = () => document.getElementById("showcase"); // dynamic getter
+  const showcaseContainer = () => document.getElementById("showcase");
   const searchInput = document.getElementById("playerSearch");
 
   if (!pageContainer) return;
@@ -117,7 +118,6 @@ async function initShowcase() {
     if (!container) return;
 
     container.textContent = "";
-
     const fragment = document.createDocumentFragment();
     const sortedPlayers = Object.entries(data).sort((a, b) => b[1].shiny_count - a[1].shiny_count);
     const lowerFilter = filter.toLowerCase();
@@ -162,11 +162,9 @@ async function initShowcase() {
   }
 
   // ---------- PLAYER PAGE ----------
-  async function loadPlayerPage(playerName) {
+  window.renderPlayerPage = async function(playerName) {
     const container = showcaseContainer();
     if (!container) return;
-
-    document.body.classList.add("player-page-active");
 
     const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
     if (!realKey) {
@@ -175,6 +173,7 @@ async function initShowcase() {
     }
 
     const playerData = data[realKey];
+    document.body.classList.add("player-page-active");
 
     container.innerHTML = `
       <div class="player-page">
@@ -197,7 +196,7 @@ async function initShowcase() {
     });
 
     setupInfoBoxFlip();
-  }
+  };
 
   // ---------- INFO BOX ----------
   function setupInfoBoxFlip() {
@@ -262,45 +261,11 @@ async function initShowcase() {
     if (isTouchDevice) document.addEventListener('click', hideAllInfoBoxes);
   }
 
-  // ---------- HASH HANDLING ----------
-  async function handleHash() {
-    const hash = window.location.hash.slice(1);
-
-    if (hash.startsWith("player/")) {
-      const playerName = hash.split("/")[1];
-
-      // Ensure showcase HTML exists
-      if (!showcaseContainer()) {
-        try {
-          const res = await fetch("/pages/shiny-showcase.html");
-          if (!res.ok) throw new Error("Failed to load showcase page");
-          pageContainer.innerHTML = await res.text();
-        } catch (err) {
-          console.error(err);
-          pageContainer.innerHTML = `<div class="message">Error loading showcase page</div>`;
-          return;
-        }
-      }
-
-      await loadPlayerPage(playerName);
-    } else {
-      document.body.classList.remove("player-page-active");
-      renderShowcase();
-    }
+  // ---------- SEARCH ----------
+  if (searchInput) {
+    searchInput.addEventListener("input", e => renderShowcase(e.target.value));
   }
 
-  // Expose handleHash globally for spa.js
-  window.handleHash = handleHash;
-
-  // ---------- PLAYER LINK NAV ----------
-  document.addEventListener("click", e => {
-    const link = e.target.closest("a.player-link");
-    if (!link) return;
-    e.preventDefault();
-    const player = link.dataset.player;
-    window.location.hash = `player/${player}`;
-  });
-
-  // ---------- INITIAL LOAD ----------
-  handleHash();
+  // ---------- INITIAL SHOWCASE RENDER ----------
+  renderShowcase();
 }
