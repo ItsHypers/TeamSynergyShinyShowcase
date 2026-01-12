@@ -11901,11 +11901,11 @@
         "Alpha": "No",
         "Sold": "No",
         "Event": "No",
-        "Reaction": "No",
+        "Reaction": "Yes",
         "MysteriousBall": "No",
         "Safari": "No",
         "Favourite": "Yes",
-        "Reaction Link": ""
+        "Reaction Link": "https://www.youtube.com/watch?v=nBIA8wjrNoE"
       },
       "2": {
         "Pokemon": "durant",
@@ -11934,7 +11934,7 @@
         "Reaction Link": ""
       },
       "4": {
-        "Pokemon": "mienfoo",
+        "Pokemon": "mienshao",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -11973,7 +11973,7 @@
         "Reaction Link": ""
       },
       "7": {
-        "Pokemon": "ralts",
+        "Pokemon": "gardevoir",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -11986,7 +11986,7 @@
         "Reaction Link": ""
       },
       "8": {
-        "Pokemon": "vulpix",
+        "Pokemon": "ninetales",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -11999,7 +11999,7 @@
         "Reaction Link": ""
       },
       "9": {
-        "Pokemon": "poochyena",
+        "Pokemon": "mightyena",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -12025,7 +12025,7 @@
         "Reaction Link": ""
       },
       "11": {
-        "Pokemon": "venipede",
+        "Pokemon": "whirlipede",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
