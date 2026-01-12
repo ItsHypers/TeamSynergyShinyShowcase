@@ -1,14 +1,13 @@
-// ---------- INIT SHOWCASE ----------
 async function initShowcase() {
   const pageContainer = document.getElementById("main-container");
   const showcaseContainer = document.getElementById("showcase");
   const searchInput = document.getElementById("playerSearch");
 
-  if (!pageContainer || !showcaseContainer) return;
+  if (!pageContainer) return;
 
   // ---------- DATA ----------
   const JSON_FILE = "./shiny_database.json";
-  const JSON_VERSION = "v17"; // increment if JSON updates
+  const JSON_VERSION = "v17";
   let cachedData = null;
 
   async function getData() {
@@ -24,6 +23,8 @@ async function initShowcase() {
       return {};
     }
   }
+
+  const data = await getData(); // Load JSON first
 
   // ---------- CREATE SHINY ITEM ----------
   function createShinyItem(s) {
@@ -112,7 +113,7 @@ async function initShowcase() {
 
   // ---------- RENDER SHOWCASE ----------
   async function renderShowcase(filter = "") {
-    const data = await getData();
+    if (!showcaseContainer) return;
     showcaseContainer.textContent = "";
 
     const fragment = document.createDocumentFragment();
@@ -158,38 +159,21 @@ async function initShowcase() {
     setupInfoBoxFlip();
   }
 
-  // ---------- SEARCH ----------
-  if (searchInput) {
-    searchInput.addEventListener("input", e => renderShowcase(e.target.value));
-  }
-
   // ---------- PLAYER PAGE ----------
   async function loadPlayerPage(playerName) {
-    let showcase = document.getElementById("showcase");
+    if (!showcaseContainer) return;
 
-    // If #showcase doesn't exist (page reload or direct link)
-    if (!showcase) {
-      const res = await fetch("/pages/shiny-showcase.html");
-      if (!res.ok) {
-        pageContainer.innerHTML = `<div class="message">Error loading showcase page.</div>`;
-        return;
-      }
-      pageContainer.innerHTML = await res.text();
-      showcase = document.getElementById("showcase");
-    }
-
-    const data = await getData();
     document.body.classList.add("player-page-active");
 
     const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
     if (!realKey) {
-      showcase.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
+      showcaseContainer.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
       return;
     }
 
     const playerData = data[realKey];
 
-    showcase.innerHTML = `
+    showcaseContainer.innerHTML = `
       <div class="player-page">
         <button class="back-button">← Back to Showcase</button>
         <h1>${realKey}'s Shiny Collection ✨</h1>
@@ -199,13 +183,11 @@ async function initShowcase() {
     `;
 
     // Back button
-    showcase.querySelector(".back-button").addEventListener("click", () => {
+    showcaseContainer.querySelector(".back-button").addEventListener("click", () => {
       window.location.hash = "";
-      document.body.classList.remove("player-page-active");
-      renderShowcase();
     });
 
-    const shinyList = showcase.querySelector(".shiny-list");
+    const shinyList = showcaseContainer.querySelector(".shiny-list");
     Object.values(playerData.shinies).forEach(s => {
       const shiny = createShinyItem(s);
       shiny.classList.add("big-shiny-wrapper");
@@ -278,31 +260,20 @@ async function initShowcase() {
     if (isTouchDevice) document.addEventListener('click', hideAllInfoBoxes);
   }
 
-// ---------- HASH ROUTING ----------
-async function handleHash() {
-  const data = await getData(); // ensure JSON loaded first
-  const hash = window.location.hash.slice(1); // remove #
-  const showcase = document.getElementById("showcase");
+  // ---------- HASH HANDLING ----------
+  async function handleHash() {
+    const hash = window.location.hash.slice(1);
 
-  if (hash.startsWith("player/")) {
-    const playerName = hash.split("/")[1];
-    const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
-    if (realKey) {
-      await loadPlayerPage(realKey); // show player
-    } else if (showcase) {
-      showcase.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
+    if (hash.startsWith("player/")) {
+      const playerName = hash.split("/")[1];
+      await loadPlayerPage(playerName);
+    } else {
+      document.body.classList.remove("player-page-active");
+      renderShowcase();
     }
-  } else {
-    document.body.classList.remove("player-page-active");
-    renderShowcase();
   }
-}
 
-// Ensure JSON loads before handling hash
-getData().then(() => {
   window.addEventListener("hashchange", handleHash);
-  handleHash(); // initial page load
-});
 
   // ---------- PLAYER LINK CLICK NAV ----------
   document.addEventListener("click", e => {
@@ -314,8 +285,5 @@ getData().then(() => {
   });
 
   // ---------- INITIAL LOAD ----------
-  await getData();          // ensure JSON ready
-  window.addEventListener("hashchange", handleHash);
-  handleHash();             // initial page load
-} 
- 
+  handleHash();
+}
