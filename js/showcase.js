@@ -161,46 +161,74 @@ async function initShowcase() {
     setupInfoBoxFlip();
   }
 
-  // ---------- PLAYER PAGE ----------
-  window.renderPlayerPage = async function(playerName) {
-    const container = showcaseContainer();
-    if (!container) return;
 
-    const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
-    if (!realKey) {
-      container.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
-      return;
-    }
+window.renderPlayerPage = async function(playerName) {
+  const container = document.getElementById("showcase");
+  if (!container) return;
 
-    const playerData = data[realKey];
-    document.body.classList.add("player-page-active");
+  const data = await getData(); // make sure we have the JSON
 
-    container.innerHTML = `
-      <div class="player-page">
-        <button class="back-button">← Back to Showcase</button>
-        <h1>${realKey}'s Shiny Collection ✨</h1>
-        <p>Total Shinies: ${playerData.shiny_count}</p>
-        <div class="shiny-list large-shinies"></div>
-      </div>
-    `;
+  const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
+  if (!realKey) {
+    container.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
+    return;
+  }
 
-    container.querySelector(".back-button").addEventListener("click", () => {
-      window.location.hash = "";
-    });
+  const playerData = data[realKey];
+  document.body.classList.add("player-page-active");
 
-    const shinyList = container.querySelector(".shiny-list");
-    Object.values(playerData.shinies).forEach(s => {
+  container.innerHTML = `
+    <div class="player-page">
+      <button class="back-button">← Back to Showcase</button>
+      <h1>${realKey}'s Shiny Collection ✨</h1>
+      <p>Total Shinies: ${playerData.shiny_count}</p>
+      <div class="favourite-list"></div>
+      <div class="shiny-list large-shinies"></div>
+    </div>
+  `;
+
+  // Back button
+  container.querySelector(".back-button").addEventListener("click", () => {
+    window.location.hash = "";
+  });
+
+  const shinyList = container.querySelector(".shiny-list");
+  const favouriteList = container.querySelector(".favourite-list");
+
+  // Separate favourites and normal shinies
+  const shinies = Object.values(playerData.shinies);
+  const favourites = shinies.filter(s => s.Favourite?.toLowerCase() === "yes");
+  const normalShinies = shinies.filter(s => s.Favourite?.toLowerCase() !== "yes");
+
+  // Render favourites
+  if (favourites.length) {
+    favouriteList.innerHTML = `<h2 class="favourites-header">My Follower</h2>`;
+    favourites.forEach(s => {
       const shiny = createShinyItem(s);
-      shiny.classList.add("big-shiny-wrapper");
-      shinyList.appendChild(shiny);
-    });
+      shiny.classList.add("big-shiny-wrapper", "favourite-shiny"); // special class
 
-    setupInfoBoxFlip();
-  };
+      // Add a subtle sparkle behind the Pokémon
+      const sparkle = document.createElement("div");
+      sparkle.className = "favourite-sparkle";
+      shiny.querySelector(".gif-container").appendChild(sparkle);
+
+      favouriteList.appendChild(shiny);
+    });
+  }
+
+  // Render normal shinies
+  normalShinies.forEach(s => {
+    const shiny = createShinyItem(s);
+    shinyList.appendChild(shiny);
+  });
+
+  setupInfoBoxFlip();
+};
+
 
   // ---------- INFO BOX ----------
   function setupInfoBoxFlip() {
-    const spans = document.querySelectorAll('.shiny-list span');
+    const spans = document.querySelectorAll('.shiny-list span, .favourite-list span');
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     const hideAllInfoBoxes = () => {

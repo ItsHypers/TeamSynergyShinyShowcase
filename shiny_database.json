@@ -2302,8 +2302,8 @@
         "Reaction": "No",
         "MysteriousBall": "No",
         "Safari": "Yes",
-        "Favourite": "No",
-        "Reaction Link": ""
+        "Favourite": "Yes",
+        "Reaction Link": "https://www.youtube.com/watch?v=J-ohyXs9I3o"
       },
       "29": {
         "Pokemon": "wailord",
@@ -16046,50 +16046,6 @@
       },
       "2": {
         "Pokemon": "pidgey",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      }
-    }
-  },
-  "Vinndubs": {
-    "shiny_count": 3,
-    "shinies": {
-      "1": {
-        "Pokemon": "walrein",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "2": {
-        "Pokemon": "nidoking",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "3": {
-        "Pokemon": "smeargle",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
