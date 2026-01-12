@@ -263,12 +263,6 @@ h1:hover {
   opacity: 80%;
 }
 
-/* GIF itself maintains ratio */
-.shiny-gif {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
 
 /* Particle overlay */
 .particle-gif {
@@ -294,9 +288,24 @@ h1:hover {
 }
 
 .gif-container {
-  display: inline-block;
-  position: relative; /* optional, good for internal icons/particles */
+  display: flex;
+  align-items: center;   /* vertical center */
+  justify-content: center; /* horizontal center */
+  width: 80px;  /* fixed container size */
+  height: 80px; /* fixed container size */
+  position: relative; 
 }
+/* GIF itself maintains ratio */
+.shiny-gif {
+  max-width: 90%;
+  max-height: 90%;
+  width: auto;
+  height: auto;
+  display: block;
+  object-fit: contain;   /* <-- this ensures it scales correctly */
+}
+
+
 .info-box strong {
   display: block;
   margin-bottom: 6px;
@@ -655,7 +664,7 @@ body {
 
 .favourite-list {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 60px;
 }
 
 /* Make the span inline-block so they center correctly */
