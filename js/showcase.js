@@ -24,7 +24,7 @@ async function initShowcase() {
     }
   }
 
-  const data = await getData(); // Load JSON first
+  const data = await getData();
 
   // ---------- CREATE SHINY ITEM ----------
   function createShinyItem(s) {
@@ -273,8 +273,6 @@ async function initShowcase() {
     }
   }
 
-  window.addEventListener("hashchange", handleHash);
-
   // ---------- PLAYER LINK CLICK NAV ----------
   document.addEventListener("click", e => {
     const link = e.target.closest("a.player-link");
@@ -283,6 +281,9 @@ async function initShowcase() {
     const player = link.dataset.player;
     window.location.hash = `player/${player}`;
   });
+
+  // Expose handleHash globally so spa.js can call it
+  window.handleHash = handleHash;
 
   // ---------- INITIAL LOAD ----------
   handleHash();

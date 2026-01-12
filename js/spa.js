@@ -45,18 +45,26 @@ tabs.forEach(tab => {
     e.preventDefault();
     const tabName = tab.textContent.trim().toLowerCase().replace(/\s+/g, "-");
     window.location.hash = tabName;
-    loadPage(tabName);
   });
 });
 
-// SPA hash handling
-window.addEventListener("hashchange", () => {
-  const hash = window.location.hash.replace("#", "") || "shiny-showcase";
-  loadPage(hash);
-});
+// ---------- HASH HANDLING ----------
+async function handleHashChange() {
+  const hash = window.location.hash.replace("#", "");
+
+  if (hash.startsWith("player/")) {
+    // Player page handled by initShowcase
+    if (typeof initShowcase === "function") {
+      await initShowcase();       // ensure JSON is loaded
+      if (typeof handleHash === "function") await handleHash();
+    }
+  } else {
+    // Normal tabs
+    await loadPage(hash || "shiny-showcase");
+  }
+}
+
+window.addEventListener("hashchange", handleHashChange);
 
 // Initial load
-document.addEventListener("DOMContentLoaded", () => {
-  const initialPage = window.location.hash.replace("#", "") || "shiny-showcase";
-  loadPage(initialPage);
-});
+document.addEventListener("DOMContentLoaded", handleHashChange);
