@@ -2299,10 +2299,10 @@
         "Alpha": "No",
         "Sold": "Yes",
         "Event": "No",
-        "Reaction": "No",
+        "Reaction": "Yes",
         "MysteriousBall": "No",
         "Safari": "Yes",
-        "Favourite": "Yes",
+        "Favourite": "No",
         "Reaction Link": "https://www.youtube.com/watch?v=J-ohyXs9I3o"
       },
       "29": {
