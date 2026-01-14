@@ -3,7 +3,7 @@ async function initSHOTM(targetMonth, targetYear) {
   if (!container) return;
 
   const JSON_FILE = "./shiny_database.json";
-  const JSON_VERSION = "v17";
+  const JSON_VERSION = "v18";
   let cachedData = null;
 
   const TRAIT_POINTS = {
