@@ -10,21 +10,17 @@ function createShinyItem(s, points) {
     imgContainer.onclick = () => window.open(s["Reaction Link"], "_blank");
   }
 
-  // Add traits
   const traitChecks = {
     Alpha: ["alpha-pokemon", "glow-alphapokemon"],
     "Secret Shiny": ["glow-pokemon"],
     Favourite: ["favourite-pokemon"],
-    "Honey Tree": ["honey-tree", "glow-honeytree"],
   };
   for (const [key, classes] of Object.entries(traitChecks)) {
     if (s[key]?.toLowerCase() === "yes") imgContainer.classList.add(...classes);
   }
 
-  // Add icons
   const iconMap = {
     "Secret Shiny": ["/images/Shiny Showcase/secretshiny.png", "secret-icon"],
-    "Honey Tree": ["/images/Shiny Showcase/honey.png", "honey-icon"],
     Egg: ["/images/Shiny Showcase/egg.png", "egg-icon"],
     Safari: ["/images/Shiny Showcase/safari.png", "safari-icon"],
     Event: ["/images/Shiny Showcase/event.png", "event-icon"],
@@ -63,41 +59,15 @@ function createShinyItem(s, points) {
 
   imgContainer.append(img, particle);
 
-  // Info box
   const info = document.createElement("div");
   info.className = "info-box";
-
-  const traitLabels = {
-    "Secret Shiny": "Secret Shiny",
-    "Honey Tree": "Honey Tree",
-    "Legendary": "Legendary",
-    Egg: "Egg",
-    Alpha: "Alpha",
-    Sold: "Sold/Fled",
-    Event: "Event",
-    MysteriousBall: "Mysterious Ball",
-    Safari: "Safari",
-    Favourite: "Favourite",
-  };
-
-  const traits = Object.keys(traitLabels)
-    .filter((t) => s[t]?.toLowerCase() === "yes")
-    .map((t) => traitLabels[t]);
-
-  // Build HTML
-  let infoHTML = `<strong>${s.Pokemon}</strong>`;
-
-  if (points != null) {
-    infoHTML += `<br>Points: ${points}`;
-  }
-
-  if (traits.length) infoHTML += `<br>${traits.join("<br>")}`;
-
-  info.innerHTML = infoHTML;
-
+  // Show per-Pokémon points here
+  info.innerHTML = `<strong>${s.Pokemon}</strong> (${points} pts)`;
   span.append(imgContainer, info);
+
   return span;
 }
+
 /**
  * Sets up hover/click for all info boxes in shiny lists.
  * Now global so it can be reused in SHOTM.

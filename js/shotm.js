@@ -189,8 +189,10 @@ const data = await getData();
 
       // Pass points directly to each shiny
       info.shinies.forEach(s => {
-        shinyList.appendChild(createShinyItem(s, info.points));
+        const shinyPoints = calculateShinyPoints(s); // calculate points for this shiny
+        shinyList.appendChild(createShinyItem(s, shinyPoints)); // pass points
       });
+
 
       card.appendChild(shinyList);
       list.appendChild(card);
