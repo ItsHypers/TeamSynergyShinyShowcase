@@ -987,3 +987,102 @@ body {
   border-style: solid;
   border-color: rgba(50,50,50,0.95) transparent transparent transparent;
 }
+
+/* Trophy Page Styles */
+.trophy-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.trophy-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.large-trophy {
+  max-width: 80vw;  /* scales to 80% of viewport width */
+  max-height: 50vh; /* scales to half the viewport height */
+  width: auto;
+  height: auto;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.trophy-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+  color: #ffd700; /* golden text for trophy */
+  text-shadow: 1px 1px 4px black;
+}
+
+.trophy-players-list {
+  list-style: none;
+  padding: 0;
+  text-align: center;
+  font-size: 1.2rem;  /* increase if needed */
+  margin-top: 16px;
+  display: inline-block; /* so items don't stretch full width */
+}
+
+.trophy-players-list li {
+  margin: 4px 0;
+}
+
+.trophy-players-list a {
+  color: #b07fff; /* purple-ish text */
+  text-decoration: none; /* removes underline */
+  font-weight: 700;
+  font-size: 1.2rem;
+  font-family: 'Arial', sans-serif;
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000; /* black outline for readability */
+  cursor: pointer; /* makes it clear it's clickable */
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.trophy-players-list a:hover {
+  color: #d2a3ff; /* lighter purple on hover */
+  text-shadow:
+    -1px -1px 2px #000,
+     1px -1px 2px #000,
+    -1px  1px 2px #000,
+     1px  1px 2px #000,
+     0 0 5px #d2a3ff; /* subtle glow effect */
+}
+
+
+.trophy-players-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  justify-items: center;
+  padding: 0;
+}
+
+.back-button {
+  align-self: flex-start;
+  margin-bottom: 20px;
+  padding: 6px 12px;
+  font-size: 1rem;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background: #555;
+}

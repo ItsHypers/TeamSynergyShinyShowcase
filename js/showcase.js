@@ -133,7 +133,53 @@ function setupInfoBoxFlip() {
 
   if (isTouchDevice) document.addEventListener("click", hideAllInfoBoxes);
 }
+window.renderTrophyPage = async (trophyName) => {
+  console.log("Rendering trophy page for:", trophyName);
+  const container = document.getElementById("main-container");
+  if (!container) return;
 
+  try {
+    const res = await fetch("./json/trophies.json");
+    if (!res.ok) throw new Error("Failed to fetch trophies.json");
+    const { trophies, trophyAssignments } = await res.json();
+
+    const trophyKey = Object.keys(trophies).find(k => k.toLowerCase() === trophyName.toLowerCase());
+    if (!trophyKey) {
+      container.innerHTML = `<h2 style="color:white;">Trophy "${trophyName}" not found</h2>`;
+      return;
+    }
+
+    const trophyImg = trophies[trophyKey];
+    const players = trophyAssignments[trophyKey] || [];
+
+    container.innerHTML = `
+      <div class="trophy-page">
+        <button class="back-button">← Back to Showcase</button>
+        <div class="trophy-header">
+          <img src="${trophyImg}" alt="${trophyKey}" class="large-trophy">
+          <h1>${trophyKey}</h1>
+        </div>
+        <h2 style="color:white;margin-top:16px;">Players who have this trophy:</h2>
+        <ul class="trophy-players-list"></ul>
+      </div>
+    `;
+
+    const ul = container.querySelector(".trophy-players-list");
+    players.forEach(player => {
+      const li = document.createElement("li");
+      li.innerHTML = `<a href="#player/${player.toLowerCase()}">${player}</a>`;
+      ul.appendChild(li);
+    });
+
+    container.querySelector(".back-button").addEventListener("click", () => {
+      window.location.hash = "";
+    });
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = `<h2 style="color:white;">Error loading trophy page</h2>`;
+  }
+};
 async function initShowcase() {
     const trophies = {
   "Team Darkrai Shiny Wars Winner": "./images/trophy/darkrai_trophy.png",
@@ -344,7 +390,12 @@ function createTrophyShelf(playerName, trophies, trophyAssignments) {
         const remainingCount = assignedPlayers.length - MAX_VISIBLE;
         tooltipText += `${visiblePlayers} +${remainingCount} more`;
       }
+
       tooltip.innerHTML = tooltipText;
+      trophyImg.style.cursor = "pointer";
+      trophyImg.addEventListener("click", () => {
+        window.location.hash = `trophy/${encodeURIComponent(awardName.toLowerCase())}`;
+      });
 
       trophy.appendChild(trophyImg);
       trophy.appendChild(tooltip);
@@ -358,9 +409,14 @@ function createTrophyShelf(playerName, trophies, trophyAssignments) {
     sectionContainer.appendChild(shelfContainer);
     return sectionContainer;
   }
+  
 
   return null;
 }
+
+// Then call
+window.addEventListener("DOMContentLoaded", handleHashChange);
+
 
 
   renderShowcase();

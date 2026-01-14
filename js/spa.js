@@ -61,23 +61,32 @@ tabs.forEach((tab) => {
 
 async function handleHashChange() {
   const hash = window.location.hash.slice(1);
+  const pageContainer = document.getElementById("main-container");
+  if (!pageContainer) return;
 
   if (hash.startsWith("player/")) {
-    const playerName = hash.split("/")[1];
-
+    const playerName = decodeURIComponent(hash.split("/")[1]); // decode spaces
     if (!document.getElementById("showcase")) {
       const res = await fetch("/pages/shiny-showcase.html");
       pageContainer.innerHTML = await res.text();
       if (typeof initShowcase === "function") await initShowcase();
     }
-
     if (typeof window.renderPlayerPage === "function") {
       window.renderPlayerPage(playerName);
     }
-  } else {
+
+  } else if (hash.startsWith("trophy/")) {
+  const trophyName = decodeURIComponent(hash.split("/")[1]);
+  console.log(trophyName)
+  if (typeof window.renderTrophyPage === "function") {
+    window.renderTrophyPage(trophyName);
+  }
+}
+else {
     await loadPage(hash || "shiny-showcase");
   }
 }
+
 
 window.addEventListener("hashchange", handleHashChange);
 document.addEventListener("DOMContentLoaded", handleHashChange);
