@@ -8,8 +8,7 @@ async function initSHOTM(targetMonth, targetYear) {
 
   const TRAIT_POINTS = {
     Alpha: 50,
-    "Secret Shiny": 20,
-    Favourite: 10,
+    "Secret Shiny": 10,
     Egg: 5,
     Safari: 5,
     Event: 5,
@@ -56,43 +55,57 @@ async function initSHOTM(targetMonth, targetYear) {
     localStorage.setItem(`shotm-ranks-${month}-${year}`, JSON.stringify(ranks));
 
   const calculateShinyPoints = (shiny) => {
-    if (shiny.Sold?.toLowerCase() === "yes" || shiny.Flee?.toLowerCase() === "yes") return 0;
-    let total = 0;
-    const tier = getPokemonTier(shiny.Pokemon);
-    if (tier) total += tierPoints[tier] || 0;
-    for (const [trait, points] of Object.entries(TRAIT_POINTS)) {
-      if (shiny[trait]?.toLowerCase?.() === "yes") total += points;
+  if (shiny.Sold?.toLowerCase() === "yes" || shiny.Flee?.toLowerCase() === "yes") return 0;
+
+  let total = 0;
+  const tier = getPokemonTier(shiny.Pokemon);
+  if (tier) {
+    const tierPoint = tierPoints[tier] || 0;
+    total += tierPoint;
+  }
+
+  // Track which traits actually contributed
+  Object.entries(shiny).forEach(([key, value]) => {
+    if (!value) return;
+    if (TRAIT_POINTS[key] && value.toLowerCase() === "yes") {
+      total += TRAIT_POINTS[key];
     }
-    return total;
-  };
+  });
+
+  return total;
+};
+
 
   const getShinyHuntersOfMonth = (data, monthOverride, yearOverride) => {
-    const { month, year } = monthOverride && yearOverride
-      ? { month: monthOverride.toLowerCase(), year: String(yearOverride) }
-      : getCurrentMonthYear();
+  const { month, year } = monthOverride && yearOverride
+    ? { month: monthOverride.toLowerCase(), year: String(yearOverride) }
+    : getCurrentMonthYear();
 
-    const result = {};
-    const notFound = new Set();
+  const result = {};
+  const notFound = new Set();
 
-    Object.entries(data).forEach(([player, playerData]) => {
-      const monthShinies = Object.values(playerData.shinies).filter(s => {
-        const m = s.Month?.toLowerCase()?.trim();
-        const y = String(s.Year || "").trim();
-        return m === month && y === year;
-      });
-
-      if (!monthShinies.length) return;
-
-      const totalPoints = monthShinies.reduce((acc, s) => {
-        if (!getPokemonTier(s.Pokemon)) notFound.add(s.Pokemon);
-        return acc + calculateShinyPoints(s);
-      }, 0);
-
-      result[player] = { shinies: monthShinies, points: totalPoints };
+  Object.entries(data).forEach(([player, playerData]) => {
+    // Only shinies for this month/year
+    const monthShinies = Object.values(playerData.shinies).filter(s => {
+      const m = s.Month?.toLowerCase()?.trim();
+      const y = String(s.Year || "").trim();
+      return m === month && y === year;
     });
 
-    return { result, month, year, notFound };
-  };
+    if (!monthShinies.length) return;
+
+    let totalPoints = 0;
+    monthShinies.forEach(s => {
+      const points = calculateShinyPoints(s);
+      totalPoints += points;
+    });
+
+    result[player] = { shinies: monthShinies, points: totalPoints };
+  });
+
+  return { result, month, year, notFound };
+};
+
 
   const getAllTimeLeaderboard = (data) => {
     const allTime = {};

@@ -2239,7 +2239,7 @@
     }
   },
   "Hyper": {
-    "shiny_count": 34,
+    "shiny_count": 35,
     "shinies": {
       "1": {
         "Pokemon": "golem",
@@ -2464,7 +2464,8 @@
         "Favourite": "Yes",
         "Reaction Link": "https://www.youtube.com/watch?v=ioG31sUvLvc",
         "Honey Tree": "No",
-        "Legendary": "No"
+        "Legendary": "No",
+        "Month": "January"
       },
       "16": {
         "Pokemon": "persian",
