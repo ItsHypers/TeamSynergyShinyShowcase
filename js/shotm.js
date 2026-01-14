@@ -126,14 +126,12 @@ async function initSHOTM(targetMonth, targetYear) {
     <div class="alltime-container">
       <button class="alltime-toggle">All-Time Leaderboard ▼</button>
       <div class="alltime-list"></div>
+      <div class="points-container"></div>
     </div>
-
     <div class="shotm-page">
-      <button class="back-button">← Back to Showcase</button>
       <h1>Shiny Hunters of the Month</h1>
       <h2>${month.charAt(0).toUpperCase() + month.slice(1)} ${year}</h2>
       <div class="error-messages"></div>
-      <div class="points-container"></div>
       <div class="shotm-list"></div>
     </div>
   `;
@@ -142,8 +140,6 @@ async function initSHOTM(targetMonth, targetYear) {
     container.querySelector(".error-messages").textContent =
       `Pokémon not found in tiers: ${[...notFound].join(", ")}`;
   }
-
-  container.querySelector(".back-button").addEventListener("click", () => window.location.hash = "");
 
   const allTimeList = container.querySelector(".alltime-list");
   const allTimeData = getAllTimeLeaderboard(data);
