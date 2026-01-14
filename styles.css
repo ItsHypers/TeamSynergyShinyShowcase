@@ -33,6 +33,15 @@ li {
   padding: 0 20px;    
 }
 
+#main-container .shotm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;         
+  width: 100%;        
+  box-sizing: border-box;
+  padding: 0 20px;    
+}
+
 h1 {
   text-align: center;
   font-size: 2.5rem;
@@ -1108,10 +1117,12 @@ body {
 }
 
 .trophy-board-img {
-  width: 110px;
-  height: auto;
-  margin: 0 auto 12px;
+  width: 110px;        /* fixed width */
+  height: 110px;       /* fixed height */
+  object-fit: cover;   /* keeps aspect ratio, crops overflow */
+  object-position: center; /* center the image */
   display: block;
+  margin: 0 auto 12px;
   transition: transform 0.25s ease;
 }
 
