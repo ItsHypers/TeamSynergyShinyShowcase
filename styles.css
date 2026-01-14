@@ -85,7 +85,7 @@ h1:hover {
 
 @media (max-width: 900px) {
 
-  .secret-icon, .egg-icon, .reaction-icon, .safari-icon, .mysteriousball-gif {
+  .secret-icon, .egg-icon, .reaction-icon, .safari-icon, .mysteriousball-gif, .honey-icon {
     max-width: 10px;
     max-height: 10px;
   }
@@ -198,6 +198,7 @@ h1:hover {
     text-align: center;
 }
 
+
 .gif-container:hover {
   transform: scale(1.2);
   border-color: #4a90e2; 
@@ -219,6 +220,16 @@ h1:hover {
   height: 20px;
   pointer-events: none; 
   z-index: 5;          
+}
+
+.honey-icon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;      
+  height: 20px;
+  pointer-events: none; 
+  z-index: 5;             
 }
 
 .egg-icon {
@@ -378,7 +389,8 @@ h1:hover {
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 button.back-button {
-  display: inline-block;
+  display: block;       /* make it block to allow margin centering */
+  margin: 0 auto 20px;  /* center horizontally, add spacing below */
   padding: 10px 25px;
   border-radius: 25px;
   border: 2px solid #444;
@@ -391,6 +403,7 @@ button.back-button {
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   text-decoration: none;
 }
+
 
 button.back-button:hover {
   background: #2a2a2a;
@@ -675,4 +688,33 @@ body {
   display: block;
   position: relative;
   letter-spacing: 1px;
+}
+
+.rank-arrow {
+  display: inline-block;
+  width: 20px;  /* adjust size as needed */
+  height: 20px;
+  margin-left: 8px;
+  vertical-align: middle;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.rank-arrow.animate-up {
+  animation: bounceUp 1s ease forwards;
+}
+
+.rank-arrow.animate-down {
+  animation: bounceDown 1s ease forwards;
+}
+
+@keyframes bounceUp {
+  0% { transform: translateY(0); opacity: 0; }
+  50% { transform: translateY(-15px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes bounceDown {
+  0% { transform: translateY(0); opacity: 0; }
+  50% { transform: translateY(15px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
 }

@@ -1,10 +1,4 @@
-// ------------------ GLOBAL HELPERS ------------------
-
-/**
- * Creates a shiny Pokemon item element with GIF, icons, and info box.
- * Now global so it can be reused in SHOTM.
- */
-function createShinyItem(s) {
+function createShinyItem(s, points) {
   const span = document.createElement("span");
   const urlName = s.Pokemon.toLowerCase().replace(/[^a-z0-9-]/g, "-");
 
@@ -16,17 +10,21 @@ function createShinyItem(s) {
     imgContainer.onclick = () => window.open(s["Reaction Link"], "_blank");
   }
 
+  // Add traits
   const traitChecks = {
     Alpha: ["alpha-pokemon", "glow-alphapokemon"],
     "Secret Shiny": ["glow-pokemon"],
     Favourite: ["favourite-pokemon"],
+    "Honey Tree": ["honey-tree", "glow-honeytree"],
   };
   for (const [key, classes] of Object.entries(traitChecks)) {
     if (s[key]?.toLowerCase() === "yes") imgContainer.classList.add(...classes);
   }
 
+  // Add icons
   const iconMap = {
     "Secret Shiny": ["/images/Shiny Showcase/secretshiny.png", "secret-icon"],
+    "Honey Tree": ["/images/Shiny Showcase/honey.png", "honey-icon"],
     Egg: ["/images/Shiny Showcase/egg.png", "egg-icon"],
     Safari: ["/images/Shiny Showcase/safari.png", "safari-icon"],
     Event: ["/images/Shiny Showcase/event.png", "event-icon"],
@@ -65,11 +63,14 @@ function createShinyItem(s) {
 
   imgContainer.append(img, particle);
 
+  // Info box
   const info = document.createElement("div");
   info.className = "info-box";
 
   const traitLabels = {
     "Secret Shiny": "Secret Shiny",
+    "Honey Tree": "Honey Tree",
+    "Legendary": "Legendary",
     Egg: "Egg",
     Alpha: "Alpha",
     Sold: "Sold/Fled",
@@ -83,11 +84,20 @@ function createShinyItem(s) {
     .filter((t) => s[t]?.toLowerCase() === "yes")
     .map((t) => traitLabels[t]);
 
-  info.innerHTML = `<strong>${s.Pokemon}</strong><br>${traits.length ? traits.join("<br>") : "None"}`;
+  // Build HTML
+  let infoHTML = `<strong>${s.Pokemon}</strong>`;
+
+  if (points != null) {
+    infoHTML += `<br>Points: ${points}`;
+  }
+
+  if (traits.length) infoHTML += `<br>${traits.join("<br>")}`;
+
+  info.innerHTML = infoHTML;
+
   span.append(imgContainer, info);
   return span;
 }
-
 /**
  * Sets up hover/click for all info boxes in shiny lists.
  * Now global so it can be reused in SHOTM.
