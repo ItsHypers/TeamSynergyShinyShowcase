@@ -16,8 +16,7 @@ async function initSHOTM(targetMonth, targetYear) {
     Egg: 5,
     Safari: 5,
     Event: 5,
-    MysteriousBall: 5,
-    "Honey Tree": 5,
+    "Honey Tree": 5
   };
 
   // -----------------------------
