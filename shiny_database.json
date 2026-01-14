@@ -3729,7 +3729,7 @@
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
-        "Sold": "Yes",
+        "Sold": "No",
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
@@ -4834,7 +4834,7 @@
     }
   },
   "Tired": {
-    "shiny_count": 24,
+    "shiny_count": 25,
     "shinies": {
       "1": {
         "Pokemon": "primeape",
@@ -5160,11 +5160,24 @@
         "Safari": "No",
         "Favourite": "No",
         "Reaction Link": ""
+      },
+      "26": {
+        "Pokemon": "bellsprout",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "Yes",
+        "Favourite": "No",
+        "Reaction Link": ""
       }
     }
   },
   "Strength": {
-    "shiny_count": 25,
+    "shiny_count": 26,
     "shinies": {
       "1": {
         "Pokemon": "piloswine",
@@ -5493,6 +5506,19 @@
       },
       "26": {
         "Pokemon": "pelipper",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "27": {
+        "Pokemon": "hariyama",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -5954,7 +5980,7 @@
     }
   },
   "Minorinao": {
-    "shiny_count": 24,
+    "shiny_count": 25,
     "shinies": {
       "1": {
         "Pokemon": "altaria",
@@ -6257,6 +6283,19 @@
       },
       "24": {
         "Pokemon": "krabby",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "25": {
+        "Pokemon": "stunky",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -12092,7 +12131,7 @@
     }
   },
   "Pupsil": {
-    "shiny_count": 11,
+    "shiny_count": 13,
     "shinies": {
       "1": {
         "Pokemon": "mienfoo",
@@ -12226,6 +12265,32 @@
       },
       "11": {
         "Pokemon": "rattata",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "12": {
+        "Pokemon": "wurmple",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "13": {
+        "Pokemon": "combee",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -13247,7 +13312,7 @@
     }
   },
   "Tfastest": {
-    "shiny_count": 7,
+    "shiny_count": 8,
     "shinies": {
       "1": {
         "Pokemon": "graveler",
@@ -13329,6 +13394,19 @@
       },
       "7": {
         "Pokemon": "girafarig",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "8": {
+        "Pokemon": "dodrio",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -15513,7 +15591,7 @@
     }
   },
   "NuttyProfessor": {
-    "shiny_count": 22,
+    "shiny_count": 23,
     "shinies": {
       "1": {
         "Pokemon": "jigglypuff",
@@ -15790,6 +15868,19 @@
       },
       "22": {
         "Pokemon": "cherrim",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "23": {
+        "Pokemon": "pikachi",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -16223,7 +16314,7 @@
     }
   },
   "Lilohs": {
-    "shiny_count": 5,
+    "shiny_count": 6,
     "shinies": {
       "1": {
         "Pokemon": "jigglypuff",
@@ -16279,6 +16370,19 @@
       },
       "5": {
         "Pokemon": "marill",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "6": {
+        "Pokemon": "dustox",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -16947,7 +17051,7 @@
     }
   },
   "Gibbo": {
-    "shiny_count": 25,
+    "shiny_count": 26,
     "shinies": {
       "1": {
         "Pokemon": "bibarel",
@@ -17263,6 +17367,19 @@
       },
       "25": {
         "Pokemon": "cryogonal",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      },
+      "26": {
+        "Pokemon": "swinub",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -18095,6 +18212,24 @@
       },
       "10": {
         "Pokemon": "metagross",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": ""
+      }
+    }
+  },
+  "SadThomaz": {
+    "shiny_count": 1,
+    "shinies": {
+      "1": {
+        "Pokemon": "lairon",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
