@@ -541,6 +541,7 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 
+
 #top-nav ul {
   list-style: none;
   margin: 0;
@@ -548,7 +549,9 @@ body {
   display: flex;
   justify-content: center;
   gap: 30px;
+  flex-wrap: wrap; /* allow wrapping on small screens */
 }
+
 
 #top-nav li {
   color: #aaa;
@@ -558,7 +561,24 @@ body {
   border-radius: 6px;
   transition: all 0.2s ease;
 }
+@media (max-width: 600px) {
+  /* Shrink nav background padding on mobile */
+  #top-nav {
+    padding: 6px 0; /* smaller vertical padding */
+  }
 
+  /* Shrink spacing inside the list */
+  #top-nav ul {
+    padding: 5px 10px;  /* tighter padding */
+    gap: 15px;          /* reduce gap between links */
+  }
+
+  /* Shrink individual links slightly */
+  #top-nav li {
+    padding: 6px 10px;  /* smaller buttons */
+    font-size: 0.9rem;  /* optional: smaller text */
+  }
+}
 #top-nav li:hover {
   color: #4a90e2; 
   background: rgba(255,255,255,0.05);
