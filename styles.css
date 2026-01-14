@@ -1071,18 +1071,174 @@ body {
   padding: 0;
 }
 
-.back-button {
-  align-self: flex-start;
+
+
+.trophy-board-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 40px 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+.trophy-board-item {
+  width: 170px;
+  min-height: 200px;
+  background: rgba(20, 10, 40, 0.75);
+  border-radius: 16px;
+  padding: 16px 12px 20px;
+  text-align: center;
+  box-shadow: 0 0 14px rgba(155, 89, 182, 0.4);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0; /* prevents squishing */
+}
+
+.trophy-board-item:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 26px rgba(155, 89, 182, 0.9);
+  z-index: 5;
+}
+
+.trophy-board-img {
+  width: 110px;
+  height: auto;
+  margin: 0 auto 12px;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.trophy-board-item:hover .trophy-board-img {
+  transform: scale(1.08);
+}
+
+.trophy-board-label {
+  font-size: 0.95rem;
+  color: #c39bd3;
+  font-weight: bold;
+  text-shadow:
+    0 0 4px rgba(155, 89, 182, 0.8),
+    0 0 8px rgba(155, 89, 182, 0.5);
+  line-height: 1.25;
+}
+
+
+
+/* ===== TROPHY PAGE ===== */
+
+.trophy-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.trophy-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
   margin-bottom: 20px;
-  padding: 6px 12px;
+}
+
+.large-trophy {
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 12px rgba(155, 89, 182, 0.8));
+  animation: glowPulse 2.5s infinite alternate;
+}
+
+@keyframes glowPulse {
+  from {
+    filter: drop-shadow(0 0 8px rgba(155, 89, 182, 0.5));
+  }
+  to {
+    filter: drop-shadow(0 0 18px rgba(155, 89, 182, 1));
+  }
+}
+
+.trophy-header h1 {
+  font-size: 1.8rem;
+  color: #d2b4de;
+  text-shadow:
+    0 0 6px rgba(155, 89, 182, 0.9),
+    0 0 12px rgba(155, 89, 182, 0.6);
+}
+
+/* ===== PLAYERS LIST ===== */
+
+.trophy-players-list {
+  display: flex;             /* use flex for wrapping */
+  flex-wrap: wrap;           /* allow items to wrap to next row */
+  justify-content: center;   /* center items horizontally */
+  gap: 16px;                 /* space between items */
+  padding: 16px;
+  margin-top: 12px;
+
+  background: rgba(25, 15, 40, 0.85);
+  border-radius: 14px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+
+.trophy-players-list li {
+  list-style: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(60, 40, 90, 0.85);
+  text-align: center;
+  border-left: 4px solid #9b59b6;
+  transition: background 0.2s ease, transform 0.2s ease;
+  min-width: 140px;         /* ensures they don’t shrink too small */
+  max-width: 200px;         /* keeps them roughly square */
+}
+
+.trophy-players-list li:hover {
+  background: rgba(90, 60, 130, 0.95);
+  transform: scale(1.03);
+}
+
+.trophy-players-list a {
+  text-decoration: none;
+  color: #f2f2f2;
+  font-weight: 600;
   font-size: 1rem;
-  background: #333;
+  display: block;
+}
+
+.trophy-players-list a:hover {
+  color: #ffffff;
+}
+
+
+/* ===== BACK BUTTON ===== */
+
+.back-button {
+  background: linear-gradient(135deg, #5e3370, #9b59b6);
   color: white;
   border: none;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: bold;
   cursor: pointer;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(155, 89, 182, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .back-button:hover {
-  background: #555;
+  transform: scale(1.05);
+  box-shadow: 0 0 18px rgba(155, 89, 182, 0.9);
+}
+
+.back-button:active {
+  transform: scale(0.97);
 }

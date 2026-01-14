@@ -1,8 +1,12 @@
 {
   "trophies": {
-    "SHOTM November 2025": "./images/trophy/SHOTM_NOV_2025.png"
+    "SHOTM November 2025": "./images/trophy/SHOTM_NOV_2025.png",
+    "SHOTM December 2025": "./images/trophy/SHOTM_DEC_2025.png",
+    "Darkrai Vs Cresselia MVP": "./images/trophy/darkraivscresseliaMVP.png"
   },
   "trophyAssignments": {
-    "SHOTM November 2025": ["BaldBabyBat"]
+    "SHOTM November 2025": ["BaldBabyBat"],
+    "SHOTM December 2025": [ "Nausea"],
+    "Darkrai Vs Cresselia MVP": [ "MiroMMO"]
   }
 }
