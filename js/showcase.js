@@ -1,4 +1,5 @@
 function createShinyItem(s, points) {
+  
   const span = document.createElement("span");
   const urlName = s.Pokemon.toLowerCase().replace(/[^a-z0-9-]/g, "-");
 
@@ -134,6 +135,15 @@ function setupInfoBoxFlip() {
 }
 
 async function initShowcase() {
+    const trophies = {
+  "Team Darkrai Shiny Wars Winner": "./images/trophy/darkrai_trophy.png",
+  "SHOTM December 2025": "/images/trophies/mvp.png",
+  "SHOTM December 2025": "/images/trophies/eventchamp.png",
+  };
+
+  const trophyAssignments = {
+    "Team Darkrai Shiny Wars Winner": ["Blaziken","hyper","hyper","hyper","hyper","hyper","hyper"]
+  };
   const pageContainer = document.getElementById("main-container");
   const showcaseContainer = () => document.getElementById("showcase");
   const searchInput = document.getElementById("playerSearch");
@@ -202,57 +212,156 @@ async function initShowcase() {
   };
 
   window.renderPlayerPage = async (playerName) => {
-    const container = showcaseContainer();
-    if (!container) return;
+  const container = showcaseContainer();
+  if (!container) return;
 
-    const data = await getData();
-    const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
-    if (!realKey) {
-      container.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
-      return;
+  const data = await getData();
+  const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
+  if (!realKey) {
+    container.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
+    return;
+  }
+
+  const playerData = data[realKey];
+  document.body.classList.add("player-page-active");
+
+  container.innerHTML = `
+    <div class="player-page">
+      <button class="back-button">← Back to Showcase</button>
+      <h1>${realKey}'s Shiny Collection ✨</h1>
+      <p>Total Shinies: ${playerData.shiny_count}</p>
+      <div class="favourite-list"></div>
+      <div class="shiny-list large-shinies"></div>
+    </div>
+  `;
+
+  const shinyList = container.querySelector(".shiny-list");
+  const favouriteList = container.querySelector(".favourite-list");
+
+  container.querySelector(".back-button").addEventListener("click", () => window.location.hash = "");
+
+  const shinies = Object.values(playerData.shinies);
+  const favourites = shinies.filter(s => s.Favourite?.toLowerCase() === "yes");
+  const normalShinies = shinies.filter(s => s.Favourite?.toLowerCase() !== "yes");
+
+  if (favourites.length) {
+    favouriteList.innerHTML = `<h2 class="favourites-header">My Follower</h2>`;
+    favourites.forEach(s => {
+      const shiny = createShinyItem(s);
+      shiny.classList.add("big-shiny-wrapper", "favourite-shiny");
+
+      const sparkle = document.createElement("div");
+      sparkle.className = "favourite-sparkle";
+      shiny.querySelector(".gif-container").appendChild(sparkle);
+
+      favouriteList.appendChild(shiny);
+    });
+  }
+
+  normalShinies.forEach(s => shinyList.appendChild(createShinyItem(s)));
+  setupInfoBoxFlip();
+
+  // --- Fetch trophies.json and create trophy shelf ---
+  try {
+    const response = await fetch('./json/trophies.json');
+    if (!response.ok) throw new Error('Failed to load trophies.json');
+
+    const trophiesData = await response.json();
+    const { trophies, trophyAssignments } = trophiesData;
+
+    const trophyShelf = createTrophyShelf(realKey, trophies, trophyAssignments);
+    if (trophyShelf) container.querySelector(".player-page").appendChild(trophyShelf);
+  } catch (error) {
+    console.error('Error loading trophies:', error);
+  }
+};
+
+// --- Existing search input handler ---
+if (searchInput) searchInput.addEventListener("input", e => renderShowcase(e.target.value));
+
+// --- Trophy helper functions ---
+function createTrophyItem(playerName, trophies, trophyAssignments) {
+  const container = document.createElement("div");
+  container.className = "trophy-shelf";
+
+  Object.entries(trophies).forEach(([awardName, imgSrc]) => {
+    const assignedPlayers = trophyAssignments[awardName] || [];
+    if (assignedPlayers.map(p => p.toLowerCase()).includes(playerName.toLowerCase())) {
+      const trophy = document.createElement("img");
+      trophy.src = imgSrc;
+      trophy.alt = awardName;
+      trophy.title = awardName;
+      trophy.className = "player-trophy-item";
+      container.appendChild(trophy);
     }
+  });
 
-    const playerData = data[realKey];
-    document.body.classList.add("player-page-active");
+  return container;
+}
 
-    container.innerHTML = `
-      <div class="player-page">
-        <button class="back-button">← Back to Showcase</button>
-        <h1>${realKey}'s Shiny Collection ✨</h1>
-        <p>Total Shinies: ${playerData.shiny_count}</p>
-        <div class="favourite-list"></div>
-        <div class="shiny-list large-shinies"></div>
-      </div>
-    `;
+function createTrophyShelf(playerName, trophies, trophyAssignments) {
+  const sectionContainer = document.createElement("div");
+  sectionContainer.className = "player-trophy-section";
 
-    const shinyList = container.querySelector(".shiny-list");
-    const favouriteList = container.querySelector(".favourite-list");
+  const heading = document.createElement("h2");
+  heading.textContent = "Trophy Board";
+  heading.style.color = "#fff";
+  heading.style.textAlign = "center";
+  heading.style.marginBottom = "16px";
+  heading.style.fontFamily = "Arial, sans-serif";
+  heading.style.fontSize = "1.5rem";
 
-    container.querySelector(".back-button").addEventListener("click", () => window.location.hash = "");
+  const shelfContainer = document.createElement("div");
+  shelfContainer.className = "trophy-shelf-container";
 
-    const shinies = Object.values(playerData.shinies);
-    const favourites = shinies.filter(s => s.Favourite?.toLowerCase() === "yes");
-    const normalShinies = shinies.filter(s => s.Favourite?.toLowerCase() !== "yes");
+  const shelf = document.createElement("div");
+  shelf.className = "trophy-shelf";
 
-    if (favourites.length) {
-      favouriteList.innerHTML = `<h2 class="favourites-header">My Follower</h2>`;
-      favourites.forEach(s => {
-        const shiny = createShinyItem(s);
-        shiny.classList.add("big-shiny-wrapper", "favourite-shiny");
+  const normalizedPlayerName = playerName.trim().toLowerCase();
 
-        const sparkle = document.createElement("div");
-        sparkle.className = "favourite-sparkle";
-        shiny.querySelector(".gif-container").appendChild(sparkle);
+  Object.entries(trophies).forEach(([awardName, imgSrc]) => {
+    const assignedPlayers = trophyAssignments[awardName] || [];
+    const normalizedPlayers = assignedPlayers.map(p => p.trim().toLowerCase());
 
-        favouriteList.appendChild(shiny);
-      });
+    if (normalizedPlayers.includes(normalizedPlayerName)) {
+      const trophy = document.createElement("div");
+      trophy.className = "trophy-wrapper";
+
+      const trophyImg = document.createElement("img");
+      trophyImg.src = imgSrc;
+      trophyImg.alt = awardName;
+      trophyImg.className = "player-trophy-item";
+
+      const tooltip = document.createElement("div");
+      tooltip.className = "trophy-tooltip";
+
+      const MAX_VISIBLE = 5;
+      let tooltipText = `<strong>${awardName}</strong><br>Winners: `;
+      if (assignedPlayers.length <= MAX_VISIBLE) {
+        tooltipText += assignedPlayers.join(", ");
+      } else {
+        const visiblePlayers = assignedPlayers.slice(0, MAX_VISIBLE).join(", ");
+        const remainingCount = assignedPlayers.length - MAX_VISIBLE;
+        tooltipText += `${visiblePlayers} +${remainingCount} more`;
+      }
+      tooltip.innerHTML = tooltipText;
+
+      trophy.appendChild(trophyImg);
+      trophy.appendChild(tooltip);
+      shelf.appendChild(trophy);
     }
+  });
 
-    normalShinies.forEach(s => shinyList.appendChild(createShinyItem(s)));
-    setupInfoBoxFlip();
-  };
+  if (shelf.children.length > 0) {
+    shelfContainer.appendChild(shelf);
+    sectionContainer.appendChild(heading);
+    sectionContainer.appendChild(shelfContainer);
+    return sectionContainer;
+  }
 
-  if (searchInput) searchInput.addEventListener("input", e => renderShowcase(e.target.value));
+  return null;
+}
+
 
   renderShowcase();
 }
