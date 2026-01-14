@@ -6,9 +6,6 @@ async function initSHOTM(targetMonth, targetYear) {
   const JSON_VERSION = "v17";
   let cachedData = null;
 
-  // -----------------------------
-  // Configurable points
-  // -----------------------------
   const TRAIT_POINTS = {
     Alpha: 50,
     "Secret Shiny": 20,
@@ -19,10 +16,7 @@ async function initSHOTM(targetMonth, targetYear) {
     "Honey Tree": 5
   };
 
-  // -----------------------------
-  // Data fetching
-  // -----------------------------
-  async function getData() {
+  const getData = async () => {
     if (cachedData) return cachedData;
     try {
       const res = await fetch(`${JSON_FILE}?v=${JSON_VERSION}&t=${Date.now()}`, { cache: "no-store" });
@@ -33,65 +27,48 @@ async function initSHOTM(targetMonth, targetYear) {
       console.error("Error loading shiny_database.json:", err);
       return {};
     }
-  }
+  };
 
-  const tierPokemon = await fetch("./json/tier_pokemon.json").then(r => r.json());
-  const tierPoints = await fetch("./json/tier_points.json").then(r => r.json());
+  const [tierPokemon, tierPoints] = await Promise.all([
+    fetch("./json/tier_pokemon.json").then(r => r.json()),
+    fetch("./json/tier_points.json").then(r => r.json())
+  ]);
 
-  function getCurrentMonthYear() {
+  const getCurrentMonthYear = () => {
     const now = new Date();
     return {
       month: now.toLocaleString("default", { month: "long" }).toLowerCase(),
       year: String(now.getFullYear())
     };
-  }
+  };
 
-  function getPokemonTier(pokemonName) {
+  const getPokemonTier = (pokemonName) => {
+    const nameLower = pokemonName.toLowerCase();
     for (const [tier, names] of Object.entries(tierPokemon)) {
-      if (names.includes(pokemonName.toLowerCase())) return tier;
+      if (names.includes(nameLower)) return tier;
     }
     return null;
-  }
+  };
 
-  // -----------------------------
-  // Get previous/current ranks
-  // -----------------------------
-  function getPreviousRanks(month, year) {
-    const key = `shotm-ranks-${month}-${year}`;
-    return JSON.parse(localStorage.getItem(key) || "{}");
-  }
+  const getPreviousRanks = (month, year) =>
+    JSON.parse(localStorage.getItem(`shotm-ranks-${month}-${year}`) || "{}");
+  const saveCurrentRanks = (month, year, ranks) =>
+    localStorage.setItem(`shotm-ranks-${month}-${year}`, JSON.stringify(ranks));
 
-  function saveCurrentRanks(month, year, ranks) {
-    const key = `shotm-ranks-${month}-${year}`;
-    localStorage.setItem(key, JSON.stringify(ranks));
-  }
-
-  // -----------------------------
-  // Calculate total points for a shiny
-  // -----------------------------
-  function calculateShinyPoints(shiny) {
+  const calculateShinyPoints = (shiny) => {
+    if (shiny.Sold?.toLowerCase() === "yes" || shiny.Flee?.toLowerCase() === "yes") return 0;
     let total = 0;
-
-    // Add tier points
     const tier = getPokemonTier(shiny.Pokemon);
     if (tier) total += tierPoints[tier] || 0;
-
-    // Add trait points
     for (const [trait, points] of Object.entries(TRAIT_POINTS)) {
-      if (shiny[trait]?.toLowerCase?.() === "yes") {
-        total += points;
-      }
+      if (shiny[trait]?.toLowerCase?.() === "yes") total += points;
     }
-
     return total;
-  }
+  };
 
-  // -----------------------------
-  // Get Shiny Hunters of the Month
-  // -----------------------------
-  function getShinyHuntersOfMonth(data, targetMonth, targetYear) {
-    const { month, year } = targetMonth && targetYear
-      ? { month: targetMonth.toLowerCase(), year: String(targetYear) }
+  const getShinyHuntersOfMonth = (data, monthOverride, yearOverride) => {
+    const { month, year } = monthOverride && yearOverride
+      ? { month: monthOverride.toLowerCase(), year: String(yearOverride) }
       : getCurrentMonthYear();
 
     const result = {};
@@ -101,54 +78,112 @@ async function initSHOTM(targetMonth, targetYear) {
       const monthShinies = Object.values(playerData.shinies).filter(s => {
         const m = s.Month?.toLowerCase()?.trim();
         const y = String(s.Year || "").trim();
-        if (!m || !y) return false;
         return m === month && y === year;
       });
 
-      if (monthShinies.length) {
-        let totalPoints = 0;
-        monthShinies.forEach(s => {
-          const tier = getPokemonTier(s.Pokemon);
-          if (!tier) notFound.add(s.Pokemon);
+      if (!monthShinies.length) return;
 
-          totalPoints += calculateShinyPoints(s); // <-- updated points calculation
-        });
+      const totalPoints = monthShinies.reduce((acc, s) => {
+        if (!getPokemonTier(s.Pokemon)) notFound.add(s.Pokemon);
+        return acc + calculateShinyPoints(s);
+      }, 0);
 
-        result[player] = { shinies: monthShinies, points: totalPoints };
-      }
+      result[player] = { shinies: monthShinies, points: totalPoints };
     });
 
     return { result, month, year, notFound };
-  }
+  };
 
-  // -----------------------------
-  // Render leaderboard
-  // -----------------------------
-const data = await getData();
+  const getAllTimeLeaderboard = (data) => {
+    const allTime = {};
+    Object.entries(data).forEach(([player, playerData]) => {
+      allTime[player] = Object.values(playerData.shinies).reduce((acc, s) => acc + calculateShinyPoints(s), 0);
+    });
+
+    return Object.entries(allTime)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 20)
+      .map(([player, points], index) => ({ rank: index + 1, player, points }));
+  };
+
+  const data = await getData();
   const { result: shotmData, month, year, notFound } = getShinyHuntersOfMonth(data, targetMonth, targetYear);
 
   container.innerHTML = `
+    <div class="alltime-container">
+      <button class="alltime-toggle">All-Time Leaderboard ▼</button>
+      <div class="alltime-list"></div>
+    </div>
+
     <div class="shotm-page">
       <button class="back-button">← Back to Showcase</button>
       <h1>Shiny Hunters of the Month</h1>
       <h2>${month.charAt(0).toUpperCase() + month.slice(1)} ${year}</h2>
       <div class="error-messages"></div>
+      <div class="points-container"></div>
       <div class="shotm-list"></div>
     </div>
   `;
 
   if (notFound.size) {
-    container.querySelector(".error-messages").innerHTML =
-      `<p style="color:red;">Pokémon not found in tiers: ${[...notFound].join(", ")}</p>`;
+    container.querySelector(".error-messages").textContent =
+      `Pokémon not found in tiers: ${[...notFound].join(", ")}`;
   }
 
-  container.querySelector(".back-button").addEventListener("click", () => {
-    window.location.hash = "";
+  container.querySelector(".back-button").addEventListener("click", () => window.location.hash = "");
+
+  const allTimeList = container.querySelector(".alltime-list");
+  const allTimeData = getAllTimeLeaderboard(data);
+  const allTimeFragment = document.createDocumentFragment();
+
+  allTimeData.forEach(entry => {
+    const div = document.createElement("div");
+    const trophy = entry.rank === 1 ? "🥇" : entry.rank === 2 ? "🥈" : entry.rank === 3 ? "🥉" : "";
+    div.innerHTML = `${trophy} #${entry.rank} <a href="https://synergymmo.com/#player/${entry.player}" style="color:inherit; text-decoration:none;" target="_blank">${entry.player}</a> (${entry.points} pts)`;
+    allTimeFragment.appendChild(div);
+  });
+
+  allTimeList.appendChild(allTimeFragment);
+
+  container.querySelector(".alltime-toggle").addEventListener("click", (e) => {
+    allTimeList.classList.toggle("show");
+    e.target.textContent = allTimeList.classList.contains("show") ? "All-Time Leaderboard ▲" : "All-Time Leaderboard ▼";
+  });
+
+  const pointsWrapper = container.querySelector(".points-container");
+  const pointsToggle = document.createElement("button");
+  pointsToggle.className = "points-toggle";
+  pointsToggle.textContent = "How Points are Calculated ▼";
+  pointsWrapper.appendChild(pointsToggle);
+
+  const pointsContent = document.createElement("div");
+  pointsContent.className = "points-content"; 
+
+  pointsWrapper.appendChild(pointsContent);
+
+  Object.entries(tierPoints).forEach(([tier, pts]) => {
+    const div = document.createElement("div");
+    div.textContent = `${tier}: ${pts}`;
+    pointsContent.appendChild(div);
+  });
+
+  Object.entries(TRAIT_POINTS).forEach(([trait, pts]) => {
+    const div = document.createElement("div");
+    div.textContent = `${trait}: ${pts}`;
+    pointsContent.appendChild(div);
+  });
+
+  pointsToggle.addEventListener("click", () => {
+    pointsContent.classList.toggle("show");
+    pointsToggle.textContent = pointsContent.classList.contains("show") 
+      ? "How Points are Calculated ▲" 
+      : "How Points are Calculated ▼";
   });
 
   const list = container.querySelector(".shotm-list");
   const previousRanks = getPreviousRanks(month, year);
   const currentRanks = {};
+  const shotmFragment = document.createDocumentFragment();
 
   Object.entries(shotmData)
     .sort((a, b) => b[1].points - a[1].points)
@@ -160,44 +195,54 @@ const data = await getData();
 
       const trophy = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "";
 
-      // Rank arrows
       let arrowImg = null;
       if (previousRanks[player] !== undefined) {
+        arrowImg = document.createElement("img");
         if (index + 1 < previousRanks[player]) {
-          arrowImg = document.createElement("img");
           arrowImg.src = "/images/up_arrow.png";
           arrowImg.alt = "Moved Up";
           arrowImg.className = "rank-arrow animate-up";
         } else if (index + 1 > previousRanks[player]) {
-          arrowImg = document.createElement("img");
           arrowImg.src = "/images/down_arrow.png";
           arrowImg.alt = "Moved Down";
           arrowImg.className = "rank-arrow animate-down";
+        } else {
+          arrowImg = null;
         }
       }
 
       const header = document.createElement("h2");
       header.className = "player-name";
-      const textNode = document.createTextNode(`${trophy} ${player} (${info.points} pts) `);
-      header.appendChild(textNode);
+
+      const link = document.createElement("a");
+      link.href = `https://synergymmo.com/#player/${player}`;
+      link.textContent = player;
+      link.style.color = "inherit";
+      link.style.textDecoration = "none";
+      link.target = "_blank";
+
+      header.appendChild(document.createTextNode(`${trophy} `));
+      header.appendChild(link);
+      header.appendChild(document.createTextNode(` (${info.points} pts) `));
       if (arrowImg) header.appendChild(arrowImg);
+
       card.appendChild(header);
 
-      // Shiny list
       const shinyList = document.createElement("div");
       shinyList.className = "shiny-list";
 
-      // Pass points directly to each shiny
       info.shinies.forEach(s => {
-        const shinyPoints = calculateShinyPoints(s); // calculate points for this shiny
-        shinyList.appendChild(createShinyItem(s, shinyPoints)); // pass points
+        const shinyPoints = calculateShinyPoints(s);
+        if (shinyPoints > 0) shinyList.appendChild(createShinyItem(s, shinyPoints));
       });
 
-
       card.appendChild(shinyList);
-      list.appendChild(card);
+      shotmFragment.appendChild(card);
     });
+
+  list.appendChild(shotmFragment);
 
   saveCurrentRanks(month, year, currentRanks);
   setupInfoBoxFlip();
 }
+

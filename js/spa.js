@@ -39,12 +39,11 @@ async function loadPage(tabName) {
 
   pageContainer.innerHTML = await res.text();
 
-  // Call the global initSHOTM function
   if (typeof initSHOTM === "function") {
-    initSHOTM(); // default: current month
+    initSHOTM(); 
+
   }
 }
-
 
  else {
     pageContainer.innerHTML = `<div class="message">Page not found.</div>`;
@@ -82,3 +81,4 @@ async function handleHashChange() {
 
 window.addEventListener("hashchange", handleHashChange);
 document.addEventListener("DOMContentLoaded", handleHashChange);
+

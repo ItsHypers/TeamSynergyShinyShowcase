@@ -5,19 +5,15 @@ function createShinyItem(s, points) {
   const imgContainer = document.createElement("div");
   imgContainer.className = "gif-container";
 
-  if (s["Reaction Link"]) {
-    imgContainer.style.cursor = "pointer";
-    imgContainer.onclick = () => window.open(s["Reaction Link"], "_blank");
-  }
-
   const traitChecks = {
     Alpha: ["alpha-pokemon", "glow-alphapokemon"],
     "Secret Shiny": ["glow-pokemon"],
     Favourite: ["favourite-pokemon"],
   };
-  for (const [key, classes] of Object.entries(traitChecks)) {
+
+  Object.entries(traitChecks).forEach(([key, classes]) => {
     if (s[key]?.toLowerCase() === "yes") imgContainer.classList.add(...classes);
-  }
+  });
 
   const iconMap = {
     "Secret Shiny": ["/images/Shiny Showcase/secretshiny.png", "secret-icon"],
@@ -27,22 +23,24 @@ function createShinyItem(s, points) {
     MysteriousBall: ["/images/Shiny Showcase/mysteriousball.gif", "mysteriousball-gif"],
     Favourite: ["/images/Shiny Showcase/heart.png", "favourite-heart"],
   };
-  for (const [key, [src, cls]] of Object.entries(iconMap)) {
+
+  Object.entries(iconMap).forEach(([key, [src, cls]]) => {
     if (s[key]?.toLowerCase() === "yes") {
       const icon = document.createElement("img");
       icon.src = src;
       icon.className = cls;
       imgContainer.appendChild(icon);
     }
-  }
+  });
 
-  if (s["Reaction Link"]) {
+  const reactionUrl = s["Reaction Link"]?.trim();
+  if (reactionUrl) {
     const reactionIcon = document.createElement("img");
     reactionIcon.src = "/images/Shiny Showcase/reaction.png";
     reactionIcon.className = "reaction-icon";
     reactionIcon.onclick = (e) => {
       e.stopPropagation();
-      window.open(s["Reaction Link"], "_blank");
+      window.open(reactionUrl, "_blank");
     };
     imgContainer.appendChild(reactionIcon);
   }
@@ -61,29 +59,33 @@ function createShinyItem(s, points) {
 
   const info = document.createElement("div");
   info.className = "info-box";
-  // Show per-Pokémon points here
-  info.innerHTML = `<strong>${s.Pokemon}</strong> (${points} pts)`;
-  span.append(imgContainer, info);
 
+  let infoHTML = `<strong>${s.Pokemon}</strong>`;
+  if (points !== undefined) infoHTML += `<div style="font-size:0.85rem;">(${points} pts)</div>`;
+
+  const activeTraits = Object.keys(traitChecks).filter(t => s[t]?.toLowerCase() === "yes");
+  if (activeTraits.length) infoHTML += `<div style="font-size:0.85rem;margin-top:2px;">${activeTraits.join(", ")}</div>`;
+
+  if (reactionUrl) {
+    infoHTML += `<div style="margin-top:2px;font-size:0.85rem;"><a href="${reactionUrl}" target="_blank" style="color:#4a90e2;text-decoration:underline;">Reaction</a></div>`;
+  }
+
+  info.innerHTML = infoHTML;
+
+  span.append(imgContainer, info);
   return span;
 }
 
-/**
- * Sets up hover/click for all info boxes in shiny lists.
- * Now global so it can be reused in SHOTM.
- */
 function setupInfoBoxFlip() {
-  const spans = document.querySelectorAll(".shiny-list span, .favourite-list span");
+  const spans = Array.from(document.querySelectorAll(".shiny-list span, .favourite-list span"));
   const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
-  const hideAllInfoBoxes = () => {
-    spans.forEach((span) => {
-      const infoBox = span.querySelector(".info-box");
-      if (infoBox) infoBox.style.opacity = "0";
-    });
-  };
+  const hideAllInfoBoxes = () => spans.forEach(span => {
+    const infoBox = span.querySelector(".info-box");
+    if (infoBox) infoBox.style.opacity = "0";
+  });
 
-  spans.forEach((span) => {
+  spans.forEach(span => {
     const infoBox = span.querySelector(".info-box");
     if (!infoBox) return;
 
@@ -102,10 +104,7 @@ function setupInfoBoxFlip() {
       if (spanRect.right + boxWidth + 8 > viewportWidth) leftPos = -boxWidth - 8;
 
       if (isTouchDevice) {
-        if (spanRect.left + leftPos + boxWidth > viewportWidth) {
-          boxWidth = viewportWidth - spanRect.left - leftPos - 8;
-          infoBox.style.width = boxWidth + "px";
-        }
+        if (spanRect.left + leftPos + boxWidth > viewportWidth) boxWidth = viewportWidth - spanRect.left - leftPos - 8;
         if (spanRect.left + leftPos < 0) {
           boxWidth = boxWidth + (spanRect.left + leftPos);
           infoBox.style.width = Math.max(150, boxWidth) + "px";
@@ -120,7 +119,7 @@ function setupInfoBoxFlip() {
     };
 
     if (isTouchDevice) {
-      span.addEventListener("click", (e) => {
+      span.addEventListener("click", e => {
         e.stopPropagation();
         hideAllInfoBoxes();
         showInfoBox();
@@ -134,24 +133,20 @@ function setupInfoBoxFlip() {
   if (isTouchDevice) document.addEventListener("click", hideAllInfoBoxes);
 }
 
-// ------------------ INIT SHOWCASE ------------------
-
 async function initShowcase() {
   const pageContainer = document.getElementById("main-container");
   const showcaseContainer = () => document.getElementById("showcase");
   const searchInput = document.getElementById("playerSearch");
-
   if (!pageContainer) return;
 
   const JSON_FILE = "./shiny_database.json";
   const JSON_VERSION = "v17";
   let cachedData = null;
 
-  async function getData() {
+  const getData = async () => {
     if (cachedData) return cachedData;
     try {
-      const cacheBuster = Date.now();
-      const res = await fetch(`${JSON_FILE}?v=${JSON_VERSION}&t=${cacheBuster}`, { cache: "no-store" });
+      const res = await fetch(`${JSON_FILE}?v=${JSON_VERSION}&t=${Date.now()}`, { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to fetch JSON");
       cachedData = await res.json();
       return cachedData;
@@ -159,59 +154,55 @@ async function initShowcase() {
       console.error("Error loading shiny_database.json:", err);
       return {};
     }
-  }
+  };
 
   const data = await getData();
 
-  // ------------------ RENDER MAIN SHOWCASE ------------------
-  async function renderShowcase(filter = "") {
+  const renderShowcase = async (filter = "") => {
     const container = showcaseContainer();
     if (!container) return;
 
     container.textContent = "";
     const fragment = document.createDocumentFragment();
-    const sortedPlayers = Object.entries(data).sort((a, b) => b[1].shiny_count - a[1].shiny_count);
     const lowerFilter = filter.toLowerCase();
 
-    sortedPlayers.forEach(([player, playerData], index) => {
-      if (filter && !player.toLowerCase().includes(lowerFilter)) return;
+    Object.entries(data)
+      .sort((a, b) => b[1].shiny_count - a[1].shiny_count)
+      .forEach(([player, playerData], index) => {
+        if (filter && !player.toLowerCase().includes(lowerFilter)) return;
 
-      const card = document.createElement("div");
-      card.className = "player-card";
+        const card = document.createElement("div");
+        card.className = "player-card";
 
-      const playerClass = index < 5 ? "player-name top-player" : index < 20 ? "player-name high-player" : "player-name";
+        const playerClass = index < 5 ? "player-name top-player" : index < 20 ? "player-name high-player" : "player-name";
 
-      const trophyImg =
-        index === 0 ? '<img src="/images/Shiny Showcase/gold.png" class="player-trophy">' :
-        index === 1 ? '<img src="/images/Shiny Showcase/silver.png" class="player-trophy">' :
-        index === 2 ? '<img src="/images/Shiny Showcase/bronze.png" class="player-trophy">' : "";
+        const trophyImg =
+          index === 0 ? '<img src="/images/Shiny Showcase/gold.png" class="player-trophy">' :
+          index === 1 ? '<img src="/images/Shiny Showcase/silver.png" class="player-trophy">' :
+          index === 2 ? '<img src="/images/Shiny Showcase/bronze.png" class="player-trophy">' : "";
 
-      const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : "";
+        const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : "";
 
-      const playerLink = `
-        <a href="#player/${player.toLowerCase()}" 
-           class="${playerClass} player-link"
-           data-player="${player.toLowerCase()}">
-          #${index + 1} ${player} (${playerData.shiny_count})${sparkle} ${trophyImg}
-        </a>
-      `;
-      card.innerHTML = playerLink;
+        card.innerHTML = `
+          <a href="#player/${player.toLowerCase()}" class="${playerClass} player-link" data-player="${player.toLowerCase()}">
+            #${index + 1} ${player} (${playerData.shiny_count})${sparkle} ${trophyImg}
+          </a>
+        `;
 
-      const shinyList = document.createElement("div");
-      shinyList.className = "shiny-list";
-      Object.values(playerData.shinies).forEach((s) => shinyList.appendChild(createShinyItem(s)));
-      card.appendChild(shinyList);
+        const shinyList = document.createElement("div");
+        shinyList.className = "shiny-list";
+        Object.values(playerData.shinies).forEach(s => shinyList.appendChild(createShinyItem(s)));
+        card.appendChild(shinyList);
 
-      fragment.appendChild(card);
-    });
+        fragment.appendChild(card);
+      });
 
     container.appendChild(fragment);
     setupInfoBoxFlip();
-  }
+  };
 
-  // ------------------ PLAYER PAGE ------------------
-  window.renderPlayerPage = async function (playerName) {
-    const container = document.getElementById("showcase");
+  window.renderPlayerPage = async (playerName) => {
+    const container = showcaseContainer();
     if (!container) return;
 
     const data = await getData();
@@ -234,12 +225,10 @@ async function initShowcase() {
       </div>
     `;
 
-    container.querySelector(".back-button").addEventListener("click", () => {
-      window.location.hash = "";
-    });
-
     const shinyList = container.querySelector(".shiny-list");
     const favouriteList = container.querySelector(".favourite-list");
+
+    container.querySelector(".back-button").addEventListener("click", () => window.location.hash = "");
 
     const shinies = Object.values(playerData.shinies);
     const favourites = shinies.filter(s => s.Favourite?.toLowerCase() === "yes");
@@ -247,7 +236,7 @@ async function initShowcase() {
 
     if (favourites.length) {
       favouriteList.innerHTML = `<h2 class="favourites-header">My Follower</h2>`;
-      favourites.forEach((s) => {
+      favourites.forEach(s => {
         const shiny = createShinyItem(s);
         shiny.classList.add("big-shiny-wrapper", "favourite-shiny");
 
@@ -259,15 +248,12 @@ async function initShowcase() {
       });
     }
 
-    normalShinies.forEach((s) => shinyList.appendChild(createShinyItem(s)));
+    normalShinies.forEach(s => shinyList.appendChild(createShinyItem(s)));
     setupInfoBoxFlip();
   };
 
-  // ------------------ SEARCH ------------------
-  if (searchInput) {
-    searchInput.addEventListener("input", (e) => renderShowcase(e.target.value));
-  }
+  if (searchInput) searchInput.addEventListener("input", e => renderShowcase(e.target.value));
 
-  // ------------------ INITIAL RENDER ------------------
   renderShowcase();
 }
+
