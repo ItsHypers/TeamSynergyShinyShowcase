@@ -194,6 +194,10 @@ h1:hover {
   margin: 0;
 }
 
+.shotm-page h2 {
+    text-align: center;
+}
+
 .gif-container:hover {
   transform: scale(1.2);
   border-color: #4a90e2; 

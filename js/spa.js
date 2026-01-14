@@ -28,9 +28,25 @@ async function loadPage(tabName) {
         "<div class='message'>Page not found</div>");
     pageContainer.innerHTML = await res.text();
     if (typeof initEncounterCounter === "function") initEncounterCounter();
-  } else if (tabName === "shotm") {
-    pageContainer.innerHTML = `<div class="message">Shiny Hunter of the Month coming soon!</div>`;
-  } else {
+    } else if (tabName === "shotm") {
+  document.body.classList.remove("player-page-active");
+
+  const res = await fetch("/pages/SHOTM.html");
+  if (!res.ok) {
+    pageContainer.innerHTML = "<div class='message'>Page not found</div>";
+    return;
+  }
+
+  pageContainer.innerHTML = await res.text();
+
+  // Call the global initSHOTM function
+  if (typeof initSHOTM === "function") {
+    initSHOTM(); // default: current month
+  }
+}
+
+
+ else {
     pageContainer.innerHTML = `<div class="message">Page not found.</div>`;
   }
 

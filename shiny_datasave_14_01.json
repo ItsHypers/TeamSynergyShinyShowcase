@@ -15534,7 +15534,7 @@
     }
   },
   "Bacondonut": {
-    "shiny_count": 5,
+    "shiny_count": 4,
     "shinies": {
       "1": {
         "Pokemon": "rattata",
@@ -15577,21 +15577,6 @@
       },
       "4": {
         "Pokemon": "litwick",
-        "Secret Shiny": "No",
-        "Egg": "No",
-        "Alpha": "No",
-        "Sold": "No",
-        "Event": "No",
-        "Reaction": "No",
-        "MysteriousBall": "No",
-        "Safari": "No",
-        "Favourite": "No",
-        "Reaction Link": ""
-      },
-      "5": {
-        "Pokemon": "piloswine",
-        "Month": "January",
-        "Year": "2026",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
