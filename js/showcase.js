@@ -1,5 +1,4 @@
 function createShinyItem(s, points) {
-  
   const span = document.createElement("span");
   const urlName = s.Pokemon.toLowerCase().replace(/[^a-z0-9-]/g, "-");
 
@@ -21,7 +20,10 @@ function createShinyItem(s, points) {
     Egg: ["/images/Shiny Showcase/egg.png", "egg-icon"],
     Safari: ["/images/Shiny Showcase/safari.png", "safari-icon"],
     Event: ["/images/Shiny Showcase/event.png", "event-icon"],
-    MysteriousBall: ["/images/Shiny Showcase/mysteriousball.gif", "mysteriousball-gif"],
+    MysteriousBall: [
+      "/images/Shiny Showcase/mysteriousball.gif",
+      "mysteriousball-gif",
+    ],
     Favourite: ["/images/Shiny Showcase/heart.png", "favourite-heart"],
   };
 
@@ -62,10 +64,14 @@ function createShinyItem(s, points) {
   info.className = "info-box";
 
   let infoHTML = `<strong>${s.Pokemon}</strong>`;
-  if (points !== undefined) infoHTML += `<div style="font-size:0.85rem;">(${points} pts)</div>`;
+  if (points !== undefined)
+    infoHTML += `<div style="font-size:0.85rem;">(${points} pts)</div>`;
 
-  const activeTraits = Object.keys(traitChecks).filter(t => s[t]?.toLowerCase() === "yes");
-  if (activeTraits.length) infoHTML += `<div style="font-size:0.85rem;margin-top:2px;">${activeTraits.join(", ")}</div>`;
+  const activeTraits = Object.keys(traitChecks).filter(
+    (t) => s[t]?.toLowerCase() === "yes",
+  );
+  if (activeTraits.length)
+    infoHTML += `<div style="font-size:0.85rem;margin-top:2px;">${activeTraits.join(", ")}</div>`;
 
   if (reactionUrl) {
     infoHTML += `<div style="margin-top:2px;font-size:0.85rem;"><a href="${reactionUrl}" target="_blank" style="color:#4a90e2;text-decoration:underline;">Reaction</a></div>`;
@@ -78,15 +84,19 @@ function createShinyItem(s, points) {
 }
 
 function setupInfoBoxFlip() {
-  const spans = Array.from(document.querySelectorAll(".shiny-list span, .favourite-list span"));
-  const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  const spans = Array.from(
+    document.querySelectorAll(".shiny-list span, .favourite-list span"),
+  );
+  const isTouchDevice =
+    "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
-  const hideAllInfoBoxes = () => spans.forEach(span => {
-    const infoBox = span.querySelector(".info-box");
-    if (infoBox) infoBox.style.opacity = "0";
-  });
+  const hideAllInfoBoxes = () =>
+    spans.forEach((span) => {
+      const infoBox = span.querySelector(".info-box");
+      if (infoBox) infoBox.style.opacity = "0";
+    });
 
-  spans.forEach(span => {
+  spans.forEach((span) => {
     const infoBox = span.querySelector(".info-box");
     if (!infoBox) return;
 
@@ -102,10 +112,12 @@ function setupInfoBoxFlip() {
       let boxWidth = infoBox.offsetWidth;
       let leftPos = span.offsetWidth + 8;
 
-      if (spanRect.right + boxWidth + 8 > viewportWidth) leftPos = -boxWidth - 8;
+      if (spanRect.right + boxWidth + 8 > viewportWidth)
+        leftPos = -boxWidth - 8;
 
       if (isTouchDevice) {
-        if (spanRect.left + leftPos + boxWidth > viewportWidth) boxWidth = viewportWidth - spanRect.left - leftPos - 8;
+        if (spanRect.left + leftPos + boxWidth > viewportWidth)
+          boxWidth = viewportWidth - spanRect.left - leftPos - 8;
         if (spanRect.left + leftPos < 0) {
           boxWidth = boxWidth + (spanRect.left + leftPos);
           infoBox.style.width = Math.max(150, boxWidth) + "px";
@@ -120,7 +132,7 @@ function setupInfoBoxFlip() {
     };
 
     if (isTouchDevice) {
-      span.addEventListener("click", e => {
+      span.addEventListener("click", (e) => {
         e.stopPropagation();
         hideAllInfoBoxes();
         showInfoBox();
@@ -180,16 +192,23 @@ async function renderTrophyBoard() {
   }
 }
 
-
 async function initShowcase() {
-    const trophies = {
-  "Team Darkrai Shiny Wars Winner": "./images/trophy/darkrai_trophy.png",
-  "SHOTM December 2025": "/images/trophies/mvp.png",
-  "SHOTM December 2025": "/images/trophies/eventchamp.png",
+  const trophies = {
+    "Team Darkrai Shiny Wars Winner": "./images/trophy/darkrai_trophy.png",
+    "SHOTM December 2025": "/images/trophies/mvp.png",
+    "SHOTM December 2025": "/images/trophies/eventchamp.png",
   };
 
   const trophyAssignments = {
-    "Team Darkrai Shiny Wars Winner": ["Blaziken","hyper","hyper","hyper","hyper","hyper","hyper"]
+    "Team Darkrai Shiny Wars Winner": [
+      "Blaziken",
+      "hyper",
+      "hyper",
+      "hyper",
+      "hyper",
+      "hyper",
+      "hyper",
+    ],
   };
   const pageContainer = document.getElementById("main-container");
   const showcaseContainer = () => document.getElementById("showcase");
@@ -203,7 +222,10 @@ async function initShowcase() {
   const getData = async () => {
     if (cachedData) return cachedData;
     try {
-      const res = await fetch(`${JSON_FILE}?v=${JSON_VERSION}&t=${Date.now()}`, { cache: "no-store" });
+      const res = await fetch(
+        `${JSON_FILE}?v=${JSON_VERSION}&t=${Date.now()}`,
+        { cache: "no-store" },
+      );
       if (!res.ok) throw new Error("Failed to fetch JSON");
       cachedData = await res.json();
       return cachedData;
@@ -231,12 +253,21 @@ async function initShowcase() {
         const card = document.createElement("div");
         card.className = "player-card";
 
-        const playerClass = index < 5 ? "player-name top-player" : index < 20 ? "player-name high-player" : "player-name";
+        const playerClass =
+          index < 5
+            ? "player-name top-player"
+            : index < 20
+              ? "player-name high-player"
+              : "player-name";
 
         const trophyImg =
-          index === 0 ? '<img src="/images/Shiny Showcase/gold.png" class="player-trophy">' :
-          index === 1 ? '<img src="/images/Shiny Showcase/silver.png" class="player-trophy">' :
-          index === 2 ? '<img src="/images/Shiny Showcase/bronze.png" class="player-trophy">' : "";
+          index === 0
+            ? '<img src="/images/Shiny Showcase/gold.png" class="player-trophy">'
+            : index === 1
+              ? '<img src="/images/Shiny Showcase/silver.png" class="player-trophy">'
+              : index === 2
+                ? '<img src="/images/Shiny Showcase/bronze.png" class="player-trophy">'
+                : "";
 
         const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : "";
 
@@ -248,7 +279,9 @@ async function initShowcase() {
 
         const shinyList = document.createElement("div");
         shinyList.className = "shiny-list";
-        Object.values(playerData.shinies).forEach(s => shinyList.appendChild(createShinyItem(s)));
+        Object.values(playerData.shinies).forEach((s) =>
+          shinyList.appendChild(createShinyItem(s)),
+        );
         card.appendChild(shinyList);
 
         fragment.appendChild(card);
@@ -259,20 +292,22 @@ async function initShowcase() {
   };
 
   window.renderPlayerPage = async (playerName) => {
-  const container = showcaseContainer();
-  if (!container) return;
+    const container = showcaseContainer();
+    if (!container) return;
 
-  const data = await getData();
-  const realKey = Object.keys(data).find(k => k.toLowerCase() === playerName.toLowerCase());
-  if (!realKey) {
-    container.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
-    return;
-  }
+    const data = await getData();
+    const realKey = Object.keys(data).find(
+      (k) => k.toLowerCase() === playerName.toLowerCase(),
+    );
+    if (!realKey) {
+      container.innerHTML = `<h2 style="color:white;">Player "${playerName}" not found</h2>`;
+      return;
+    }
 
-  const playerData = data[realKey];
-  document.body.classList.add("player-page-active");
+    const playerData = data[realKey];
+    document.body.classList.add("player-page-active");
 
-  container.innerHTML = `
+    container.innerHTML = `
     <div class="player-page">
       <button class="back-button">← Back to Showcase</button>
       <h1>${realKey}'s Shiny Collection ✨</h1>
@@ -282,147 +317,161 @@ async function initShowcase() {
     </div>
   `;
 
-  const shinyList = container.querySelector(".shiny-list");
-  const favouriteList = container.querySelector(".favourite-list");
+    const shinyList = container.querySelector(".shiny-list");
+    const favouriteList = container.querySelector(".favourite-list");
 
-  container.querySelector(".back-button").addEventListener("click", () => window.location.hash = "");
+    container
+      .querySelector(".back-button")
+      .addEventListener("click", () => (window.location.hash = ""));
 
-  const shinies = Object.values(playerData.shinies);
-  const favourites = shinies.filter(s => s.Favourite?.toLowerCase() === "yes");
-  const normalShinies = shinies.filter(s => s.Favourite?.toLowerCase() !== "yes");
+    const shinies = Object.values(playerData.shinies);
+    const favourites = shinies.filter(
+      (s) => s.Favourite?.toLowerCase() === "yes",
+    );
+    const normalShinies = shinies.filter(
+      (s) => s.Favourite?.toLowerCase() !== "yes",
+    );
 
-  if (favourites.length) {
-    favouriteList.innerHTML = `<h2 class="favourites-header">My Follower</h2>`;
-    favourites.forEach(s => {
-      const shiny = createShinyItem(s);
-      shiny.classList.add("big-shiny-wrapper", "favourite-shiny");
+    if (favourites.length) {
+      favouriteList.innerHTML = `<h2 class="favourites-header">My Follower</h2>`;
+      favourites.forEach((s) => {
+        const shiny = createShinyItem(s);
+        shiny.classList.add("big-shiny-wrapper", "favourite-shiny");
 
-      const sparkle = document.createElement("div");
-      sparkle.className = "favourite-sparkle";
-      shiny.querySelector(".gif-container").appendChild(sparkle);
+        const sparkle = document.createElement("div");
+        sparkle.className = "favourite-sparkle";
+        shiny.querySelector(".gif-container").appendChild(sparkle);
 
-      favouriteList.appendChild(shiny);
-    });
-  }
-
-  normalShinies.forEach(s => shinyList.appendChild(createShinyItem(s)));
-  setupInfoBoxFlip();
-
-  // --- Fetch trophies.json and create trophy shelf ---
-  try {
-    const response = await fetch('./json/trophies.json');
-    if (!response.ok) throw new Error('Failed to load trophies.json');
-
-    const trophiesData = await response.json();
-    const { trophies, trophyAssignments } = trophiesData;
-
-    const trophyShelf = createTrophyShelf(realKey, trophies, trophyAssignments);
-    if (trophyShelf) container.querySelector(".player-page").appendChild(trophyShelf);
-  } catch (error) {
-    console.error('Error loading trophies:', error);
-  }
-};
-
-// --- Existing search input handler ---
-if (searchInput) searchInput.addEventListener("input", e => renderShowcase(e.target.value));
-
-// --- Trophy helper functions ---
-function createTrophyItem(playerName, trophies, trophyAssignments) {
-  const container = document.createElement("div");
-  container.className = "trophy-shelf";
-
-  Object.entries(trophies).forEach(([awardName, imgSrc]) => {
-    const assignedPlayers = trophyAssignments[awardName] || [];
-    if (assignedPlayers.map(p => p.toLowerCase()).includes(playerName.toLowerCase())) {
-      const trophy = document.createElement("img");
-      trophy.src = imgSrc;
-      trophy.alt = awardName;
-      trophy.title = awardName;
-      trophy.className = "player-trophy-item";
-      container.appendChild(trophy);
+        favouriteList.appendChild(shiny);
+      });
     }
-  });
 
-  return container;
-}
+    normalShinies.forEach((s) => shinyList.appendChild(createShinyItem(s)));
+    setupInfoBoxFlip();
 
-function createTrophyShelf(playerName, trophies, trophyAssignments) {
-  const sectionContainer = document.createElement("div");
-  sectionContainer.className = "player-trophy-section";
+    try {
+      const response = await fetch("./json/trophies.json");
+      if (!response.ok) throw new Error("Failed to load trophies.json");
 
-  const heading = document.createElement("h2");
-  heading.textContent = "Trophy Board";
-  heading.style.color = "#fff";
-  heading.style.textAlign = "center";
-  heading.style.marginBottom = "16px";
-  heading.style.fontFamily = "Arial, sans-serif";
-  heading.style.fontSize = "1.5rem";
+      const trophiesData = await response.json();
+      const { trophies, trophyAssignments } = trophiesData;
 
-  const shelfContainer = document.createElement("div");
-  shelfContainer.className = "trophy-shelf-container";
+      const trophyShelf = createTrophyShelf(
+        realKey,
+        trophies,
+        trophyAssignments,
+      );
+      if (trophyShelf)
+        container.querySelector(".player-page").appendChild(trophyShelf);
+    } catch (error) {
+      console.error("Error loading trophies:", error);
+    }
+  };
 
-  const shelf = document.createElement("div");
-  shelf.className = "trophy-shelf";
+  if (searchInput)
+    searchInput.addEventListener("input", (e) =>
+      renderShowcase(e.target.value),
+    );
 
-  const normalizedPlayerName = playerName.trim().toLowerCase();
+  function createTrophyItem(playerName, trophies, trophyAssignments) {
+    const container = document.createElement("div");
+    container.className = "trophy-shelf";
 
-  Object.entries(trophies).forEach(([awardName, imgSrc]) => {
-    const assignedPlayers = trophyAssignments[awardName] || [];
-    const normalizedPlayers = assignedPlayers.map(p => p.trim().toLowerCase());
-
-    if (normalizedPlayers.includes(normalizedPlayerName)) {
-      const trophy = document.createElement("div");
-      trophy.className = "trophy-wrapper";
-
-      const trophyImg = document.createElement("img");
-      trophyImg.src = imgSrc;
-      trophyImg.alt = awardName;
-      trophyImg.className = "player-trophy-item";
-
-      const tooltip = document.createElement("div");
-      tooltip.className = "trophy-tooltip";
-
-      const MAX_VISIBLE = 5;
-      let tooltipText = `<strong>${awardName}</strong><br>Winners: `;
-      if (assignedPlayers.length <= MAX_VISIBLE) {
-        tooltipText += assignedPlayers.join(", ");
-      } else {
-        const visiblePlayers = assignedPlayers.slice(0, MAX_VISIBLE).join(", ");
-        const remainingCount = assignedPlayers.length - MAX_VISIBLE;
-        tooltipText += `${visiblePlayers} +${remainingCount} more`;
+    Object.entries(trophies).forEach(([awardName, imgSrc]) => {
+      const assignedPlayers = trophyAssignments[awardName] || [];
+      if (
+        assignedPlayers
+          .map((p) => p.toLowerCase())
+          .includes(playerName.toLowerCase())
+      ) {
+        const trophy = document.createElement("img");
+        trophy.src = imgSrc;
+        trophy.alt = awardName;
+        trophy.title = awardName;
+        trophy.className = "player-trophy-item";
+        container.appendChild(trophy);
       }
-
-      tooltip.innerHTML = tooltipText;
-      trophyImg.style.cursor = "pointer";
-      trophyImg.addEventListener("click", () => {
-      // Save current page so trophy page knows where to go back to
-      sessionStorage.setItem("lastPageHash", window.location.hash || "#");
-
-      window.location.hash = `trophy/${encodeURIComponent(awardName.toLowerCase())}`;
     });
 
-
-      trophy.appendChild(trophyImg);
-      trophy.appendChild(tooltip);
-      shelf.appendChild(trophy);
-    }
-  });
-
-  if (shelf.children.length > 0) {
-    shelfContainer.appendChild(shelf);
-    sectionContainer.appendChild(heading);
-    sectionContainer.appendChild(shelfContainer);
-    return sectionContainer;
+    return container;
   }
-  
 
-  return null;
-}
+  function createTrophyShelf(playerName, trophies, trophyAssignments) {
+    const sectionContainer = document.createElement("div");
+    sectionContainer.className = "player-trophy-section";
 
-// Then call
-window.addEventListener("DOMContentLoaded", handleHashChange);
+    const heading = document.createElement("h2");
+    heading.textContent = "Trophy Board";
+    heading.style.color = "#fff";
+    heading.style.textAlign = "center";
+    heading.style.marginBottom = "16px";
+    heading.style.fontFamily = "Arial, sans-serif";
+    heading.style.fontSize = "1.5rem";
 
+    const shelfContainer = document.createElement("div");
+    shelfContainer.className = "trophy-shelf-container";
 
+    const shelf = document.createElement("div");
+    shelf.className = "trophy-shelf";
+
+    const normalizedPlayerName = playerName.trim().toLowerCase();
+
+    Object.entries(trophies).forEach(([awardName, imgSrc]) => {
+      const assignedPlayers = trophyAssignments[awardName] || [];
+      const normalizedPlayers = assignedPlayers.map((p) =>
+        p.trim().toLowerCase(),
+      );
+
+      if (normalizedPlayers.includes(normalizedPlayerName)) {
+        const trophy = document.createElement("div");
+        trophy.className = "trophy-wrapper";
+
+        const trophyImg = document.createElement("img");
+        trophyImg.src = imgSrc;
+        trophyImg.alt = awardName;
+        trophyImg.className = "player-trophy-item";
+
+        const tooltip = document.createElement("div");
+        tooltip.className = "trophy-tooltip";
+
+        const MAX_VISIBLE = 5;
+        let tooltipText = `<strong>${awardName}</strong><br>Winners: `;
+        if (assignedPlayers.length <= MAX_VISIBLE) {
+          tooltipText += assignedPlayers.join(", ");
+        } else {
+          const visiblePlayers = assignedPlayers
+            .slice(0, MAX_VISIBLE)
+            .join(", ");
+          const remainingCount = assignedPlayers.length - MAX_VISIBLE;
+          tooltipText += `${visiblePlayers} +${remainingCount} more`;
+        }
+
+        tooltip.innerHTML = tooltipText;
+        trophyImg.style.cursor = "pointer";
+        trophyImg.addEventListener("click", () => {
+
+          sessionStorage.setItem("lastPageHash", window.location.hash || "#");
+
+          window.location.hash = `trophy/${encodeURIComponent(awardName.toLowerCase())}`;
+        });
+
+        trophy.appendChild(trophyImg);
+        trophy.appendChild(tooltip);
+        shelf.appendChild(trophy);
+      }
+    });
+
+    if (shelf.children.length > 0) {
+      shelfContainer.appendChild(shelf);
+      sectionContainer.appendChild(heading);
+      sectionContainer.appendChild(shelfContainer);
+      return sectionContainer;
+    }
+
+    return null;
+  }
+
+  window.addEventListener("DOMContentLoaded", handleHashChange);
 
   renderShowcase();
 }

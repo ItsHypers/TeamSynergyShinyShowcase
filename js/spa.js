@@ -4,7 +4,7 @@ const tabs = nav.querySelectorAll("li");
 
 function setActiveTab(tabName) {
   const cleanName = tabName.replace(/^#/, "");
-  tabs.forEach(t => {
+  tabs.forEach((t) => {
     const name = t.textContent.trim().toLowerCase().replace(/\s+/g, "-");
     t.classList.toggle("active", name === cleanName);
   });
@@ -14,19 +14,30 @@ async function loadPage(tabName = "shiny-showcase") {
   document.body.classList.remove("player-page-active");
 
   const pageMap = {
-    "shiny-showcase": { path: "/pages/shiny-showcase.html", init: "initShowcase" },
-    "counter-generator": { path: "/pages/counter-generator.html", init: "initEncounterCounter" },
-    "random-pokemon-generator": { path: "/pages/random-pokemon-generator.html", init: "initRandomPokemon" },
-    "shotm": { path: "/pages/SHOTM.html", init: "initSHOTM" },
+    "shiny-showcase": {
+      path: "/pages/shiny-showcase.html",
+      init: "initShowcase",
+    },
+    "counter-generator": {
+      path: "/pages/counter-generator.html",
+      init: "initEncounterCounter",
+    },
+    "random-pokemon-generator": {
+      path: "/pages/random-pokemon-generator.html",
+      init: "initRandomPokemon",
+    },
+    shotm: { path: "/pages/SHOTM.html", init: "initSHOTM" },
     "trophy-board": { init: "initTrophyBoard" },
-    "trophies": { init: "initTrophyBoard" }
+    trophies: { init: "initTrophyBoard" },
   };
 
   const page = pageMap[tabName];
   if (page) {
     if (page.path) {
       const res = await fetch(page.path);
-      pageContainer.innerHTML = res.ok ? await res.text() : "<div class='message'>Page not found</div>";
+      pageContainer.innerHTML = res.ok
+        ? await res.text()
+        : "<div class='message'>Page not found</div>";
     }
     if (page.init && typeof window[page.init] === "function") {
       await window[page.init]();
@@ -38,7 +49,7 @@ async function loadPage(tabName = "shiny-showcase") {
   setActiveTab(tabName);
 }
 
-tabs.forEach(tab => {
+tabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     const tabName = tab.textContent.trim().toLowerCase().replace(/\s+/g, "-");
     window.location.hash = `#${tabName}`;
@@ -57,12 +68,14 @@ async function handleHashChange() {
       pageContainer.innerHTML = await res.text();
       if (typeof initShowcase === "function") await initShowcase();
     }
-    if (typeof window.renderPlayerPage === "function") window.renderPlayerPage(playerName);
+    if (typeof window.renderPlayerPage === "function")
+      window.renderPlayerPage(playerName);
     sessionStorage.setItem("lastPageHash", "#shiny-showcase");
   } else if (hash.startsWith("trophy/")) {
     const trophyName = decodeURIComponent(hash.split("/")[1]);
     const lastHash = sessionStorage.getItem("lastPageHash") || "#trophy-board";
-    if (typeof window.renderTrophyPage === "function") window.renderTrophyPage(trophyName, lastHash);
+    if (typeof window.renderTrophyPage === "function")
+      window.renderTrophyPage(trophyName, lastHash);
   } else if (hash === "trophy-board" || hash === "trophies") {
     if (typeof initTrophyBoard === "function") await initTrophyBoard();
   } else {
@@ -70,7 +83,8 @@ async function handleHashChange() {
   }
 
   setActiveTab(rawHash);
-  if (!hash.startsWith("player/") && !hash.startsWith("trophy/")) sessionStorage.setItem("lastPageHash", rawHash);
+  if (!hash.startsWith("player/") && !hash.startsWith("trophy/"))
+    sessionStorage.setItem("lastPageHash", rawHash);
 }
 
 window.addEventListener("hashchange", handleHashChange);

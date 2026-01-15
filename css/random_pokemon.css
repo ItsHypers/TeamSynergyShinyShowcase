@@ -1,7 +1,5 @@
-/* ===== RANDOM POKEMON GENERATOR ===== */
-
 .random-pokemon-page {
-  max-width: 95%; /* scale down on mobile */
+  max-width: 95%; 
   margin: 0 auto;
   padding: 20px 15px;
   text-align: center;
@@ -21,7 +19,6 @@
     0 0 12px rgba(155, 89, 182, 0.6);
 }
 
-/* Tabs */
 .tab-container {
   display: flex;
   justify-content: center;
@@ -51,7 +48,6 @@
   background: #7e4ca5;
 }
 
-/* Tier Filters */
 .tier-filters {
   margin-bottom: 20px;
   text-align: left;
@@ -79,7 +75,6 @@
   accent-color: #9b59b6;
 }
 
-/* Generate button */
 #generateBtn {
   margin: 15px 0;
   padding: 12px 28px;
@@ -105,7 +100,6 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.4);
 }
 
-/* Random result & log */
 .random-result,
 .previous-log {
   margin: 20px 0;
@@ -129,7 +123,6 @@
   gap: 8px;
 }
 
-/* Single Pokémon image */
 #randomPokemon img.pokemon-img {
   width: 60px;
   height: 60px;
@@ -139,7 +132,6 @@
   filter: drop-shadow(0 0 6px rgba(0,0,0,0.5));
 }
 
-/* ===== BINGO CARD ===== */
 .bingo-card {
   display: grid;
   gap: 4px;
@@ -175,7 +167,6 @@
   pointer-events: none;
 }
 
-/* Bingo overlay */
 #bingoOverlay {
   position: fixed;
   top: 0;
@@ -186,12 +177,11 @@
   justify-content: center;
   align-items: center;
   pointer-events: none;
-  z-index: 9999; /* always above everything */
+  z-index: 9999; 
   flex-direction: column;
-  background: rgba(0,0,0,0.15); /* optional: slight dark overlay behind fireworks */
+  background: rgba(0,0,0,0.15); 
 }
 
-/* Fireworks canvas full-screen */
 #fireworksCanvas {
   position: fixed;
   top: 0;
@@ -199,38 +189,35 @@
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 9998; /* just below the message */
+  z-index: 9998; 
 }
 
 .pokemon-img {
-  display: block;       /* makes the image behave like a block element */
-  margin: 0 auto;       /* centers it horizontally */
-  max-width: 100%;      /* ensures it doesn’t overflow container */
-  height: auto;         /* keeps aspect ratio */
+  display: block;       
+  margin: 0 auto;       
+  max-width: 100%;      
+  height: auto;         
 }
 
-/* Bingo message text */
 .bingo-message {
-  color: #ffffff; /* bright, legible */
+  color: #ffffff; 
   font-size: 3rem;
   text-align: center;
   text-shadow: 0 0 10px #df61ff, 0 0 20px rgb(0,0,0);
   animation: pop 0.6s ease forwards;
-  z-index: 10000; /* above everything */
+  z-index: 10000; 
   pointer-events: none;
 }
 
-/* Pop animation */
 @keyframes pop {
   0% { transform: scale(0.2); opacity: 0; }
   80% { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(1); }
 }
 
-/* Responsive adjustments for mobile */
 @media (max-width: 500px) {
   .bingo-message {
-    font-size: 2rem; /* smaller on mobile but still visible */
+    font-size: 2rem; 
   }
   #fireworksCanvas {
     width: 100vw;
@@ -238,8 +225,6 @@
   }
 }
 
-
-/* Bingo settings */
 #bingoSettings {
   display: block;
   margin: 15px auto;
@@ -274,13 +259,11 @@
   text-align: center;
 }
 
-/* Options style */
 #bingoSettings select option {
   background-color: #6c3483;
   color: #fff;
 }
 
-/* Responsive tweaks */
 @media (max-width: 500px) {
   .random-pokemon-page h1 {
     font-size: 1.5rem;
@@ -301,7 +284,7 @@
   }
 
   .bingo-cell {
-    width: auto; /* JS will calculate dynamic width */
+    width: auto; 
     height: auto;
   }
 
@@ -321,3 +304,4 @@
     font-size: 0.9rem;
   }
 }
+
