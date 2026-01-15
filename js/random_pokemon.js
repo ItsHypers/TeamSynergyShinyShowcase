@@ -22,7 +22,7 @@ async function initRandomPokemon() {
           Bingo Size:
           <select id="bingoSize">
             <option value="3">3x3</option>
-            <option value="4" >4x4</option>
+            <option value="4">4x4</option>
             <option value="5" selected>5x5</option>
             <option value="6">6x6</option>
             <option value="7">7x7</option>
@@ -47,9 +47,9 @@ async function initRandomPokemon() {
       <div class="bingo-card" id="bingoCard"></div>
 
       <div id="bingoOverlay" class="bingo-overlay" style="display:none;">
-      <div class="bingo-message"></div> <!-- empty -->
-      <canvas id="fireworksCanvas"></canvas>
-    </div>
+        <div class="bingo-message"></div>
+        <canvas id="fireworksCanvas"></canvas>
+      </div>
     </div>
   `;
 
@@ -60,6 +60,7 @@ async function initRandomPokemon() {
 
   const formatPokemonName = (name) =>
     name ? name.charAt(0).toUpperCase() + name.slice(1) : name;
+
   const getPokemonImageUrl = (name) => {
     let urlName = name
       .toLowerCase()
@@ -71,16 +72,11 @@ async function initRandomPokemon() {
     return `https://img.pokemondb.net/sprites/black-white/anim/shiny/${urlName}.gif`;
   };
 
-  const saveBingo = (data) =>
-    localStorage.setItem("bingoCard", JSON.stringify(data));
+  const saveBingo = (data) => localStorage.setItem("bingoCard", JSON.stringify(data));
   const loadBingo = () => {
     const saved = localStorage.getItem("bingoCard");
     if (!saved) return null;
-    try {
-      return JSON.parse(saved);
-    } catch (e) {
-      return null;
-    }
+    try { return JSON.parse(saved); } catch { return null; }
   };
 
   const getTierData = async () => {
@@ -121,50 +117,31 @@ async function initRandomPokemon() {
       wrapper.appendChild(label);
     });
   };
+
   const getEnabledTiers = () => {
-    const checkboxes = container.querySelectorAll(
-      "#tierCheckboxes input[type='checkbox']",
-    );
-    return Array.from(checkboxes)
-      .filter((cb) => cb.checked)
-      .map((cb) => cb.value);
+    const checkboxes = container.querySelectorAll("#tierCheckboxes input[type='checkbox']");
+    return Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
   };
-  const getRandomTierPokemon = (data, enabledTiers) => {
-    if (!enabledTiers.length) return null;
-    const tier = enabledTiers[Math.floor(Math.random() * enabledTiers.length)];
-    const list = data[tier];
-    if (!list || !list.length) return null;
-    const poke = list[Math.floor(Math.random() * list.length)];
+
+  const getRandomPokemon = (data, enabledTiers) => {
+    const allPokemon = enabledTiers.flatMap(tier => data[tier]);
+    if (!allPokemon.length) return null;
+    const poke = allPokemon[Math.floor(Math.random() * allPokemon.length)];
+    const tier = enabledTiers.find(t => data[t].includes(poke));
     return { tier, pokemon: poke };
   };
 
-  const rawData = await getTierData();
-  if (!rawData) return;
-  const normalizedTiers = normalizeTiers(rawData);
-  createTierFilters(normalizedTiers);
-
-  const generateBtn = container.querySelector("#generateBtn");
-  const tierSpan = container.querySelector("#randomTier");
-  const pokemonSpan = container.querySelector("#randomPokemon");
-  const previousList = container.querySelector("#previousPokemonList");
   const bingoCard = container.querySelector("#bingoCard");
   const bingoSettings = container.querySelector("#bingoSettings");
   const bingoSizeSelect = container.querySelector("#bingoSize");
-  const tabButtons = container.querySelectorAll(".tab-btn");
-  const randomResultDiv = container.querySelector(".random-result");
-  const logDiv = container.querySelector(".previous-log");
   const bingoOverlay = container.querySelector("#bingoOverlay");
-
-  const bingoMessages = ["", "1st Line!", "2nd Line!", "Full House!"];
+  const bingoMessages = ["", "1st Line!", "2nd Line!", "Bingo!!"];
 
   function renderBingoCard(card, size, completed) {
     bingoCard.innerHTML = "";
     bingoCard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
 
-    const containerWidth = Math.min(
-      bingoCard.clientWidth,
-      window.innerWidth - 40,
-    );
+    const containerWidth = Math.min(bingoCard.clientWidth, window.innerWidth - 40);
     const gap = 6;
     const cellSize = (containerWidth - gap * (size - 1)) / size;
 
@@ -182,7 +159,6 @@ async function initRandomPokemon() {
       img.style.width = `${cellSize * 0.875}px`;
       img.style.height = `${cellSize * 0.875}px`;
       div.appendChild(img);
-
       bingoCard.appendChild(div);
 
       div.addEventListener("click", () => {
@@ -191,7 +167,7 @@ async function initRandomPokemon() {
 
         if (div.classList.contains("completed")) {
           div.classList.remove("completed");
-          saved.completed = saved.completed.filter((i) => i !== idx);
+          saved.completed = saved.completed.filter(i => i !== idx);
         } else {
           div.classList.add("completed");
           saved.completed.push(idx);
@@ -215,14 +191,21 @@ async function initRandomPokemon() {
     });
   }
 
-  function showBingoOverlay(milestone) {
-    const overlay = document.getElementById("bingoOverlay");
-    const message = overlay.querySelector(".bingo-message");
-    message.textContent = ["", "1st Line!", "2nd Line!", "Full House!"][
-      milestone
-    ];
+  function checkBingo(completed, size) {
+    let lines = 0;
+    for (let r = 0; r < size; r++)
+      if ([...Array(size).keys()].every(c => completed.includes(r * size + c))) lines++;
+    for (let c = 0; c < size; c++)
+      if ([...Array(size).keys()].every(r => completed.includes(r * size + c))) lines++;
+    if ([...Array(size).keys()].every(i => completed.includes(i * size + i))) lines++;
+    if ([...Array(size).keys()].every(i => completed.includes(i * size + (size - 1 - i)))) lines++;
+    return lines;
+  }
 
-    overlay.style.display = "flex";
+  function showBingoOverlay(milestone) {
+    const message = bingoOverlay.querySelector(".bingo-message");
+    message.textContent = bingoMessages[milestone];
+    bingoOverlay.style.display = "flex";
 
     const canvas = document.getElementById("fireworksCanvas");
     canvas.width = window.innerWidth;
@@ -230,68 +213,26 @@ async function initRandomPokemon() {
 
     launchFireworks(canvas);
 
-    setTimeout(() => {
-      overlay.style.display = "none";
-    }, 4000);
-  }
-
-  const checkBingo = (completed, size) => {
-    let lines = 0;
-    for (let r = 0; r < size; r++)
-      if (
-        [...Array(size).keys()].every((c) => completed.includes(r * size + c))
-      )
-        lines++;
-    for (let c = 0; c < size; c++)
-      if (
-        [...Array(size).keys()].every((r) => completed.includes(r * size + c))
-      )
-        lines++;
-    if ([...Array(size).keys()].every((i) => completed.includes(i * size + i)))
-      lines++;
-    if (
-      [...Array(size).keys()].every((i) =>
-        completed.includes(i * size + (size - 1 - i)),
-      )
-    )
-      lines++;
-    return lines;
-  };
-
-  function triggerBingo() {
-    const canvas = document.getElementById("fireworksCanvas");
-
-    bingoOverlay.style.display = "flex";
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    launchFireworks();
+    setTimeout(() => { bingoOverlay.style.display = "none"; }, 4000);
   }
 
   function launchFireworks(canvas) {
     const ctx = canvas.getContext("2d");
-    const particles = [];
-    const numParticles = 150;
+    const particles = Array.from({ length: 150 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height * 0.5,
+      vx: (Math.random() - 0.5) * 2,
+      vy: Math.random() * -2 - 1,
+      radius: Math.random() * 3 + 2,
+      alpha: 1,
+      color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+      gravity: 0.03,
+    }));
 
-    for (let i = 0; i < numParticles; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height * 0.5,
-        vx: (Math.random() - 0.5) * 2,
-        vy: Math.random() * -2 - 1,
-        radius: Math.random() * 3 + 2,
-        alpha: 1,
-        color: `hsl(${Math.random() * 360}, 100%, 60%)`,
-        gravity: 0.03,
-      });
-    }
-
-    function animate() {
+    (function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       let active = false;
-
-      particles.forEach((p) => {
+      particles.forEach(p => {
         if (p.alpha <= 0) return;
         active = true;
         ctx.beginPath();
@@ -304,23 +245,32 @@ async function initRandomPokemon() {
         p.vy += p.gravity;
         p.alpha -= 0.003;
       });
-
       if (active) requestAnimationFrame(animate);
       else ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    animate();
+    })();
   }
 
-  tabButtons.forEach((btn) => {
+  const generateBtn = container.querySelector("#generateBtn");
+  const tierSpan = container.querySelector("#randomTier");
+  const pokemonSpan = container.querySelector("#randomPokemon");
+  const previousList = container.querySelector("#previousPokemonList");
+  const tabButtons = container.querySelectorAll(".tab-btn");
+  const randomResultDiv = container.querySelector(".random-result");
+  const logDiv = container.querySelector(".previous-log");
+
+  const rawData = await getTierData();
+  if (!rawData) return;
+  const normalizedTiers = normalizeTiers(rawData);
+  createTierFilters(normalizedTiers);
+
+  tabButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       if (currentTab === btn.dataset.tab) return;
-      tabButtons.forEach((b) => b.classList.remove("active"));
+      tabButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       currentTab = btn.dataset.tab;
 
       const title = container.querySelector("h1");
-
       if (currentTab === "single") {
         bingoSettings.style.display = "none";
         randomResultDiv.style.display = "block";
@@ -349,11 +299,10 @@ async function initRandomPokemon() {
     if (!enabledTiers.length) return;
 
     if (currentTab === "single") {
-      const result = getRandomTierPokemon(normalizedTiers, enabledTiers);
+      const result = getRandomPokemon(normalizedTiers, enabledTiers);
       if (!result) return;
 
       const tierNumber = result.tier.replace("Tier ", "");
-
       tierSpan.textContent = tierNumber;
       pokemonSpan.innerHTML = "";
 
@@ -371,12 +320,10 @@ async function initRandomPokemon() {
       img.className = "pokemon-img";
       pokemonSpan.appendChild(img);
 
-      history.unshift(
-        `${formatPokemonName(result.pokemon)} (Tier ${tierNumber})`,
-      );
+      history.unshift(`${formatPokemonName(result.pokemon)} (Tier ${tierNumber})`);
       if (history.length > 10) history.pop();
       previousList.innerHTML = "";
-      history.forEach((entry) => {
+      history.forEach(entry => {
         const li = document.createElement("li");
         li.textContent = entry;
         previousList.appendChild(li);
@@ -385,7 +332,7 @@ async function initRandomPokemon() {
 
     if (currentTab === "bingo") {
       const size = parseInt(bingoSizeSelect.value);
-      const allPokemon = enabledTiers.flatMap((t) => normalizedTiers[t]);
+      const allPokemon = enabledTiers.flatMap(t => normalizedTiers[t]);
       if (!allPokemon.length) return;
 
       const card = [];
@@ -406,15 +353,12 @@ async function initRandomPokemon() {
     randomResultDiv.style.display = "none";
     logDiv.style.display = "none";
     bingoCard.style.display = "grid";
-    renderBingoCard(
-      savedBingo.card,
-      savedBingo.size,
-      savedBingo.completed || [],
-    );
-    tabButtons.forEach((b) => b.classList.remove("active"));
+    renderBingoCard(savedBingo.card, savedBingo.size, savedBingo.completed || []);
+    tabButtons.forEach(b => b.classList.remove("active"));
     tabButtons[1].classList.add("active");
     currentTab = "bingo";
     container.querySelector("h1").textContent = "Random Bingo Card Generator";
   }
+
 }
 
