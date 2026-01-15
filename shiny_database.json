@@ -5984,7 +5984,7 @@
     }
   },
   "Strength": {
-    "shiny_count": 26,
+    "shiny_count": 29,
     "shinies": {
       "1": {
         "Pokemon": "piloswine",
@@ -6394,6 +6394,57 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "28": {
+        "Pokemon": "raticate",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
+      },
+      "29": {
+        "Pokemon": "golbat",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
+      },
+      "30": {
+        "Pokemon": "ditto",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
