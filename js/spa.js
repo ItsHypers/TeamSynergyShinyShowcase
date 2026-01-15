@@ -16,6 +16,7 @@ async function loadPage(tabName = "shiny-showcase") {
   const pageMap = {
     "shiny-showcase": { path: "/pages/shiny-showcase.html", init: "initShowcase" },
     "counter-generator": { path: "/pages/counter-generator.html", init: "initEncounterCounter" },
+    "random-pokemon-generator": { path: "/pages/random-pokemon-generator.html", init: "initRandomPokemon" },
     "shotm": { path: "/pages/SHOTM.html", init: "initSHOTM" },
     "trophy-board": { init: "initTrophyBoard" },
     "trophies": { init: "initTrophyBoard" }
