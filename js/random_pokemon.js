@@ -27,6 +27,9 @@ async function initRandomPokemon() {
             <option value="4" >4x4</option>
             <option value="5" selected>5x5</option>
             <option value="6">6x6</option>
+            <option value="7">7x7</option>
+            <option value="8">8x8</option>
+            <option value="9">9x9</option>
           </select>
         </label>
       </div>
