@@ -121,6 +121,12 @@ async function initRandomPokemon() {
         <canvas id="fireworksCanvas"></canvas>
       </div>
     </div>
+
+    <div id="warningPopup" class="warning-popup" style="display:none;">
+    <div class="popup-content">
+      ⚠️ Please select at least one mode (Shiny, Non-Shiny, Nature, or IV)!
+    </div>
+  </div>
   `;
 
   const enableShinyCheckbox = container.querySelector("#enableShiny");
@@ -562,12 +568,23 @@ async function initRandomPokemon() {
     const allowNature = container.querySelector("#allowNature").checked;
     const allowIV = container.querySelector("#allowIV").checked;
 
+    const warningPopup = container.querySelector("#warningPopup");
+
+    function showWarning(message) {
+      warningPopup.querySelector(".popup-content").textContent = message;
+      warningPopup.style.display = "block";
+
+      setTimeout(() => {
+        warningPopup.style.display = "none";
+      }, 3000); // hide after 3 seconds
+    }
+
+    // In your generateBtn click handler:
     if (!allowShiny && !allowNormal && !allowNature && !allowIV) {
-      alert(
-        "⚠️ Please select at least one mode (Shiny, Non-Shiny, Nature, or IV)!",
-      );
+      showWarning("⚠️ Please select at least one mode (Shiny, Non-Shiny, Nature, or IV)!");
       return;
     }
+
 
     if (currentTab === "single") {
       const modes = [];
