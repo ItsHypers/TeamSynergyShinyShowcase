@@ -540,7 +540,32 @@ body {
   z-index: 2;                          
   box-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
+.discord-link {
+  position: absolute;  
+  right: 20px;         
+  top: 50%;            
+  transform: translateY(-50%);
+  display: inline-block;
+  z-index: 5;           /* ensure it’s above everything else */
+}
 
+.discord-link img {
+  height: 42px;         
+  width: 42px;
+  display: block;
+  cursor: pointer;      
+  transition: transform 0.2s ease;
+}
+
+.discord-link:hover img {
+  transform: scale(1.1);
+}
+
+@media (max-width: 900px) {
+.discord-link img{
+  padding-top: 120px;
+}
+}
 #top-nav ul {
   list-style: none;
   margin: 0;
@@ -550,6 +575,7 @@ body {
   gap: 30px;
   flex-wrap: wrap; 
 }
+
 
 #top-nav li {
   color: #aaa;
