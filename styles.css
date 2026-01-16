@@ -981,12 +981,15 @@ body {
   word-break: break-word;  
 }
 
-.trophy-wrapper {
-  position: relative; 
-  display: inline-block;
-  max-width: 200px;
+.trophy-wrapper img {
+  width: 120%;    /* Make the image 20% bigger than its container */
+  height: auto;   /* Maintain aspect ratio */
+  max-width: 200px; /* Allow it to grow beyond default limits */
   max-height: 200px;
+  display: block; /* Remove inline spacing issues */
+  margin: 0 auto; /* Center it if needed */
 }
+
 .trophy-wrapper:hover .trophy-tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(-12px); 
