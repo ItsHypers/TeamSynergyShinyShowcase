@@ -8,6 +8,7 @@ const ODDS = {
   "Tier 6": 100,
 };
 
+
 async function initRandomPokemon() {
   let bingoMilestone = 0;
   const container = document.getElementById("showcase");
@@ -50,11 +51,13 @@ async function initRandomPokemon() {
         <button class="tab-btn" data-tab="bingo">Bingo Card</button>
       </div>
 
-      <div id="bingoExtraSettings">
-        <label><input type="checkbox" id="enableShiny" checked> Enable Shiny Pokémon</label><br>
+      <div id="bingocheckBoxes">
+          <label><input type="checkbox" id="enableShiny" checked> Enable Shiny Pokémon</label><br>
         <label><input type="checkbox" id="allowNormal"> Allow Non-Shiny Pokémon</label><br>
         <label><input type="checkbox" id="allowNature"> Allow Random Nature Tasks</label><br>
         <label><input type="checkbox" id="allowIV"> Allow Random IV Tasks</label>
+      </div>
+      <div id="bingoExtraSettings">
 
         <!-- Shiny Tier Filter -->
         <div class="tier-filters" id="shinyTierFilter" style="margin-top: 10px;">
@@ -136,46 +139,46 @@ async function initRandomPokemon() {
   const shinyTierFilterDiv = container.querySelector("#shinyTierFilter");
   const bingoModeSettingsDiv = container.querySelector("#bingoModeSettings");
 
-  function updateSettingsVisibility() {
-    if (currentTab !== "bingo") {
+function updateSettingsVisibility() {
+  const bingoCheckboxes = document.getElementById("bingocheckBoxes");
+  const bingoCard = document.getElementById(".bingo-card");
 
-      shinyTierFilterDiv.style.display = "block"; 
+  if (currentTab !== "bingo") {
+    // Single tab: hide bingo panels
+    if (bingoCheckboxes) bingoCheckboxes.style.display = "none";
+    if(bingoCard) bingoCard.style.display = "none";
+    if (bingoModeSettingsDiv) bingoModeSettingsDiv.style.display = "none";
+    return;
+  }
 
-      bingoModeSettingsDiv.style.display = "none";
-      return;
-    }
+  // Bingo tab: show bingo checkboxes
+  if (bingoCheckboxes) bingoCheckboxes.style.display = "block";
+  if(bingoCard) bingoCard.style.display = "block";
 
+  // Show Shiny Tier Filter only if Shiny is enabled
+  if (shinyTierFilterDiv)
     shinyTierFilterDiv.style.display = enableShinyCheckbox.checked
       ? "block"
       : "none";
 
-    const modes = [
-      {
-        cb: enableShinyCheckbox,
-        div: document.querySelector("#pctShiny").parentElement,
-      },
-      {
-        cb: allowNormalCheckbox,
-        div: document.querySelector("#pctNormal").parentElement,
-      },
-      {
-        cb: allowNatureCheckbox,
-        div: document.querySelector("#pctNature").parentElement,
-      },
-      {
-        cb: allowIVCheckbox,
-        div: document.querySelector("#pctIV").parentElement,
-      },
-    ];
+  // Show/hide the percentage inputs based on their respective checkboxes
+  const modes = [
+    { cb: enableShinyCheckbox, div: document.querySelector("#pctShiny").parentElement },
+    { cb: allowNormalCheckbox, div: document.querySelector("#pctNormal").parentElement },
+    { cb: allowNatureCheckbox, div: document.querySelector("#pctNature").parentElement },
+    { cb: allowIVCheckbox, div: document.querySelector("#pctIV").parentElement },
+  ];
 
-    modes.forEach((m) => {
-      m.div.style.display = m.cb.checked ? "block" : "none";
-    });
+  modes.forEach((m) => {
+    if (m.div) m.div.style.display = m.cb.checked ? "block" : "none";
+  });
 
-    const countChecked = modes.filter((m) => m.cb.checked).length;
-
+  // Show Bingo Mode Settings only if 2 or more modes are enabled
+  const countChecked = modes.filter((m) => m.cb.checked).length;
+  if (bingoModeSettingsDiv)
     bingoModeSettingsDiv.style.display = countChecked >= 2 ? "block" : "none";
-  }
+}
+
 
   [
     enableShinyCheckbox,
@@ -548,7 +551,7 @@ async function initRandomPokemon() {
     container.querySelector("#bingoModeSettings").style.display = display;
 
     const mainCheckboxes = container.querySelectorAll(
-      "#bingoExtraSettings > label",
+      "#bingocheckBoxes > label",
     );
     mainCheckboxes.forEach((cb) => {
       cb.style.display = show ? "block" : "none";
