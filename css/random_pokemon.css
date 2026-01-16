@@ -62,6 +62,65 @@
   color: #d2b4de;
   text-shadow: 0 0 6px rgba(155, 89, 182, 0.8);
 }
+#bingoModeSettings {
+  margin-top: 15px;
+  text-align: left;
+  display: inline-block;
+  background: rgba(60, 40, 90, 0.85);
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 0 6px rgba(155, 89, 182, 0.5);
+}
+
+#bingoModeSettings h4 {
+  margin: 0 0 8px;
+  color: #d2b4de;
+  text-shadow: 0 0 6px rgba(155, 89, 182, 0.8);
+  font-size: 1rem;
+}
+
+#bingoModeSettings p {
+  margin: 0 0 10px;
+  color: #f2f2f2;
+  font-size: 0.8rem;
+  text-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
+
+#bingoModeSettings label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #f2f2f2;
+  margin-bottom: 8px; 
+}
+
+#bingoModeSettings label:last-child {
+  margin-bottom: 0; 
+}
+
+#bingoModeSettings input[type="number"] {
+  width: 60px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(90, 60, 130, 0.8);
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  text-align: center;
+}
+#tierCheckboxes input[type="number"] {
+  width: 60px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(90, 60, 130, 0.8);
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  text-align: center;
+}
 
 #tierCheckboxes label {
   font-size: 1rem;
@@ -131,6 +190,12 @@
   display: block;
   filter: drop-shadow(0 0 6px rgba(0,0,0,0.5));
 }
+.pokemon-img,
+.bingo-img {
+  user-select: none;       
+  -webkit-user-drag: none; 
+  pointer-events: none;    
+}
 
 .bingo-card {
   display: grid;
@@ -150,9 +215,17 @@
 .bingo-cell {
   background: rgba(90, 60, 130, 0.85);
   border: 2px solid #9b59b6;
+
   display: flex;
+  flex-direction: column;     
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+
+  overflow: hidden;
+  padding: 4px;
+  box-sizing: border-box;
+  text-align: center;
+
   transition: transform 0.3s ease, background 0.3s ease;
 }
 
@@ -161,10 +234,19 @@
 }
 
 .bingo-img {
-  width: 90%;
-  height: 90%;
+  width: 100%;
+  max-height: 65%;           
   object-fit: contain;
   pointer-events: none;
+}
+.bingo-text {
+  color: #fff;
+  margin-top: 2px;
+  max-width: 100%;
+  word-wrap: break-word;
+  white-space: normal;
+  text-align: center;
+
 }
 
 #bingoOverlay {
@@ -281,11 +363,6 @@
 
   .bingo-card {
     gap: 3px;
-  }
-
-  .bingo-cell {
-    width: auto; 
-    height: auto;
   }
 
   .bingo-message {
