@@ -982,13 +982,13 @@ body {
 }
 
 .trophy-wrapper img {
-  width: 120%;    /* Make the image 20% bigger than its container */
-  height: auto;   /* Maintain aspect ratio */
-  max-width: 200px; /* Allow it to grow beyond default limits */
-  max-height: 200px;
-  display: block; /* Remove inline spacing issues */
-  margin: 0 auto; /* Center it if needed */
+  width: 150px;         /* fixed width */
+  height: 150px;        /* fixed height */
+  object-fit: contain;   /* keep aspect ratio, fit inside the box */
+  display: block;        /* remove inline spacing */
+  margin: 0 auto;        /* center inside wrapper */
 }
+
 
 .trophy-wrapper:hover .trophy-tooltip {
   opacity: 1;
