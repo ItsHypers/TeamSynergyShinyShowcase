@@ -1,5 +1,6 @@
 {
   "trophies": {
+    "Official Shiny Wars 2025": "./images/trophy/official_wars_2025.png",
     "SHOTM July 2025": "./images/trophy/SHOTM_JULY_2025.png",
     "SHOTM August 2025": "./images/trophy/SHOTM_AUG_2025.png",
     "SHOTM September 2025": "./images/trophy/SHOTM_SEPT_2025.png",
@@ -10,6 +11,7 @@
     "Darkrai Vs Cresselia Victors": "./images/trophy/darkrai_trophy.png"
   },
   "trophyAssignments": {
+    "Official Shiny Wars 2025": ["BaldBabyBat","Blaziken","Bloom","Chan","Deeb","Dracula","Ecstasick","Ezra","Hyper","Indica","ItsTurn","Mitchell","MrBanger","Myxtik","NxmDXCO","Pinguh","Saywhatpoke","stinky","strength","tired","torskin","TTVxleJesse","jeysonklm"],
     "SHOTM July 2025": ["Strength"],
     "SHOTM August 2025": [ "Torskin"],
     "SHOTM September 2025": ["Chan"],
