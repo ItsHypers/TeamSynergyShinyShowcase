@@ -21336,7 +21336,7 @@
     }
   },
   "Cozyhood": {
-    "shiny_count": 15,
+    "shiny_count": 16,
     "shinies": {
       "1": {
         "Pokemon": "tentacruel",
@@ -21570,7 +21570,7 @@
         "Event": "No",
         "Reaction": "No",
         "MysteriousBall": "No",
-        "Safari": "No",
+        "Safari": "Yes",
         "Favourite": "No",
         "Honey Tree": "No",
         "Legendary": "No",
@@ -21581,6 +21581,23 @@
         "Month": "",
         "Year": "",
         "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
+      },
+      "16": {
+        "Pokemon": "eevee",
+        "Month": "",
+        "Year": "",
+        "Secret Shiny": "Yes",
         "Egg": "No",
         "Alpha": "No",
         "Sold": "No",
