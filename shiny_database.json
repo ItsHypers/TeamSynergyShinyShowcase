@@ -21526,7 +21526,7 @@
         "Reaction Link": ""
       },
       "12": {
-        "Pokemon": "nidoran",
+        "Pokemon": "nidoran-m",
         "Month": "",
         "Year": "",
         "Secret Shiny": "No",
@@ -21599,7 +21599,7 @@
     "shiny_count": 1,
     "shinies": {
       "1": {
-        "Pokemon": "nidoran",
+        "Pokemon": "nidoran-m",
         "Month": "",
         "Year": "",
         "Secret Shiny": "No",
@@ -21638,7 +21638,7 @@
         "Reaction Link": ""
       },
       "2": {
-        "Pokemon": "cincinno",
+        "Pokemon": "Cinccino",
         "Month": "",
         "Year": "",
         "Secret Shiny": "No",
