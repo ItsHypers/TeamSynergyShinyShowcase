@@ -1664,7 +1664,7 @@
     }
   },
   "KaiDono": {
-    "shiny_count": 38,
+    "shiny_count": 40,
     "shinies": {
       "1": {
         "Pokemon": "quilava",
@@ -2235,6 +2235,40 @@
         "Reaction Link": "",
         "Honey Tree": "No",
         "Legendary": "No"
+      },
+      "39": {
+        "Pokemon": "sneasel",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
+      },
+      "40": {
+        "Pokemon": "geodude",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -2770,7 +2804,7 @@
     }
   },
   "TTVxleJesse": {
-    "shiny_count": 34,
+    "shiny_count": 35,
     "shinies": {
       "1": {
         "Pokemon": "gyarados",
@@ -3281,6 +3315,23 @@
         "Reaction Link": "https://www.youtube.com/watch?v=lj6pXVUFhMk",
         "Honey Tree": "No",
         "Legendary": "No"
+      },
+      "35": {
+        "Pokemon": "sceptile",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -3851,7 +3902,7 @@
     }
   },
   "Bloom": {
-    "shiny_count": 30,
+    "shiny_count": 31,
     "shinies": {
       "1": {
         "Pokemon": "lilligant",
@@ -4319,11 +4370,28 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "32": {
+        "Pokemon": "zigzagoon",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
   "RedWoodGamer": {
-    "shiny_count": 27,
+    "shiny_count": 28,
     "shinies": {
       "1": {
         "Pokemon": "emolga",
@@ -4729,6 +4797,23 @@
         "Reaction Link": "",
         "Honey Tree": "No",
         "Legendary": "No"
+      },
+      "28": {
+        "Pokemon": "wooper",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "Yes",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -5984,7 +6069,7 @@
     }
   },
   "Strength": {
-    "shiny_count": 29,
+    "shiny_count": 34,
     "shinies": {
       "1": {
         "Pokemon": "piloswine",
@@ -6431,6 +6516,40 @@
       },
       "30": {
         "Pokemon": "ditto",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
+      },
+      "31": {
+        "Pokemon": "duskull",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
+      },
+      "32": {
+        "Pokemon": "bronzong",
         "Month": "January",
         "Year": "2026",
         "Secret Shiny": "No",
@@ -7360,7 +7479,7 @@
     }
   },
   "Chan": {
-    "shiny_count": 22,
+    "shiny_count": 24,
     "shinies": {
       "1": {
         "Pokemon": "altaria",
@@ -7738,6 +7857,40 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "26": {
+        "Pokemon": "voltorb",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
+      },
+      "27": {
+        "Pokemon": "dodrio",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -8141,7 +8294,7 @@
     }
   },
   "Sheepienei": {
-    "shiny_count": 22,
+    "shiny_count": 23,
     "shinies": {
       "1": {
         "Pokemon": "politoed",
@@ -8474,6 +8627,23 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "23": {
+        "Pokemon": "psyduck",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -11677,7 +11847,7 @@
     }
   },
   "MrBanger": {
-    "shiny_count": 12,
+    "shiny_count": 13,
     "shinies": {
       "1": {
         "Pokemon": "muk",
@@ -11858,11 +12028,28 @@
         "Reaction Link": "",
         "Honey Tree": "No",
         "Legendary": "No"
+      },
+      "13": {
+        "Pokemon": "gloom",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
   "LostMonarch": {
-    "shiny_count": 13,
+    "shiny_count": 14,
     "shinies": {
       "1": {
         "Pokemon": "chandelure",
@@ -12058,6 +12245,23 @@
         "Reaction Link": "",
         "Honey Tree": "No",
         "Legendary": "No"
+      },
+      "14": {
+        "Pokemon": "buneary",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -12702,7 +12906,7 @@
     }
   },
   "GaryOwnes": {
-    "shiny_count": 13,
+    "shiny_count": 14,
     "shinies": {
       "1": {
         "Pokemon": "meowth",
@@ -12900,6 +13104,23 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "14": {
+        "Pokemon": "absol",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -14095,7 +14316,7 @@
     }
   },
   "Pupsil": {
-    "shiny_count": 14,
+    "shiny_count": 15,
     "shinies": {
       "1": {
         "Pokemon": "mienfoo",
@@ -14297,6 +14518,23 @@
         "Favourite": "No",
         "Reaction Link": "",
         "Legendary": "No"
+      },
+      "14": {
+        "Pokemon": "tynamo",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -14844,6 +15082,23 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "12": {
+        "Pokemon": "riolu",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "Yes",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -16227,7 +16482,7 @@
     }
   },
   "IAmTKTV": {
-    "shiny_count": 9,
+    "shiny_count": 10,
     "shinies": {
       "1": {
         "Pokemon": "tentacruel",
@@ -16367,6 +16622,23 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "10": {
+        "Pokemon": "smeargle",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -18020,7 +18292,7 @@
     }
   },
   "Bacondonut": {
-    "shiny_count": 5,
+    "shiny_count": 6,
     "shinies": {
       "1": {
         "Pokemon": "rattata",
@@ -18100,11 +18372,28 @@
         "Reaction Link": "",
         "Honey Tree": "No",
         "Legendary": "No"
+      },
+      "6": {
+        "Pokemon": "piloswine",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
   "NuttyProfessor": {
-    "shiny_count": 23,
+    "shiny_count": 24,
     "shinies": {
       "1": {
         "Pokemon": "jigglypuff",
@@ -18452,6 +18741,23 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "24": {
+        "Pokemon": "kadabra",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -18937,7 +19243,7 @@
     }
   },
   "Lilohs": {
-    "shiny_count": 6,
+    "shiny_count": 7,
     "shinies": {
       "1": {
         "Pokemon": "jigglypuff",
@@ -19032,6 +19338,23 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "7": {
+        "Pokemon": "raticate",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -19459,7 +19782,7 @@
     }
   },
   "Dammers": {
-    "shiny_count": 6,
+    "shiny_count": 8,
     "shinies": {
       "1": {
         "Pokemon": "gastly",
@@ -19558,6 +19881,40 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "7": {
+        "Pokemon": "koffing",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
+      },
+      "8": {
+        "Pokemon": "jigglypuff",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "Yes",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "Yes",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -20492,7 +20849,7 @@
     }
   },
   "ClutchTheGod": {
-    "shiny_count": 14,
+    "shiny_count": 15,
     "shinies": {
       "1": {
         "Pokemon": "horsea",
@@ -20703,6 +21060,23 @@
         "Reaction Link": "",
         "Honey Tree": "No",
         "Legendary": "No"
+      },
+      "15": {
+        "Pokemon": "onix",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -21187,7 +21561,7 @@
     }
   },
   "SadThomaz": {
-    "shiny_count": 1,
+    "shiny_count": 2,
     "shinies": {
       "1": {
         "Pokemon": "lairon",
@@ -21205,6 +21579,23 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "2": {
+        "Pokemon": "frillish",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   }
