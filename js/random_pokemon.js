@@ -664,16 +664,17 @@ function updateSettingsVisibility() {
     randomResultDiv.style.display = "none";
     logDiv.style.display = "none";
     bingoCard.style.display = "grid";
-    renderBingoCard(
-      savedBingo.card,
-      savedBingo.size,
-      savedBingo.completed || [],
-    );
+    renderBingoCard(savedBingo.card, savedBingo.size, savedBingo.completed || []);
+
     tabButtons.forEach((b) => b.classList.remove("active"));
     tabButtons[1].classList.add("active");
     currentTab = "bingo";
     container.querySelector("h1").textContent = "Random Bingo Card Generator";
+
+    // <-- ADD THIS
+    updateSettingsVisibility(); // ensures #bingocheckBoxes, filters, etc. are visible
   }
+
 
   function generateBingoEntry(pokemonName, mode) {
     const allowNormal = container.querySelector("#allowNormal").checked;
