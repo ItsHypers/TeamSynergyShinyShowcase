@@ -47,8 +47,8 @@ async function initRandomPokemon() {
       <h1>Random Pokémon Generator</h1>
 
       <div class="tab-container">
-        <button class="tab-btn active" data-tab="single">Random Pokémon</button>
-        <button class="tab-btn" data-tab="bingo">Bingo Card</button>
+        <button class="tab-btn" data-tab="single">Random Pokémon</button>
+        <button class="tab-btn active" data-tab="bingo">Bingo Card</button>
       </div>
 
       <div id="bingocheckBoxes">
@@ -187,7 +187,7 @@ function updateSettingsVisibility() {
     allowIVCheckbox,
   ].forEach((cb) => cb.addEventListener("change", updateSettingsVisibility));
 
-  let currentTab = "single";
+  let currentTab = "bingo";
   updateSettingsVisibility();
 
   const JSON_FILE = "./json/tier_pokemon.json";
