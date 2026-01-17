@@ -190,7 +190,7 @@ function updateSettingsVisibility() {
   let currentTab = "bingo";
   updateSettingsVisibility();
 
-  const JSON_FILE = "./json/tier_pokemon.json";
+  const JSON_FILE = "./json/randomizer_tiers.json";
   let tierData = null;
   let history = [];
 
