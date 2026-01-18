@@ -199,24 +199,13 @@ async function initShowcase() {
     "SHOTM December 2025": "/images/trophies/eventchamp.png",
   };
 
-  const trophyAssignments = {
-    "Team Darkrai Shiny Wars Winner": [
-      "Blaziken",
-      "hyper",
-      "hyper",
-      "hyper",
-      "hyper",
-      "hyper",
-      "hyper",
-    ],
-  };
   const pageContainer = document.getElementById("main-container");
   const showcaseContainer = () => document.getElementById("showcase");
   const searchInput = document.getElementById("playerSearch");
   if (!pageContainer) return;
 
   const JSON_FILE = "./shiny_database.json";
-  const JSON_VERSION = "v23";
+  const JSON_VERSION = "v24";
   let cachedData = null;
 
   const getData = async () => {
