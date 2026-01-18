@@ -18706,7 +18706,7 @@
     }
   },
   "Anvixiel": {
-    "shiny_count": 3,
+    "shiny_count": 4,
     "shinies": {
       "1": {
         "Pokemon": "vulpix",
@@ -18754,6 +18754,23 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "4": {
+        "Pokemon": "girafarig",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
