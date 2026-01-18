@@ -205,7 +205,7 @@ async function initShowcase() {
   if (!pageContainer) return;
 
   const JSON_FILE = "./shiny_database.json";
-  const JSON_VERSION = "v24";
+  const JSON_VERSION = "v25";
   let cachedData = null;
 
   const getData = async () => {
