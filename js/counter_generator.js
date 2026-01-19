@@ -2,7 +2,7 @@ function initEncounterCounter() {
   let frameFiles = [];
   window.extractedFrames = [];
 
-  const input = document.getElementById('zipFileInput'); // now used for GIF input
+  const input = document.getElementById('zipFileInput');
   const minimisedInput = document.getElementById('minimisedFile');
   const fileList = document.getElementById('fileList');
   const generateBtn = document.getElementById('generateZip');
@@ -183,9 +183,6 @@ function initEncounterCounter() {
   }
 
 
-  // ======================
-  // GENERATE FINAL ZIP
-  // ======================
   generateBtn.addEventListener('click', async () => {
     if (!frameFiles.length || !window.extractedFrames.length) return;
 
@@ -208,7 +205,6 @@ function initEncounterCounter() {
     const animPromises = [];
     let firstFileAdded = false;
 
-    // Add extracted PNG frames into the zip
     window.extractedFrames.forEach(frame => {
       const p = Promise.resolve().then(() => {
         animFolder.file(frame.name, frame.blob);
@@ -221,7 +217,6 @@ function initEncounterCounter() {
       animPromises.push(p);
     });
 
-    // Add minimised (unexpanded) image if present
     if (minimisedFile) {
       const unexpandedFolder = zip.folder(`${defaultFolder}/unexpanded`);
       unexpandedFolder.file(minimisedFile.name, minimisedFile);

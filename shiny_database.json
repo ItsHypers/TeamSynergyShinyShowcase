@@ -907,7 +907,7 @@
     }
   },
   "BaldBabyBat": {
-    "shiny_count": 50,
+    "shiny_count": 51,
     "shinies": {
       "1": {
         "Pokemon": "gothita",
@@ -1660,6 +1660,23 @@
         "Legendary": "No",
         "Month": "January",
         "Year": "2026"
+      },
+      "51": {
+        "Pokemon": "oddish",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -8983,7 +9000,7 @@
     }
   },
   "Deeb": {
-    "shiny_count": 20,
+    "shiny_count": 21,
     "shinies": {
       "1": {
         "Pokemon": "marowak",
@@ -9284,6 +9301,23 @@
         "Reaction Link": "",
         "Honey Tree": "No",
         "Legendary": "No"
+      },
+      "21": {
+        "Pokemon": "mightyena",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
       }
     }
   },
@@ -22223,7 +22257,7 @@
     }
   },
   "Demon": {
-    "shiny_count": 10,
+    "shiny_count": 11,
     "shinies": {
       "1": {
         "Pokemon": "gyarados",
@@ -22390,6 +22424,23 @@
         "Reaction": "No",
         "MysteriousBall": "No",
         "Safari": "No",
+        "Favourite": "No",
+        "Honey Tree": "No",
+        "Legendary": "No",
+        "Reaction Link": ""
+      },
+      "11": {
+        "Pokemon": "bibarel",
+        "Month": "January",
+        "Year": "2026",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "Yes",
         "Favourite": "No",
         "Honey Tree": "No",
         "Legendary": "No",
