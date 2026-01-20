@@ -401,4 +401,105 @@
   0% { opacity: 0; transform: translate(-50%, -20px); }
   100% { opacity: 1; transform: translate(-50%, 0); }
 }
+/* --- Tab Buttons --- */
+.tab-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #5e3c85, #7d4fa3);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  transition: all 0.3s ease;
+}
 
+.tab-btn:hover {
+  background: linear-gradient(135deg, #7e4ca5, #a66fcf);
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #9b59b6, #b870d1);
+  box-shadow: 0 0 16px rgba(155, 89, 182, 0.8);
+  transform: scale(1.08);
+}
+
+/* --- Generate Button --- */
+#generateBtn {
+  margin: 18px 0;
+  padding: 14px 32px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s ease;
+}
+
+#generateBtn:hover {
+  transform: scale(1.06);
+  background: linear-gradient(135deg, #b870d1, #a64bc1);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.55);
+}
+
+#generateBtn:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.45);
+}
+
+/* --- Load Shinies Button --- */
+#loadShiniesBtn {
+  margin-left: 8px;
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #5e3c85, #7d4fa3);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: all 0.3s ease;
+}
+
+#loadShiniesBtn:hover {
+  background: linear-gradient(135deg, #7e4ca5, #a66fcf);
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+}
+
+#loadShiniesBtn:active {
+  transform: scale(0.97);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+}
+
+/* --- Input Text Fields (Username) --- */
+#usernameInput {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(90, 60, 130, 0.85);
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  width: 160px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+#usernameInput:focus {
+  outline: none;
+  background: rgba(110, 80, 150, 0.9);
+  box-shadow: 0 0 10px rgba(155, 89, 182, 0.7);
+}
+
+/* --- General Button Hover Effects --- */
+button {
+  user-select: none;
+}
