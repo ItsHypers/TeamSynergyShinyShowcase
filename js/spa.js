@@ -26,6 +26,10 @@ async function loadPage(tabName = "shiny-showcase") {
       path: "/pages/random-pokemon-generator.html",
       init: "initRandomPokemon",
     },
+    "pokedex": {
+      path: "/pages/pokedex.html",
+      init: "initPokeDex",
+    },
     shotm: { path: "/pages/SHOTM.html", init: "initSHOTM" },
     "trophy-board": { init: "initTrophyBoard" },
     trophies: { init: "initTrophyBoard" },
