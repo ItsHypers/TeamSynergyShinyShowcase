@@ -17,6 +17,7 @@ async function initRandomPokemon() {
 
   // --- Globals ---
   let shinyData = null;
+
   let userShinies = [];
   let tierData = null;
   let history = [];

@@ -9,55 +9,44 @@ function initEncounterCounter() {
   const zipNameInput = document.getElementById('zipName');
   const zipStatus = document.getElementById('zipStatus');
   const durationInput = document.getElementById('frameDuration');
+  const widthInput = document.getElementById('gifWidth');
+  const heightInput = document.getElementById('gifHeight');
+  const miniWidthInput = document.getElementById("miniWidth");
+  const miniHeightInput = document.getElementById("miniHeight");
 
-  input.addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
 
-    try {
-      frameFiles = [];
-      window.extractedFrames = [];
+let loadedGifFile = null;
 
-      const gifURL = URL.createObjectURL(file);
+input.addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
 
-      const frames = await gifFrames({
-        url: gifURL,
-        frames: "all",
-        outputType: "canvas"
-      });
+  loadedGifFile = file;
+  zipStatus.textContent = "GIF loaded. Press Generate to process.";
+  generateBtn.disabled = false;
+});
 
-      // Convert each canvas to a PNG Blob
-      window.extractedFrames = await Promise.all(
-        frames.map((frame, i) => {
-          const canvas = frame.getImage();
-          return new Promise(resolve => {
-            canvas.toBlob(blob => {
-              const name = `frame-${String(i + 1).padStart(5, "0")}.png`;
-              resolve({ name, blob });
-            }, "image/png");
-          });
-        })
-      );
 
-      frameFiles = window.extractedFrames.map(f => f.name);
+    function validateResolution() {
+      const w = Number(widthInput.value) || 300;
+      const h = Number(heightInput.value) || 250;
+      const MAX_SIZE = 600;
 
-      if (frameFiles.length > 0) {
+      if (w > MAX_SIZE || h > MAX_SIZE) {
         zipStatus.textContent =
-          `GIF decoded successfully! ${frameFiles.length} frames extracted.`;
-        generateBtn.disabled = false;
-      } else {
-        zipStatus.textContent = 'GIF decoded, but no frames were found.';
+          `Resolution too large. Maximum allowed is ${MAX_SIZE}x${MAX_SIZE}.`;
         generateBtn.disabled = true;
+        return false;
       }
 
-      URL.revokeObjectURL(gifURL);
-
-    } catch (err) {
-      console.error("Error reading GIF:", err);
-      zipStatus.textContent = "Error reading GIF file.";
-      generateBtn.disabled = true;
+      // Clear error when valid again
+      zipStatus.textContent = "";
+      generateBtn.disabled = false;
+      return true;
     }
-  });
+
+    widthInput.addEventListener("input", validateResolution);
+    heightInput.addEventListener("input", validateResolution);
 
 
   const counterThemeBottom = `
@@ -182,31 +171,115 @@ function initEncounterCounter() {
 </resource>`;
   }
 
+  function resizeImageToBlob(file, targetWidth, targetHeight) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = false;
+
+      ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, targetWidth, targetHeight);
+
+      canvas.toBlob(blob => {
+        URL.revokeObjectURL(url);
+        resolve(blob);
+      }, "image/png");
+    };
+
+    img.onerror = reject;
+    img.src = url;
+  });
+}
 
   generateBtn.addEventListener('click', async () => {
-    if (!frameFiles.length || !window.extractedFrames.length) return;
+  if (!loadedGifFile) {
+    zipStatus.textContent = "Please upload a GIF first.";
+    return;
+  }
 
-    const frameDuration = parseInt(durationInput.value, 10) || 100;
-    const outputZipName = zipNameInput.value.trim() || "custom-counter.zip";
-    const themeName = zipNameInput.value.replace(/\.zip$/i, '') || "custom-counter";
+  const targetWidth = Number(widthInput.value) || 300;
+  const targetHeight = Number(heightInput.value) || 250;
+  const MAX_SIZE = 600;
 
-    const zip = new JSZip();
-    const defaultFolder = `data/themes/default`;
+  if (targetWidth > MAX_SIZE || targetHeight > MAX_SIZE) {
+    zipStatus.textContent =
+      `Resolution too large. Maximum allowed is ${MAX_SIZE}x${MAX_SIZE}.`;
+    return;
+  }
 
-    const minimisedFile = minimisedInput.files[0];
-    const minimisedFileName = minimisedFile ? minimisedFile.name : null;
+  zipStatus.textContent = "Decoding and resizing GIF...";
 
-    const counterXML = generateCounterXML(frameFiles, minimisedFileName, frameDuration);
-    zip.file(`${defaultFolder}/custom-counter.xml`, counterXML);
-    zip.file(`${defaultFolder}/theme.xml`, themeXMLContent);
+  try {
+    frameFiles = [];
+    window.extractedFrames = [];
 
-    const animFolder = zip.folder(`${defaultFolder}/anim`);
+    const gifURL = URL.createObjectURL(loadedGifFile);
 
-    const animPromises = [];
-    let firstFileAdded = false;
+    const frames = await gifFrames({
+      url: gifURL,
+      frames: "all",
+      outputType: "canvas"
+    });
 
-    window.extractedFrames.forEach(frame => {
-      const p = Promise.resolve().then(() => {
+    window.extractedFrames = await Promise.all(
+      frames.map((frame, i) => {
+        const src = frame.getImage();
+
+        const resized = document.createElement("canvas");
+        resized.width = targetWidth;
+        resized.height = targetHeight;
+
+        const ctx = resized.getContext("2d");
+        ctx.imageSmoothingEnabled = false;
+
+        ctx.drawImage(
+          src,
+          0, 0, src.width, src.height,
+          0, 0, targetWidth, targetHeight
+        );
+
+        return new Promise(resolve => {
+          resized.toBlob(blob => {
+            resolve({
+              name: `frame-${String(i + 1).padStart(5, "0")}.png`,
+              blob
+            });
+          }, "image/png");
+        });
+      })
+    );
+
+    frameFiles = window.extractedFrames.map(f => f.name);
+
+    zipStatus.textContent =
+      `GIF processed: ${frameFiles.length} frames at ${targetWidth}x${targetHeight}. Creating ZIP...`;
+
+      const zip = new JSZip();
+      const defaultFolder = `data/themes/default`;
+
+      const frameDuration = parseInt(durationInput.value, 10) || 100;
+      const outputZipName = zipNameInput.value.trim() || "custom-counter.zip";
+      const themeName = zipNameInput.value.replace(/\.zip$/i, '') || "custom-counter";
+
+      const minimisedFile = minimisedInput.files[0];
+      const minimisedFileName = minimisedFile ? minimisedFile.name : null;
+
+      // Generate XML files
+      const counterXML = generateCounterXML(frameFiles, minimisedFileName, frameDuration);
+      zip.file(`${defaultFolder}/custom-counter.xml`, counterXML);
+      zip.file(`${defaultFolder}/theme.xml`, themeXMLContent);
+
+      // Animation frames
+      const animFolder = zip.folder(`${defaultFolder}/anim`);
+
+      let firstFileAdded = false;
+      window.extractedFrames.forEach(frame => {
         animFolder.file(frame.name, frame.blob);
 
         if (!firstFileAdded) {
@@ -214,23 +287,48 @@ function initEncounterCounter() {
           firstFileAdded = true;
         }
       });
-      animPromises.push(p);
-    });
 
-    if (minimisedFile) {
+      if (minimisedFile) {
+      const miniW = Number(miniWidthInput.value) || 300;
+      const miniH = Number(miniHeightInput.value) || 250;
+      const MAX_SIZE = 600;
+
+      if (miniW > MAX_SIZE || miniH > MAX_SIZE) {
+        zipStatus.textContent =
+          `Minimised image size too large. Max is ${MAX_SIZE}x${MAX_SIZE}.`;
+        return;
+      }
+
+      zipStatus.textContent = "Resizing minimised image...";
+
+      const resizedMiniBlob = await resizeImageToBlob(minimisedFile, miniW, miniH);
+
       const unexpandedFolder = zip.folder(`${defaultFolder}/unexpanded`);
-      unexpandedFolder.file(minimisedFile.name, minimisedFile);
+      unexpandedFolder.file(minimisedFile.name, resizedMiniBlob);
     }
 
-    zip.file(`info.xml`, generateinfoXML(themeName));
 
-    await Promise.all(animPromises);
+      // info.xml
+      zip.file(`info.xml`, generateinfoXML(themeName));
 
-    zip.generateAsync({ type: "blob" }).then(content => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(content);
-      a.download = outputZipName;
-      a.click();
-    });
-  });
+      // Generate and download ZIP
+      zip.generateAsync({ type: "blob" }).then(content => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(content);
+        a.download = outputZipName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        zipStatus.textContent = "ZIP created and downloaded successfully!";
+      });
+
+
+    URL.revokeObjectURL(gifURL);
+
+  } catch (err) {
+    console.error(err);
+    zipStatus.textContent = "Error processing GIF.";
+  }
+});
 }

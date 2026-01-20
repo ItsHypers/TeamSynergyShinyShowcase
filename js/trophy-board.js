@@ -6,7 +6,6 @@ window.renderTrophyPage = async (trophyName, returnHash = "#") => {
   if (!container) return;
 
   try {
-    // Fetch both JSON files
     const [trophiesRes, shinyRes] = await Promise.all([
       fetch("./json/trophies.json"),
       fetch("./shiny_database.json")
@@ -31,8 +30,9 @@ window.renderTrophyPage = async (trophyName, returnHash = "#") => {
 
     // Only show players that exist in shiny_database.json
     const players = (trophyAssignments[trophyKey] || []).filter(player =>
-      shinyDatabase.hasOwnProperty(player)
+      Object.keys(shinyDatabase).some(dbKey => dbKey.toLowerCase() === player.toLowerCase())
     );
+
 
     let buttonText = "← Back";
     if (returnHash.startsWith("#player/")) {
