@@ -108,6 +108,7 @@ async function initTrophyBoard() {
       trophyImg.src = imgSrc;
       trophyImg.alt = name;
       trophyImg.className = "trophy-board-img";
+      trophyImg.loading = 'lazy';
 
       const trophyLabel = document.createElement("div");
       trophyLabel.className = "trophy-board-label";
