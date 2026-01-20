@@ -176,16 +176,26 @@ async function initPokeDex() {
         renderPokeDex(generationData, shinyData, currentMode, hideComplete);
       });
     }
-
+    
     const dexOptions = document.querySelectorAll('.dex-option');
-    dexOptions.forEach(opt => {
+    const slider = document.getElementById('dex-slider'); // Get the slider
+
+    dexOptions.forEach((opt, index) => {
       opt.addEventListener('click', () => {
+        // Update active class
         dexOptions.forEach(o => o.classList.remove('active'));
         opt.classList.add('active');
-        currentMode = opt.dataset.mode;
+
+        // Move the slider
+        slider.style.transform = `translateX(${index * 100}%)`;
+
+        // Update current mode and re-render
+        currentMode = opt.dataset.mode; // just assign, don't redeclare
         renderPokeDex(generationData, shinyData, currentMode, hideComplete);
       });
     });
+
+
   } catch (err) {
     console.error('Failed to initialize Pokedex:', err);
   }
