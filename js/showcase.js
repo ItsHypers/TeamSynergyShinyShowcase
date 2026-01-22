@@ -192,6 +192,7 @@ async function renderTrophyBoard() {
   }
 }
 
+
 async function initShowcase() {
   const trophies = {
     "Team Darkrai Shiny Wars Winner": "./images/trophy/darkrai_trophy.png",
