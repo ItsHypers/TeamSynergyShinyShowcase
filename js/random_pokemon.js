@@ -442,16 +442,30 @@ function getExcludedPokemonWithSpecies(userShinies) {
   }
 
   function generateBingoEntry(pokemonName, mode) {
+
+  const IV_LOWER_MIN = 60;   
+  const IV_LOWER_MAX = 80;   
+  const IV_HIGHER_MIN = 115;
+  const IV_HIGHER_MAX = 130; 
+  const IV_LOWER_CHANCE = 0.5; 
+
     if (mode === "nature") {
       return { name: pokemonName, type: "nature", nature: NATURES[Math.floor(Math.random() * NATURES.length)] };
     }
-    if (mode === "iv") {
-      const isLower = Math.random() < 0.5;
-      const roll = isLower ? Math.floor(Math.random() * 21) + 40 : Math.floor(Math.random() * 21) + 130;
-      return { name: pokemonName, type: "iv", iv: { roll, target: isLower ? "LOWER" : "HIGHER" } };
-    }
-    return { name: pokemonName, type: mode };
+  if (mode === "iv") {
+    // Decide if LOWER or HIGHER IV
+    const isLower = Math.random() < IV_LOWER_CHANCE;
+    const roll = isLower
+      ? Math.floor(Math.random() * (IV_LOWER_MAX - IV_LOWER_MIN + 1)) + IV_LOWER_MIN
+      : Math.floor(Math.random() * (IV_HIGHER_MAX - IV_HIGHER_MIN + 1)) + IV_HIGHER_MIN;
+
+    return { name: pokemonName, type: "iv", iv: { roll, target: isLower ? "LOWER" : "HIGHER" } };
   }
+
+  // Default: shiny or normal Pokémon
+  return { name: pokemonName, type: mode };
+}
+
 
   function renderBingoCard(card, size, completed) {
     bingoCard.innerHTML = "";
@@ -491,25 +505,32 @@ function getExcludedPokemonWithSpecies(userShinies) {
       bingoCard.appendChild(div);
 
       div.addEventListener("click", () => {
-        const saved = loadBingo() || { card, size, completed: [] };
-        if (div.classList.contains("completed")) saved.completed = saved.completed.filter(i => i !== idx);
-        else saved.completed.push(idx);
-        saveBingo(saved);
+      const saved = loadBingo() || { card, size, completed: [] };
 
-        const totalLines = checkBingo(saved.completed, saved.size);
-        const allComplete = saved.completed.length === saved.card.length;
+      if (div.classList.contains("completed")) {
+        saved.completed = saved.completed.filter(i => i !== idx);
+        div.classList.remove("completed");
+      } else {
+        saved.completed.push(idx);
+        div.classList.add("completed"); 
+      }
 
-        let milestone = 0;
-        if (allComplete && bingoMilestone < 3) milestone = 3;
-        else if (totalLines === 2 && bingoMilestone < 2) milestone = 2;
-        else if (totalLines === 1 && bingoMilestone < 1) milestone = 1;
+      saveBingo(saved);
 
-        if (milestone > 0) {
-          bingoMilestone = milestone;
-          showBingoOverlay(milestone);
-        }
+      const totalLines = checkBingo(saved.completed, saved.size);
+      const allComplete = saved.completed.length === saved.card.length;
 
-      });
+      let milestone = 0;
+      if (allComplete && bingoMilestone < 3) milestone = 3;
+      else if (totalLines === 2 && bingoMilestone < 2) milestone = 2;
+      else if (totalLines === 1 && bingoMilestone < 1) milestone = 1;
+
+      if (milestone > 0) {
+        bingoMilestone = milestone;
+        showBingoOverlay(milestone);
+      }
+    });
+
     });
   }
 
@@ -588,24 +609,25 @@ function getExcludedPokemonWithSpecies(userShinies) {
       return { tier, pokemon: poke };
     }
 
-
 function updateSettingsVisibility() {
-  const bingoCheckboxes = document.getElementById("bingocheckBoxes");
-  
-  // Show/hide main content depending on tab
-  if (currentTab === "bingo") {
-    if (bingoCheckboxes) bingoCheckboxes.style.display = "block";
-    if (bingoCard) bingoCard.style.display = "grid";
-    if (bingoModeSettingsDiv) bingoModeSettingsDiv.style.display = "block";
-    if (randomResultDiv) randomResultDiv.style.display = "none";
-    if (logDiv) logDiv.style.display = "none";
-  } else {
-    if (bingoCheckboxes) bingoCheckboxes.style.display = "none";
-    if (bingoCard) bingoCard.style.display = "none";
-    if (bingoModeSettingsDiv) bingoModeSettingsDiv.style.display = "block";
-    if (randomResultDiv) randomResultDiv.style.display = "block";
-    if (logDiv) logDiv.style.display = "block";
-  }
+    const bingoCheckboxes = document.getElementById("bingocheckBoxes");
+    const bingoSettings = document.getElementById("bingoSettings");
+
+    if (currentTab === "bingo") {
+        if (bingoCheckboxes) bingoCheckboxes.style.display = "block";
+        if (bingoSettings) bingoSettings.style.display = "block"; // show size select
+        if (bingoCard) bingoCard.style.display = "grid";
+        if (bingoModeSettingsDiv) bingoModeSettingsDiv.style.display = "block";
+        if (randomResultDiv) randomResultDiv.style.display = "none";
+        if (logDiv) logDiv.style.display = "none";
+    } else {
+        if (bingoCheckboxes) bingoCheckboxes.style.display = "none";
+        if (bingoSettings) bingoSettings.style.display = "none"; // hide in single mode
+        if (bingoCard) bingoCard.style.display = "none";
+        if (bingoModeSettingsDiv) bingoModeSettingsDiv.style.display = "block";
+        if (randomResultDiv) randomResultDiv.style.display = "block";
+        if (logDiv) logDiv.style.display = "block";
+    }
 
   // Show/hide Shiny Tier Filter only if Shiny is enabled
   if (shinyTierFilterDiv)
@@ -736,6 +758,9 @@ if (currentTab === "single") {
         pokeName = allPokemon[Math.floor(Math.random() * allPokemon.length)];
     }
 
+
+
+
     // Display Pokémon
     const tierNumber = tier.replace("Tier ", "");
     tierSpan.textContent = tierNumber;
@@ -750,7 +775,7 @@ if (currentTab === "single") {
     pokemonSpan.appendChild(nameEl);
 
     // Pick mode randomly from enabled modes
-    const mode = modes[Math.floor(Math.random() * modes.length)];
+    const mode = pickModeByWeight();
     const img = document.createElement("img");
     img.src = getPokemonImageUrl(pokeName, mode === "shiny");
     img.alt = formatPokemonName(pokeName);
@@ -797,7 +822,7 @@ if (currentTab === "bingo") {
 
     while (card.length < size * size && attempts < maxAttempts) {
         attempts++;
-        const mode = modes[Math.floor(Math.random() * modes.length)];
+        const mode = pickModeByWeight();
         const tier = pickTierByWeight(enabledTiers);
         let pool = flattenedPool[tier] || [];
 
@@ -819,7 +844,35 @@ if (currentTab === "bingo") {
     renderBingoCard(card, size, []);
     bingoMilestone = 0;
 }
+function pickModeByWeight() {
+    const modeData = [
+        { checkbox: container.querySelector("#enableShiny"), input: container.querySelector("#pctShiny"), key: "shiny" },
+        { checkbox: container.querySelector("#allowNormal"), input: container.querySelector("#pctNormal"), key: "normal" },
+        { checkbox: container.querySelector("#allowNature"), input: container.querySelector("#pctNature"), key: "nature" },
+        { checkbox: container.querySelector("#allowIV"), input: container.querySelector("#pctIV"), key: "iv" },
+    ];
 
+    // Build weighted list
+    const weightedModes = [];
+    modeData.forEach(m => {
+        if (m.checkbox.checked) {
+            const weight = parseInt(m.input.value) || 0;
+            if (weight > 0) weightedModes.push({ mode: m.key, weight });
+        }
+    });
+
+    if (!weightedModes.length) return null;
+
+    const totalWeight = weightedModes.reduce((sum, m) => sum + m.weight, 0);
+    let rnd = Math.random() * totalWeight;
+
+    for (let m of weightedModes) {
+        if (rnd < m.weight) return m.mode;
+        rnd -= m.weight;
+    }
+
+    return weightedModes[0].mode; // fallback
+}
 
   // Keep bingoExtraSettings always visible
   const bingoExtraSettings = container.querySelector("#bingoExtraSettings");

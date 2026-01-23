@@ -17,6 +17,7 @@ function createShinyItem(s, points) {
 
   const iconMap = {
     "Secret Shiny": ["/images/Shiny Showcase/secretshiny.png", "secret-icon"],
+    "Honey Tree": ["/images/Shiny Showcase/honey.png", "honey-icon"],
     Egg: ["/images/Shiny Showcase/egg.png", "egg-icon"],
     Safari: ["/images/Shiny Showcase/safari.png", "safari-icon"],
     Event: ["/images/Shiny Showcase/event.png", "event-icon"],
