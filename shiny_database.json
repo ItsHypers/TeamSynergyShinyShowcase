@@ -1,6 +1,6 @@
 {
   "Blaziken": {
-    "shiny_count": 58,
+    "shiny_count": 61,
     "shinies": {
       "1": {
         "Pokemon": "noctowl",
@@ -543,7 +543,7 @@
         "Legendary": "No"
       },
       "37": {
-        "Pokemon": "marill",
+        "Pokemon": "nidoking",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -558,7 +558,7 @@
         "Legendary": "No"
       },
       "38": {
-        "Pokemon": "sneasel",
+        "Pokemon": "marill",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -573,7 +573,7 @@
         "Legendary": "No"
       },
       "39": {
-        "Pokemon": "rattata",
+        "Pokemon": "sneasel",
         "Secret Shiny": "No",
         "Egg": "No",
         "Alpha": "No",
@@ -588,6 +588,21 @@
         "Legendary": "No"
       },
       "40": {
+        "Pokemon": "rattata",
+        "Secret Shiny": "No",
+        "Egg": "No",
+        "Alpha": "No",
+        "Sold": "No",
+        "Event": "No",
+        "Reaction": "No",
+        "MysteriousBall": "No",
+        "Safari": "No",
+        "Favourite": "No",
+        "Reaction Link": "",
+        "Honey Tree": "No",
+        "Legendary": "No"
+      },
+      "41": {
         "Pokemon": "charmander",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -602,7 +617,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "41": {
+      "42": {
         "Pokemon": "budew",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -617,7 +632,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "42": {
+      "43": {
         "Pokemon": "lopunny",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -632,7 +647,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "43": {
+      "44": {
         "Pokemon": "sharpedo",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -647,7 +662,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "44": {
+      "45": {
         "Pokemon": "smeargle",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -662,7 +677,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "45": {
+      "46": {
         "Pokemon": "larvitar",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -677,7 +692,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "46": {
+      "47": {
         "Pokemon": "hydreigon",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -692,7 +707,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "47": {
+      "48": {
         "Pokemon": "snover",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -707,7 +722,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "48": {
+      "49": {
         "Pokemon": "staraptor",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -722,7 +737,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "49": {
+      "50": {
         "Pokemon": "steelix",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -737,7 +752,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "50": {
+      "51": {
         "Pokemon": "gothitelle",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -752,7 +767,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "51": {
+      "52": {
         "Pokemon": "zigzagoon",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -767,7 +782,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "52": {
+      "53": {
         "Pokemon": "machop",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -782,7 +797,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "53": {
+      "54": {
         "Pokemon": "poochyena",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -797,7 +812,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "54": {
+      "55": {
         "Pokemon": "seedot",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -812,7 +827,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "55": {
+      "56": {
         "Pokemon": "poliwhirl",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -827,7 +842,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "56": {
+      "57": {
         "Pokemon": "donphan",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -842,7 +857,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "57": {
+      "58": {
         "Pokemon": "seviper",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -857,7 +872,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "58": {
+      "59": {
         "Pokemon": "lotad",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -872,7 +887,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "59": {
+      "60": {
         "Pokemon": "swablu",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -887,7 +902,7 @@
         "Honey Tree": "No",
         "Legendary": "No"
       },
-      "60": {
+      "61": {
         "Pokemon": "mareep",
         "Secret Shiny": "No",
         "Egg": "No",
@@ -20536,7 +20551,7 @@
       }
     }
   },
-  "Liiitha": {
+  "Brakence": {
     "shiny_count": 6,
     "shinies": {
       "1": {

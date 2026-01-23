@@ -1,334 +1,213 @@
-function initEncounterCounter() {
+async function initEncounterCounter() {
   let frameFiles = [];
   window.extractedFrames = [];
 
   const input = document.getElementById('zipFileInput');
   const minimisedInput = document.getElementById('minimisedFile');
-  const fileList = document.getElementById('fileList');
   const generateBtn = document.getElementById('generateZip');
   const zipNameInput = document.getElementById('zipName');
   const zipStatus = document.getElementById('zipStatus');
-  const durationInput = document.getElementById('frameDuration');
   const widthInput = document.getElementById('gifWidth');
   const heightInput = document.getElementById('gifHeight');
+  const durationInput = document.getElementById('frameDuration');
   const miniWidthInput = document.getElementById("miniWidth");
   const miniHeightInput = document.getElementById("miniHeight");
 
+  let loadedGifFile = null;
 
-let loadedGifFile = null;
+  // --- File selection ---
+  input.addEventListener("change", (e) => {
+    loadedGifFile = e.target.files[0];
+    zipStatus.textContent = "File loaded. Press Generate to process.";
+    generateBtn.disabled = false;
+  });
 
-input.addEventListener("change", (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
+  // --- Resize helper ---
+  async function resizeToBlob(fileOrBlob, width, height) {
+    return new Promise(resolve => {
+      const img = new Image();
+      const url = URL.createObjectURL(fileOrBlob);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, width, height);
+        canvas.toBlob(blob => {
+          URL.revokeObjectURL(url);
+          resolve(blob);
+        }, "image/png");
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        throw new Error("Failed to load image for resizing.");
+      };
+      img.src = url;
+    });
+  }
 
-  loadedGifFile = file;
-  zipStatus.textContent = "GIF loaded. Press Generate to process.";
-  generateBtn.disabled = false;
-});
+  // --- Extract frames (GIF) or single image (PNG) ---
+  async function extractFrames(file, targetWidth, targetHeight) {
+    if (file.type === "image/gif") {
+      const arrayBuffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      const reader = new GifReader(bytes);
+      const frames = [];
 
+      const width = reader.width;
+      const height = reader.height;
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      const fullFrameBuffer = new Uint8ClampedArray(width * height * 4);
 
-    function validateResolution() {
-      const w = Number(widthInput.value) || 300;
-      const h = Number(heightInput.value) || 250;
-      const MAX_SIZE = 600;
+      for (let i = 0; i < reader.numFrames(); i++) {
+        const dims = reader.frameInfo(i);
+        reader.decodeAndBlitFrameRGBA(i, fullFrameBuffer);
+        const imageData = new ImageData(fullFrameBuffer, width, height);
+        ctx.putImageData(imageData, 0, 0);
 
-      if (w > MAX_SIZE || h > MAX_SIZE) {
-        zipStatus.textContent =
-          `Resolution too large. Maximum allowed is ${MAX_SIZE}x${MAX_SIZE}.`;
-        generateBtn.disabled = true;
-        return false;
+        const resizedCanvas = document.createElement("canvas");
+        resizedCanvas.width = targetWidth;
+        resizedCanvas.height = targetHeight;
+        const rctx = resizedCanvas.getContext("2d");
+        rctx.imageSmoothingEnabled = true;
+        rctx.imageSmoothingQuality = "high";
+        rctx.drawImage(canvas, 0, 0, width, height, 0, 0, targetWidth, targetHeight);
+
+        const blob = await new Promise(res => resizedCanvas.toBlob(res, "image/png"));
+
+        // Use GIF frame duration if available (dims.delay in 1/100s)
+        const duration = (dims.delay || 10) * 10; // fallback 100ms
+        frames.push({
+          name: `frame-${String(i + 1).padStart(5, "0")}.png`,
+          blob,
+          duration
+        });
       }
 
-      // Clear error when valid again
-      zipStatus.textContent = "";
-      generateBtn.disabled = false;
-      return true;
+      return frames;
+    } else if (file.type.startsWith("image/")) {
+      // PNG or JPG: single frame
+      const blob = await resizeToBlob(file, targetWidth, targetHeight);
+      return [{
+        name: "frame-00001.png",
+        blob,
+        duration: 100
+      }];
+    } else {
+      throw new Error("Unsupported file type. Please upload a GIF or PNG.");
     }
+  }
 
-    widthInput.addEventListener("input", validateResolution);
-    heightInput.addEventListener("input", validateResolution);
-
-
-  const counterThemeBottom = `
-  <theme name="encounter-counter" ref="resizableframe">
-    <param name="titleAreaTop"><int>8</int></param>
-    <param name="titleAreaLeft"><int>11</int></param>
-    <param name="titleAreaRight"><int>-1</int></param>
-    <param name="titleAreaBottom"><int>20</int></param>
-    <param name="border"><border>20,0,0,0</border></param>
-    <param name="background"><image>encounter_counter_anim</image></param>
-    <param name="minWidth"><int>200</int></param>
-    <theme name="content" ref="-defaults">
-      <theme name="label" ref="label">
-        <param name="minWidth"><int>50</int></param>
-        <param name="font"><font>alphabeta-border</font></param>
-        <param name="border"><border>7,7</border></param>
-        <param name="textAlignment"><enum type="alignment">CENTER</enum></param>
-      </theme>
-      <theme name="label-left" ref="label">
-        <param name="textAlignment"><enum type="alignment">LEFT</enum></param>
-      </theme>
-      <theme name="icon" ref="label">
-        <param name="border"><border>7,7</border></param>
-      </theme>
-      <theme name="cell" ref="label">
-        <param name="background"><image>ui-inputbox.background</image></param>
-        <param name="textAlignment"><enum type="alignment">LEFT</enum></param>
-        <param name="border"><border>5</border></param>
-      </theme>
-    </theme>
-  </theme>
-
-  <theme name="encounter-counter-expanded" ref="encounter-counter">
-      <param name="background"><image>encounter_counter_anim</image></param>
-  </theme>
-
-</themes>
-`;
-
-
-  function generateCounterXML(files, minimisedFileName = null, frameDuration = 100) {
+  // --- Generate counter XML ---
+  function generateCounterXML(frames, counterThemeBottom = '') {
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<themes>\n\n`;
 
-    if (minimisedFileName) {
-      xml += `<images file="unexpanded/${minimisedFileName}">\n`;
-      xml += `    <area name="encounter_counter" xywh="*"/>\n`;
-      xml += `</images>\n\n`;
-    }
-
-    files.forEach((file, index) => {
-      const frameNumber = String(index + 1).padStart(5, '0');
-      xml += `<images file="anim/${file}" filter="nearest">\n`;
+    frames.forEach((frame, index) => {
+      const frameNumber = String(index + 1).padStart(5, "0");
+      xml += `<images file="anim/${frame.name}" filter="nearest">\n`;
       xml += `    <area name="bg-${frameNumber}" xywh="*"/>\n`;
       xml += `</images>\n\n`;
     });
 
-    let bottom = counterThemeBottom || '';
-    if (minimisedFileName) {
-      bottom = bottom.replace(
-        /<param name="background">\s*<image>encounter_counter_anim<\/image>\s*<\/param>/,
-        `<param name="background"><image>encounter_counter</image></param>`
-      );
-    }
-
     xml += `    <images>\n        <animation name="encounter_counter_anim" timeSource="enabled">\n\n`;
-    files.forEach((_, index) => {
-      const frameNumber = String(index + 1).padStart(5, '0');
-      xml += `<frame ref="bg-${frameNumber}" duration="${frameDuration}"/>\n`;
+    frames.forEach((frame, index) => {
+      const frameNumber = String(index + 1).padStart(5, "0");
+      xml += `<frame ref="bg-${frameNumber}" duration="${frame.duration}"/>\n`;
     });
     xml += `        </animation>\n    </images>\n\n`;
-
-    xml += bottom;
+    xml += counterThemeBottom;
     return xml;
   }
 
-
-  const themeXMLContent = `<themes>
-<constantDef name="main-theme-color"><color>#6a889b</color></constantDef>
-<constantDef name="main-color"><color>#5db1ff</color></constantDef>
-<constantDef name="sub-color"><color>#5db1ff</color></constantDef>
-<constantDef name="tooltip-tint"><color>#FF565D63</color></constantDef>
-<include filename="fonts.xml"/>
-<fontGen/>
-<include filename="cursors.xml"/>
-<include filename="gfx.xml"/>
-<include filename="gfx_ui.xml"/>
-<include filename="init.xml"/>
-<include filename="ui/main.xml"/>
-<include filename="ui/battle.xml"/>
-<include filename="ui/contest.xml"/>
-<include filename="ui/party.xml"/>
-<include filename="ui/inventory.xml"/>
-<include filename="ui/chat.xml"/>
-<include filename="ui/monster-dex.xml"/>
-<include filename="ui/monster-frame.xml"/>
-<include filename="ui/customization.xml"/>
-<include filename="ui/settings.xml"/>
-<include filename="ui/guild.xml"/>
-<include filename="ui/matchmaking.xml"/>
-<include filename="ui/social.xml"/>
-<include filename="ui/instance.xml"/>
-<include filename="ui/trade.xml"/>
-<include filename="ui/shop.xml"/>
-<include filename="ui/link.xml"/>
-<include filename="ui/misc.xml"/>
-<include filename="ui/advanced-search.xml"/>
-<include filename="ui/broker.xml"/>
-<include filename="ui/pc.xml"/>
-<include filename="ui/incubator.xml"/>
-<include filename="ui/staff.xml"/>
-<include filename="main-widgets.xml"/>
-<include filename="custom-counter.xml"/>
-</themes>`;
-
-
-  function generateinfoXML(themeName) {
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<resource name="${themeName}" version="1.0" description="Animated Custom encounter counter" author="Hyper" weblink="https://forums.pokemmo.com/index.php?/topic/190960-hypers-custom-encounter-counters/">
-  <overlays>
-    <overlay path="data/themes/" name="Encounter Theme"/>
-  </overlays>
-</resource>`;
+  // --- Load XML templates ---
+  async function loadXMLTemplates() {
+    const [counterThemeBottom, themeXMLContent, infoXML] = await Promise.all([
+      fetch("/xml/counterThemeBottom.xml").then(r => r.text()),
+      fetch("/xml/themeContent.xml").then(r => r.text()),
+      fetch("/xml/info.xml").then(r => r.text())
+    ]);
+    return { counterThemeBottom, themeXMLContent, infoXML };
   }
 
-  function resizeImageToBlob(file, targetWidth, targetHeight) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-
-      const ctx = canvas.getContext("2d");
-      ctx.imageSmoothingEnabled = false;
-
-      ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, targetWidth, targetHeight);
-
-      canvas.toBlob(blob => {
-        URL.revokeObjectURL(url);
-        resolve(blob);
-      }, "image/png");
-    };
-
-    img.onerror = reject;
-    img.src = url;
-  });
-}
-
-  generateBtn.addEventListener('click', async () => {
-  if (!loadedGifFile) {
-    zipStatus.textContent = "Please upload a GIF first.";
-    return;
-  }
-
-  const targetWidth = Number(widthInput.value) || 300;
-  const targetHeight = Number(heightInput.value) || 250;
-  const MAX_SIZE = 600;
-
-  if (targetWidth > MAX_SIZE || targetHeight > MAX_SIZE) {
-    zipStatus.textContent =
-      `Resolution too large. Maximum allowed is ${MAX_SIZE}x${MAX_SIZE}.`;
-    return;
-  }
-
-  zipStatus.textContent = "Decoding and resizing GIF...";
-
-  try {
-    frameFiles = [];
-    window.extractedFrames = [];
-
-    const gifURL = URL.createObjectURL(loadedGifFile);
-
-    const frames = await gifFrames({
-      url: gifURL,
-      frames: "all",
-      outputType: "canvas"
-    });
-
-    window.extractedFrames = await Promise.all(
-      frames.map((frame, i) => {
-        const src = frame.getImage();
-
-        const resized = document.createElement("canvas");
-        resized.width = targetWidth;
-        resized.height = targetHeight;
-
-        const ctx = resized.getContext("2d");
-        ctx.imageSmoothingEnabled = false;
-
-        ctx.drawImage(
-          src,
-          0, 0, src.width, src.height,
-          0, 0, targetWidth, targetHeight
-        );
-
-        return new Promise(resolve => {
-          resized.toBlob(blob => {
-            resolve({
-              name: `frame-${String(i + 1).padStart(5, "0")}.png`,
-              blob
-            });
-          }, "image/png");
-        });
-      })
-    );
-
-    frameFiles = window.extractedFrames.map(f => f.name);
-
-    zipStatus.textContent =
-      `GIF processed: ${frameFiles.length} frames at ${targetWidth}x${targetHeight}. Creating ZIP...`;
-
-      const zip = new JSZip();
-      const defaultFolder = `data/themes/default`;
-
-      const frameDuration = parseInt(durationInput.value, 10) || 100;
-      const outputZipName = zipNameInput.value.trim() || "custom-counter.zip";
-      const themeName = zipNameInput.value.replace(/\.zip$/i, '') || "custom-counter";
-
-      const minimisedFile = minimisedInput.files[0];
-      const minimisedFileName = minimisedFile ? minimisedFile.name : null;
-
-      // Generate XML files
-      const counterXML = generateCounterXML(frameFiles, minimisedFileName, frameDuration);
-      zip.file(`${defaultFolder}/custom-counter.xml`, counterXML);
-      zip.file(`${defaultFolder}/theme.xml`, themeXMLContent);
-
-      // Animation frames
-      const animFolder = zip.folder(`${defaultFolder}/anim`);
-
-      let firstFileAdded = false;
-      window.extractedFrames.forEach(frame => {
-        animFolder.file(frame.name, frame.blob);
-
-        if (!firstFileAdded) {
-          zip.file("icon.png", frame.blob);
-          firstFileAdded = true;
-        }
-      });
-
-      if (minimisedFile) {
-      const miniW = Number(miniWidthInput.value) || 300;
-      const miniH = Number(miniHeightInput.value) || 250;
-      const MAX_SIZE = 600;
-
-      if (miniW > MAX_SIZE || miniH > MAX_SIZE) {
-        zipStatus.textContent =
-          `Minimised image size too large. Max is ${MAX_SIZE}x${MAX_SIZE}.`;
-        return;
-      }
-
-      zipStatus.textContent = "Resizing minimised image...";
-
-      const resizedMiniBlob = await resizeImageToBlob(minimisedFile, miniW, miniH);
-
-      const unexpandedFolder = zip.folder(`${defaultFolder}/unexpanded`);
-      unexpandedFolder.file(minimisedFile.name, resizedMiniBlob);
+  // --- Generate ZIP ---
+  generateBtn.addEventListener("click", async () => {
+    if (!loadedGifFile) {
+      zipStatus.textContent = "Please upload a GIF or PNG first.";
+      return;
     }
 
+    const w = Number(widthInput.value) || 300;
+    const h = Number(heightInput.value) || 250;
 
-      // info.xml
-      zip.file(`info.xml`, generateinfoXML(themeName));
+    zipStatus.textContent = "Processing frames…";
 
-      // Generate and download ZIP
-      zip.generateAsync({ type: "blob" }).then(content => {
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(content);
-        a.download = outputZipName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+    try {
+      const frames = await extractFrames(loadedGifFile, w, h);
+      window.extractedFrames = frames;
+      frameFiles = frames.map(f => f.name);
 
-        zipStatus.textContent = "ZIP created and downloaded successfully!";
-      });
+      zipStatus.textContent = `Extracted ${frames.length} frames. Loading XML templates…`;
 
+      const { counterThemeBottom, themeXMLContent, infoXML } = await loadXMLTemplates();
 
-    URL.revokeObjectURL(gifURL);
+      const zip = new JSZip();
+      const base = "data/themes/default";
+      const animFolder = zip.folder(`${base}/anim`);
 
-  } catch (err) {
-    console.error(err);
-    zipStatus.textContent = "Error processing GIF.";
-  }
-});
+      // Add frames to anim/
+      frames.forEach(frame => animFolder.file(frame.name, frame.blob));
+
+      // Add root icon.png (first frame)
+      if (frames.length > 0) {
+        zip.file("icon.png", frames[0].blob);
+      }
+
+      // --- Minimised image ---
+      const minimisedFile = minimisedInput.files[0];
+      const miniW = Number(miniWidthInput.value) || 100;
+      const miniH = Number(miniHeightInput.value) || 100;
+
+      let minimisedBlob = null;
+      if (minimisedFile) {
+        minimisedBlob = await resizeToBlob(minimisedFile, miniW, miniH);
+      } else if (frames.length > 0) {
+        minimisedBlob = await resizeToBlob(frames[0].blob, miniW, miniH);
+      }
+
+      if (minimisedBlob) {
+        const unexpandedFolder = zip.folder(`${base}/unexpanded`);
+        unexpandedFolder.file("minimised.png", minimisedBlob); // always minimised.png
+      }
+
+      // --- Dynamic custom-counter.xml ---
+      zip.file(`${base}/custom-counter.xml`, generateCounterXML(frames, counterThemeBottom));
+
+      // theme.xml
+      zip.file(`${base}/theme.xml`, themeXMLContent);
+
+      // info.xml with themeName
+      const zipNameValue = zipNameInput.value.trim() || "custom-counter";
+      const themeName = zipNameValue.replace(/\.zip$/i, '');
+      const infoXMLReplaced = infoXML.replace("${themeName}", themeName);
+      zip.file("info.xml", infoXMLReplaced);
+
+      // --- Download ZIP ---
+      const outputZipName = zipNameValue.endsWith(".zip") ? zipNameValue : zipNameValue + ".zip";
+      const a = document.createElement("a");
+      const content = await zip.generateAsync({ type: "blob" });
+      a.href = URL.createObjectURL(content);
+      a.download = outputZipName;
+      a.click();
+
+      zipStatus.textContent = "ZIP created successfully!";
+    } catch (err) {
+      console.error(err);
+      zipStatus.textContent = "Error processing file: " + err.message;
+    }
+  });
 }
