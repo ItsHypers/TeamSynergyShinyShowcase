@@ -9,7 +9,16 @@ const ODDS = {
 };
 
 async function initRandomPokemon() {
-  const SHINY_DB_FILE = "shiny_database.json";
+  const SHINY_DB_FILE = "shiny_database.json"; 
+  const shinyboardBaseURL = "https://shinyboard.net/api/users/";
+  let shiny_database = null;
+  fetch(SHINY_DB_FILE)
+      .then(res => res.json())
+      .then(data => {
+          shiny_database = data;
+      })
+      .catch(err => console.error("Failed to load local shiny database:", err));
+
   const JSON_FILE = "./json/randomizer_tiers.json";
 
   const container = document.getElementById("showcase");
@@ -35,13 +44,14 @@ async function initRandomPokemon() {
     <h1>Random Pokémon Generator</h1>
 
     <div id="usernameContainer" style="margin-bottom:10px;">
+
+      <div>(This uses either the Synergy Database or Shinyboard.net)</div>
       <label>
         Filter your shinies
-        <input type="text" id="usernameInput" placeholder="Synergy Members Only">
+        <input type="text" id="usernameInput" placeholder="">
       </label>
       <button id="loadShiniesBtn">Pre-load Shinies</button>
-    </div>
-    <div id="loadedShinyMessage" style="color:green; font-weight:600; margin-top:6px;"></div>
+      <div id="result" style="color:green; font-weight:600; margin-top:6px"></div>
 
     <div class="tab-container">
       <button class="tab-btn" data-tab="single">Random Pokémon</button>
@@ -107,6 +117,7 @@ async function initRandomPokemon() {
     </div>
   </div>
   `;
+  
 
   // --- Element References ---
   const usernameInput = container.querySelector("#usernameInput");
@@ -129,6 +140,8 @@ async function initRandomPokemon() {
   const logDiv = container.querySelector(".previous-log");
   const warningPopup = container.querySelector("#warningPopup");
   const bingoOverlay = container.querySelector("#bingoOverlay");
+  const resultDiv = document.getElementById("result");
+
 
   // --- Utility Functions ---
   const showWarning = (message) => {
@@ -191,73 +204,138 @@ async function initRandomPokemon() {
   await loadGenerationData();
 
   // --- Filter User Shinies ---
-  function filterUserShinies(username) {
-    userShinies = [];
-    if (!shinyData || !username) return;
+async function fetchShinyBoardShinies(username) {
+  if (!username) return [];
 
-    const found = Object.entries(shinyData).find(
-      ([key]) => key.toLowerCase() === username.toLowerCase()
-    );
-    if (!found) return;
+  let shinies = [];
+  let url = `https://shinyboard.net/api/users/${username}/shinies?page=1`;
 
-    const userData = found[1];
-    if (!userData || !userData.shinies) return;
-
-    if (Array.isArray(userData.shinies)) {
-      userShinies = userData.shinies
-        .map((s) => s.Pokemon?.toLowerCase())
-        .filter(Boolean);
-    } else {
-      for (let key in userData.shinies) {
-        const p = userData.shinies[key].Pokemon?.toLowerCase();
-        if (p) userShinies.push(p);
+  try {
+    while (url) {
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error("Failed to fetch user"); // handle 404, 500, etc.
       }
+
+      const data = await res.json();
+      const ownedShinies = data.shinies
+        .filter(item => item.status === "owned" && item.pokemon?.name)
+        .map(item => item.pokemon.name.toLowerCase());
+
+      console.log("API shinies page:", ownedShinies);
+      shinies.push(...ownedShinies);
+
+      url = data.next_page_url || null;
     }
 
-    console.log("User shinies loaded:", userShinies.length);
+    return shinies; // return empty array if user has 0 shinies
+  } catch (err) {
+    console.error("Failed to fetch user"); // console log
+    return null; // null = fetch failed
   }
+}
 
-  loadShiniesBtn.addEventListener("click", async () => {
-    const username = usernameInput.value.trim();
-    if (!username) return alert("Please enter your name");
 
-    // Wait for shiny database to load if it hasn't yet
-    if (!shinyData) await loadShinyDatabase();
-    
+async function filterUserShinies(username) {
+    userShinies = []; // reset
 
-    filterUserShinies(username);
+    // 1️⃣ Check local database first
+    let localShinies = [];
+    if (shinyData) {
+        const localUsernames = Object.keys(shinyData);
+        const match = localUsernames.find(u => u.toLowerCase() === username.toLowerCase());
+        if (match) {
+            const userShiniesObj = shinyData[match].shinies;
+            localShinies = Object.values(userShiniesObj).map(s => s.Pokemon.toLowerCase());
+        }
+    }
 
-    loadedShinyMessageDiv.innerHTML = `Loaded <strong>${userShinies.length}</strong> shiny Pokémon for <strong>${username}</strong>`;
-  });
+    if (localShinies.length > 0) {
+        userShinies = localShinies;
+        console.log(`Loaded ${userShinies.length} shinies from local database for ${username}`);
+        return;
+    }
 
-function getExcludedPokemonWithSpecies(userShinies) {
-  if (!generationData) return [...userShinies];
+    // 2️⃣ Local database empty → fetch from Shinyboard
+    try {
+        let page = 1;
+        let hasNext = true;
+        while (hasNext) {
+            const res = await fetch(`https://shinyboard.net/api/users/${username}/shinies?page=${page}`);
+            if (!res.ok) {
+                throw new Error("Failed to fetch user");
+            }
+            const data = await res.json();
 
-  // lowercase all user shinies
-  const excludeSet = new Set(userShinies.map(p => p.toLowerCase()));
+            // Filter only owned shinies and normalize to lowercase strings
+            const shinyNames = data.shinies
+                .filter(s => s.status === "owned" && s.pokemon?.name)
+                .map(s => s.pokemon.name.toLowerCase());
 
-  // Loop through each generation
-  Object.values(generationData).forEach(gen => {
-    gen.forEach(speciesLine => {
-      // lowercase all Pokémon in species line for comparison
-      const speciesLower = speciesLine.map(p => p.toLowerCase());
+            userShinies.push(...shinyNames);
 
-      // If any Pokémon in the line is owned, exclude all of them
-      if (speciesLower.some(p => excludeSet.has(p))) {
-        speciesLower.forEach(p => excludeSet.add(p));
-      }
-    });
-  });
+            if (data.next_page_url) {
+                page++;
+            } else {
+                hasNext = false;
+            }
+        }
 
-  const excludedArray = Array.from(excludeSet);
-
-  console.log("Excluded Pokémon (including species lines):", excludedArray);
-
-  return excludedArray;
+        console.log(`Loaded ${userShinies.length} shinies from Shinyboard for ${username}`);
+    } catch (err) {
+        console.error(err);
+        userShinies = null; // indicate fetch failed
+    }
 }
 
 
 
+
+loadShiniesBtn.addEventListener("click", async () => {
+    const username = usernameInput.value.trim();
+    if (!username) return;
+
+    try {
+        // Run the merged search
+        await filterUserShinies(username); // populates userShinies if found locally or on Shinyboard
+
+        if (!userShinies || userShinies.length === 0) {
+            resultDiv.innerHTML = `Failed to fetch user <strong>${username}</strong>`;
+        } else {
+            resultDiv.innerHTML = `Loaded <strong>${userShinies.length}</strong> shiny Pokémon for <strong>${username}</strong>`;
+            console.log(userShinies)
+        }
+
+    } catch (error) {
+        console.error(error);
+        resultDiv.innerHTML = `Failed to fetch user <strong>${username}</strong>`;
+    }
+});
+
+
+
+
+
+function getExcludedPokemonWithSpecies(userShinies) {
+    if (!generationData || !userShinies) return [];
+
+    const excludeSet = new Set(userShinies);
+
+    Object.values(generationData).forEach(gen => {
+        gen.forEach(speciesLine => {
+            const speciesLower = speciesLine.map(p => p.toLowerCase());
+            if (speciesLower.some(p => excludeSet.has(p))) {
+                speciesLower.forEach(p => {
+                    if (!excludeSet.has(p)) {
+                        excludeSet.add(p);
+                    }
+                });
+            }
+        });
+    });
+
+    return Array.from(excludeSet);
+}
 
   // --- Load Tier Data ---
   async function getTierData() {
@@ -495,7 +573,14 @@ function getExcludedPokemonWithSpecies(userShinies) {
       const allowShiny = container.querySelector("#enableShiny")?.checked;
       if (allowShiny && userShinies.length) {
         const excluded = getExcludedPokemonWithSpecies(userShinies);
-        allPokemon = allPokemon.filter(p => !excluded.includes(p.toLowerCase()));
+          pool = pool.filter(p => {
+          const lowerP = p.toLowerCase();
+          if (excluded.includes(lowerP)) {
+              console.log(`Excluded Pokémon due to species line: ${p}`);
+              return false; // remove from pool
+          }
+          return true; // keep
+      });
       }
 
       if (!allPokemon.length) return null;
@@ -587,13 +672,25 @@ generateBtn.addEventListener("click", () => {
 
   const warningPopup = container.querySelector("#warningPopup");
 
-  function showWarning(message) {
+function showWarning(message) {
+    const warningPopup = container.querySelector("#warningPopup");
     warningPopup.querySelector(".popup-content").textContent = message;
+
+    // Position it over the bingo card
+    const rect = bingoCard.getBoundingClientRect();
+    warningPopup.style.position = "absolute";
+    warningPopup.style.top = `${rect.top + window.scrollY}px`; // use scrollY for page scroll
+    warningPopup.style.left = `${rect.left + window.scrollX}px`;
+    warningPopup.style.width = `${rect.width}px`;
+    warningPopup.style.textAlign = "center";
+    warningPopup.style.zIndex = 9999;
     warningPopup.style.display = "block";
+
     setTimeout(() => {
-      warningPopup.style.display = "none";
-    }, 3000);
-  }
+        warningPopup.style.display = "none";
+    }, 4000);
+}
+
 
   // Require at least one mode
   if (!allowShiny && !allowNormal && !allowNature && !allowIV) {
@@ -607,27 +704,39 @@ generateBtn.addEventListener("click", () => {
   if (allowNature) modes.push("nature");
   if (allowIV) modes.push("iv");
 
-  // ----- Single Pokémon Mode -----
-  if (currentTab === "single") {
+// ----- Single Pokémon Mode -----
+if (currentTab === "single") {
     // Pick a tier
     const tier = pickTierByWeight(enabledTiers);
     let allPokemon = normalizedTiers[tier] || [];
     if (!allPokemon.length) return;
 
     // Apply species-line filtering for shiny mode
+    let pokeName = null;
     if (allowShiny && userShinies.length) {
-      const excluded = getExcludedPokemonWithSpecies(userShinies);
-      allPokemon = allPokemon.filter(p => !excluded.includes(p.toLowerCase()));
-      console.log("Single Pokémon pool after filtering:", allPokemon);
+        const excluded = getExcludedPokemonWithSpecies(userShinies);
+
+        let attempts = 0;
+        do {
+            if (attempts++ > 50) break; // prevent infinite loop
+            const candidate = allPokemon[Math.floor(Math.random() * allPokemon.length)];
+            if (excluded.includes(candidate.toLowerCase())) {
+                console.log(`Excluded Pokémon due to species line: ${candidate}`);
+            } else {
+                pokeName = candidate; // found eligible Pokémon
+            }
+        } while (!pokeName);
+
+        if (!pokeName) {
+            showWarning("No eligible Pokémon left for shiny mode in this tier!");
+            return;
+        }
+    } else {
+        // If shiny mode not active or no exclusions
+        pokeName = allPokemon[Math.floor(Math.random() * allPokemon.length)];
     }
 
-    if (!allPokemon.length) {
-      showWarning("No eligible Pokémon left for shiny mode in this tier!");
-      return;
-    }
-
-    const pokeName = allPokemon[Math.floor(Math.random() * allPokemon.length)];
-
+    // Display Pokémon
     const tierNumber = tier.replace("Tier ", "");
     tierSpan.textContent = tierNumber;
     pokemonSpan.innerHTML = "";
@@ -653,43 +762,64 @@ generateBtn.addEventListener("click", () => {
     if (history.length > 10) history.pop();
     previousList.innerHTML = "";
     history.forEach((entry) => {
-      const li = document.createElement("li");
-      li.textContent = entry;
-      previousList.appendChild(li);
+        const li = document.createElement("li");
+        li.textContent = entry;
+        previousList.appendChild(li);
     });
-  }
+}
 
-  // ----- Bingo Card Mode -----
-  if (currentTab === "bingo") {
+
+// ----- Bingo Card Mode -----
+if (currentTab === "bingo") {
     const size = parseInt(bingoSizeSelect.value);
     const card = [];
 
-    while (card.length < size * size) {
-      const mode = modes[Math.floor(Math.random() * modes.length)];
-      const tier = pickTierByWeight(enabledTiers);
-      let pool = normalizedTiers[tier] || [];
+    // Precompute available Pokémon per tier to prevent infinite loops
+    const maxAttempts = 200; // max tries to fill the board
+    let attempts = 0;
 
-      // Apply species-line filtering if shiny mode
-      if (mode === "shiny" && userShinies.length) {
-        const excluded = getExcludedPokemonWithSpecies(userShinies);
-        pool = pool.filter(p => !excluded.includes(p.toLowerCase()));
-      }
+    // Flatten all eligible Pokémon by tier and mode
+    const flattenedPool = {};
+    enabledTiers.forEach(tier => {
+        let allPokemon = normalizedTiers[tier] || [];
+        if (allowShiny && userShinies.length) {
+            const excluded = getExcludedPokemonWithSpecies(userShinies);
+            allPokemon = allPokemon.filter(p => !excluded.includes(p.toLowerCase()));
+        }
+        flattenedPool[tier] = allPokemon;
+    });
 
-      if (!pool.length) {
-        showWarning("No eligible Pokémon left for shiny mode in this tier!");
-        continue;
-      }
+    const totalPoolSize = Object.values(flattenedPool).reduce((sum, arr) => sum + arr.length, 0);
+    if (totalPoolSize < size * size) {
+        showWarning("⚠️ Not enough eligible Pokémon to generate a full bingo card!");
+        return;
+    }
 
-      const pokeName = pool[Math.floor(Math.random() * pool.length)];
-      if (!card.some((e) => e.name === pokeName)) {
-        card.push(generateBingoEntry(pokeName, mode));
-      }
+    while (card.length < size * size && attempts < maxAttempts) {
+        attempts++;
+        const mode = modes[Math.floor(Math.random() * modes.length)];
+        const tier = pickTierByWeight(enabledTiers);
+        let pool = flattenedPool[tier] || [];
+
+        if (!pool.length) continue;
+
+        const pokeName = pool[Math.floor(Math.random() * pool.length)];
+
+        if (!card.some(e => e.name === pokeName)) {
+            card.push(generateBingoEntry(pokeName, mode));
+        }
+    }
+
+    if (card.length < size * size) {
+        showWarning("⚠️ Could not fill the bingo card with enough Pokémon!");
+        return;
     }
 
     saveBingo({ card, size, completed: [] });
     renderBingoCard(card, size, []);
     bingoMilestone = 0;
-  }
+}
+
 
   // Keep bingoExtraSettings always visible
   const bingoExtraSettings = container.querySelector("#bingoExtraSettings");
