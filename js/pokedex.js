@@ -1,3 +1,4 @@
+// Normalize Pokémon names for URLs
 function normalizePokemonName(name) {
   return name
     .trim()
@@ -7,12 +8,14 @@ function normalizePokemonName(name) {
     .replace(/\s+/g, '-');
 }
 
+// Load JSON data
 async function loadData() {
   const shinyData = await fetch('/shiny_database.json').then(res => res.json());
   const generationData = await fetch('./json/generation.json').then(res => res.json());
   return { shinyData, generationData };
 }
 
+// Get all shinies that are NOT sold
 function getGlobalShinies(shinyData) {
   const globalShinies = new Set();
 
@@ -21,8 +24,7 @@ function getGlobalShinies(shinyData) {
     for (const key in shinies) {
       const pokemonEntry = shinies[key];
       const pokemon = pokemonEntry.Pokemon.toLowerCase();
-
-      if (pokemonEntry.Sold === "No") {
+      if (pokemonEntry.Sold && pokemonEntry.Sold.toLowerCase() === 'no') {
         globalShinies.add(pokemon);
       }
     }
@@ -31,6 +33,7 @@ function getGlobalShinies(shinyData) {
   return globalShinies;
 }
 
+// Render the Pokédex
 function renderPokeDex(generationData, shinyData, mode = 'shiny', hideComplete = false) {
   const container = document.getElementById('showcase');
   if (!container) return;
@@ -40,7 +43,7 @@ function renderPokeDex(generationData, shinyData, mode = 'shiny', hideComplete =
   const globalShinies = getGlobalShinies(shinyData);
 
   for (const gen in generationData) {
-
+    // Add generation header
     const genHeader = document.createElement('h2');
     genHeader.textContent = gen;
     genHeader.style.textAlign = 'center';
@@ -51,6 +54,7 @@ function renderPokeDex(generationData, shinyData, mode = 'shiny', hideComplete =
 
     const allPokemon = generationData[gen].flat();
 
+    // Determine which species are complete (at least one shiny owned)
     const speciesCompleteSet = new Set();
     if (mode === 'shiny') {
       generationData[gen].forEach(speciesArray => {
@@ -67,7 +71,6 @@ function renderPokeDex(generationData, shinyData, mode = 'shiny', hideComplete =
       if (mode === 'shiny') {
         isComplete = speciesCompleteSet.has(lowerName);
       } else {
-
         isComplete = globalShinies.has(lowerName);
       }
 
@@ -88,6 +91,7 @@ function renderPokeDex(generationData, shinyData, mode = 'shiny', hideComplete =
   attachHoverInfo(shinyData);
 }
 
+// Attach hover info box to show owners of shiny Pokémon
 function attachHoverInfo(shinyData) {
   const container = document.getElementById('showcase');
   if (!container) return;
@@ -117,48 +121,65 @@ function attachHoverInfo(shinyData) {
     });
   }
 
-  container.addEventListener('mouseover', e => {
-    const target = e.target;
-    if (target.tagName !== 'IMG') return;
-    if (!target.classList.contains('complete')) return;
+container.addEventListener('mouseover', e => {
+  const target = e.target;
+  if (target.tagName !== 'IMG') return;
+  if (!target.classList.contains('complete')) return;
 
-    const pokemonName = target.alt.toLowerCase();
-    const players = [];
+  const pokemonName = target.alt.toLowerCase();
+  const players = [];
+  let hasShinyEntry = false; // Track if the Pokémon exists in shinyData
 
-    for (const player in shinyData) {
-      for (const key in shinyData[player].shinies) {
-        const shinyPokemon = shinyData[player].shinies[key].Pokemon.toLowerCase();
-        if (shinyPokemon === pokemonName) players.push(player);
-      }
+  for (const player in shinyData) {
+    for (const key in shinyData[player].shinies) {
+      const shinyEntry = shinyData[player].shinies[key];
+      const shinyPokemon = shinyEntry.Pokemon.toLowerCase();
+
+      if (shinyPokemon !== pokemonName) continue;
+      hasShinyEntry = true; // Found a shiny entry for this Pokémon
+
+      if (shinyEntry.Sold && shinyEntry.Sold.toLowerCase() === 'yes') continue;
+      players.push(player);
     }
+  }
 
-    if (players.length === 0) return;
+  // Determine text content
+  let text = '';
+  if (players.length > 0) {
+    text = `Owned by: ${players.join(', ')}`;
+  } else if (hasShinyEntry) {
+    text = 'Owned by: Sold';
+  } // else leave blank for Pokémon not in shinyData (evolutions, etc.)
 
-    infoBox.textContent = `Owned by: ${players.join(', ')}`;
+  infoBox.textContent = text;
 
-    const rect = target.getBoundingClientRect();
-    const padding = 8;
-    let left = rect.right + padding + window.scrollX;
-    let top = rect.top + window.scrollY;
+  if (!text) return; // Don't show info box if blank
 
-    if (left + infoBox.offsetWidth > window.scrollX + window.innerWidth) {
-      left = rect.left - infoBox.offsetWidth - padding + window.scrollX;
-    }
+  const rect = target.getBoundingClientRect();
+  const padding = 8;
+  let left = rect.right + padding + window.scrollX;
+  let top = rect.top + window.scrollY;
 
-    if (top + infoBox.offsetHeight > window.scrollY + window.innerHeight) {
-      top = window.scrollY + window.innerHeight - infoBox.offsetHeight - padding;
-    }
+  if (left + infoBox.offsetWidth > window.scrollX + window.innerWidth) {
+    left = rect.left - infoBox.offsetWidth - padding + window.scrollX;
+  }
 
-    infoBox.style.left = `${left}px`;
-    infoBox.style.top = `${top}px`;
-    infoBox.style.opacity = 1;
-  });
+  if (top + infoBox.offsetHeight > window.scrollY + window.innerHeight) {
+    top = window.scrollY + window.innerHeight - infoBox.offsetHeight - padding;
+  }
+
+  infoBox.style.left = `${left}px`;
+  infoBox.style.top = `${top}px`;
+  infoBox.style.opacity = 1;
+});
+
 
   container.addEventListener('mouseout', e => {
     if (e.target.tagName === 'IMG') infoBox.style.opacity = 0;
   });
 }
 
+// Initialize the Pokédex
 async function initPokeDex() {
   try {
     const { shinyData, generationData } = await loadData();
@@ -178,7 +199,7 @@ async function initPokeDex() {
     }
     
     const dexOptions = document.querySelectorAll('.dex-option');
-    const slider = document.getElementById('dex-slider'); // Get the slider
+    const slider = document.getElementById('dex-slider'); // Slider element
 
     dexOptions.forEach((opt, index) => {
       opt.addEventListener('click', () => {
@@ -187,19 +208,18 @@ async function initPokeDex() {
         opt.classList.add('active');
 
         // Move the slider
-        slider.style.transform = `translateX(${index * 100}%)`;
+        if (slider) slider.style.transform = `translateX(${index * 100}%)`;
 
         // Update current mode and re-render
-        currentMode = opt.dataset.mode; // just assign, don't redeclare
+        currentMode = opt.dataset.mode;
         renderPokeDex(generationData, shinyData, currentMode, hideComplete);
       });
     });
-
 
   } catch (err) {
     console.error('Failed to initialize Pokedex:', err);
   }
 }
 
+// Expose init function globally
 window.initPokeDex = initPokeDex;
-
