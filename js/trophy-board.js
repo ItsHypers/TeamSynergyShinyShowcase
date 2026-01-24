@@ -80,9 +80,6 @@ window.renderTrophyPage = async (trophyName, returnHash = "#") => {
 };
 
 
-// ===============================
-// TROPHY BOARD
-// ===============================
 async function initTrophyBoard() {
   const container = document.getElementById("main-container");
   if (!container) return;
