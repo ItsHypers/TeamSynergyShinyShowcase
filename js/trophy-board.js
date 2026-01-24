@@ -8,7 +8,7 @@ window.renderTrophyPage = async (trophyName, returnHash = "#") => {
   try {
     const [trophiesRes, shinyRes] = await Promise.all([
       fetch("./json/trophies.json"),
-      fetch("https://adminpage.hypersmmo.workers.dev/api/shiny-database")
+      fetch("https://adminpage.hypersmmo.workers.dev/admin/database")
     ]);
 
     if (!trophiesRes.ok) throw new Error("Failed to fetch trophies.json");

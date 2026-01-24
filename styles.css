@@ -83,6 +83,10 @@ h1:hover {
   max-width: 90%;
   margin: auto;
 }
+.twitch-icon {
+  width: 20px;  /* adjust size */
+  height: 20px;
+}
 
 @media (min-width: 4000px) { 
   .player-card {

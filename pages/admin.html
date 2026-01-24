@@ -1,90 +1,110 @@
-<div id="admin-form-container" class="admin-panel" style="display:none;">
-  <h1>Admin Panel - Add Pokémon</h1>
+<div id="admin-form-container" class="admin-panel" style="display:block;">
+  <h1>Admin Panel</h1>
 
-  <label for="player">Player Name:</label>
-  <input type="text" id="player" placeholder="AceZ" />
-
-  <label for="pokemon">Pokémon Name:</label>
-  <input type="text" id="pokemon" placeholder="Pikachu" />
-
-  <label for="month">Month:</label>
-  <input type="text" id="month" placeholder="January" />
-
-  <label for="year">Year:</label>
-  <input type="text" id="year" placeholder="2026" />
-
-  <label for="egg">Egg:</label>
-  <select id="egg">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
+  <label for="mode">Select Mode:</label>
+  <select id="mode">
+    <option value="pokemon">Add Pokémon</option>
+    <option value="streamer">Add Streamer</option>
   </select>
 
-  <label for="favourite">Favourite:</label>
-  <select id="favourite">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
-  </select>
+  <!-- Pokémon Form -->
+  <div id="pokemon-form">
+    <label for="player">Player Name:</label>
+    <input type="text" id="player" placeholder="AceZ" />
 
-  <label for="secretShiny">Secret Shiny:</label>
-  <select id="secretShiny">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
-  </select>
+    <label for="pokemon">Pokémon Name:</label>
+    <input type="text" id="pokemon" placeholder="Pikachu" />
 
-  <label for="alpha">Alpha:</label>
-  <select id="alpha">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
-  </select>
+    <label for="month">Month:</label>
+    <input type="text" id="month" placeholder="January" />
 
-  <label for="sold">Sold:</label>
-  <select id="sold">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
-  </select>
+    <label for="year">Year:</label>
+    <input type="text" id="year" placeholder="2026" />
 
-  <label for="event">Event:</label>
-  <select id="event">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
-  </select>
+    <label for="egg">Egg:</label>
+    <select id="egg">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
 
-  <label for="reaction">Reaction:</label>
-  <select id="reaction">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
-  </select>
+    <label for="favourite">Favourite:</label>
+    <select id="favourite">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
 
-  <label for="mysteriousBall">Mysterious Ball:</label>
-  <select id="mysteriousBall">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
-  </select>
+    <label for="secretShiny">Secret Shiny:</label>
+    <select id="secretShiny">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
 
-  <label for="safari">Safari:</label>
-  <select id="safari">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
-  </select>
+    <label for="alpha">Alpha:</label>
+    <select id="alpha">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
 
-  <label for="honeyTree">Honey Tree:</label>
-  <select id="honeyTree">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
-  </select>
+    <label for="sold">Sold:</label>
+    <select id="sold">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
 
-  <label for="legendary">Legendary:</label>
-  <select id="legendary">
-    <option value="Yes">Yes</option>
-    <option value="No" selected>No</option>
-  </select>
+    <label for="event">Event:</label>
+    <select id="event">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
 
-  <label for="reactionLink">Reaction Link:</label>
-  <input type="text" id="reactionLink" placeholder="Optional URL" />
+    <label for="reaction">Reaction:</label>
+    <select id="reaction">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
 
-  <button id="addBtn">Add Pokémon</button>
+    <label for="mysteriousBall">Mysterious Ball:</label>
+    <select id="mysteriousBall">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
+
+    <label for="safari">Safari:</label>
+    <select id="safari">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
+
+    <label for="honeyTree">Honey Tree:</label>
+    <select id="honeyTree">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
+
+    <label for="legendary">Legendary:</label>
+    <select id="legendary">
+      <option value="Yes">Yes</option>
+      <option value="No" selected>No</option>
+    </select>
+
+    <label for="reactionLink">Reaction Link:</label>
+    <input type="text" id="reactionLink" placeholder="Optional URL" />
+  </div>
+
+  <!-- Streamer Form -->
+  <div id="streamer-form" style="display:none;">
+    <label for="pokeName">PokeMMO Name:</label>
+    <input type="text" id="pokeName" placeholder="AceZ" />
+
+    <label for="twitchName">Twitch Name:</label>
+    <input type="text" id="twitchName" placeholder="twitch.tv/acez" />
+  </div>
+
+  <button id="addBtn">Add</button>
   <div id="message" class="info"></div>
 
-  <h2>Preview JSON:</h2>
-  <pre id="preview" class="preview-box"></pre>
+  <h3>Preview JSON:</h3>
+  <pre id="preview" contenteditable="true" class="preview-box"></pre>
+  <button id="updateBtn">Update JSON</button>
+  <div id="update-message" class="admin-message"></div>
 </div>

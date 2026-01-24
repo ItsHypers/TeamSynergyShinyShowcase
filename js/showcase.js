@@ -206,7 +206,7 @@ async function initShowcase() {
   const searchInput = document.getElementById("playerSearch");
   if (!pageContainer) return;
 
-  const WORKER_URL = "https://adminpage.hypersmmo.workers.dev/api/shiny-database";
+  const WORKER_URL = "https://adminpage.hypersmmo.workers.dev/admin/database";
   const JSON_VERSION = "v30";
   let cachedData = null;
 
@@ -229,58 +229,111 @@ async function initShowcase() {
   const data = await getData();
 
   const renderShowcase = async (filter = "") => {
-    const container = showcaseContainer();
-    if (!container) return;
+  const container = showcaseContainer();
+  if (!container) return;
 
-    container.textContent = "";
-    const fragment = document.createDocumentFragment();
-    const lowerFilter = filter.toLowerCase();
+  container.textContent = "";
+  const fragment = document.createDocumentFragment();
+  const lowerFilter = filter.toLowerCase();
 
-    Object.entries(data)
-      .sort((a, b) => b[1].shiny_count - a[1].shiny_count)
-      .forEach(([player, playerData], index) => {
-        if (filter && !player.toLowerCase().includes(lowerFilter)) return;
+  // Fetch streamers data
+  let streamersData = {};
+  try {
+    const res = await fetch("https://adminpage.hypersmmo.workers.dev/admin/streamers");
+    streamersData = await res.json();
+  } catch (err) {
+    console.error("Failed to load streamers JSON:", err);
+  }
 
-        const card = document.createElement("div");
-        card.className = "player-card";
+  Object.entries(data)
+    .sort((a, b) => b[1].shiny_count - a[1].shiny_count)
+    .forEach(([player, playerData], index) => {
+      if (filter && !player.toLowerCase().includes(lowerFilter)) return;
 
-        const playerClass =
-          index < 5
-            ? "player-name top-player"
-            : index < 20
-              ? "player-name high-player"
-              : "player-name";
+      const card = document.createElement("div");
+      card.className = "player-card";
 
-        const trophyImg =
-          index === 0
-            ? '<img src="/images/Shiny Showcase/gold.png" class="player-trophy">'
-            : index === 1
-              ? '<img src="/images/Shiny Showcase/silver.png" class="player-trophy">'
-              : index === 2
-                ? '<img src="/images/Shiny Showcase/bronze.png" class="player-trophy">'
-                : "";
+      const playerClass =
+        index < 5
+          ? "player-name top-player"
+          : index < 20
+            ? "player-name high-player"
+            : "player-name";
 
-        const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : "";
+      const trophyImg =
+        index === 0
+          ? '<img src="/images/Shiny Showcase/gold.png" class="player-trophy">'
+          : index === 1
+            ? '<img src="/images/Shiny Showcase/silver.png" class="player-trophy">'
+            : index === 2
+              ? '<img src="/images/Shiny Showcase/bronze.png" class="player-trophy">'
+              : "";
 
-        card.innerHTML = `
-          <a href="#player/${player.toLowerCase()}" class="${playerClass} player-link" data-player="${player.toLowerCase()}">
-            #${index + 1} ${player} (${playerData.shiny_count})${sparkle} ${trophyImg}
-          </a>
-        `;
+      const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : "";
 
-        const shinyList = document.createElement("div");
-        shinyList.className = "shiny-list";
-        Object.values(playerData.shinies).forEach((s) =>
-          shinyList.appendChild(createShinyItem(s)),
-        );
-        card.appendChild(shinyList);
+      // Create the player link
+      const playerLink = document.createElement("a");
+      playerLink.href = `#player/${player.toLowerCase()}`;
+      playerLink.className = `${playerClass} player-link`;
+      playerLink.dataset.player = player.toLowerCase();
+      playerLink.innerHTML = `#${index + 1} ${player} (${playerData.shiny_count})${sparkle}`;
 
-        fragment.appendChild(card);
-      });
+      // Create a container for the name + optional Twitch icon
+      const nameContainer = document.createElement("div"); // changed from span
+      nameContainer.style.display = "inline-flex";
+      nameContainer.style.alignItems = "center";
+      nameContainer.style.justifyContent = "center"; // centers horizontally
+      nameContainer.style.gap = "4px";
+      nameContainer.style.width = "100%"; // take full width of card
 
-    container.appendChild(fragment);
-    setupInfoBoxFlip();
-  };
+
+      // Add Twitch icon if streamer exists
+      const twitchUser = streamersData[player]?.twitch_username;
+      if (twitchUser) {
+        const twitchLink = document.createElement("a");
+        twitchLink.href = `https://www.twitch.tv/${twitchUser}`;
+        twitchLink.target = "_blank";
+        twitchLink.style.display = "inline-flex";
+        twitchLink.style.alignItems = "center";
+
+        const twitchIcon = document.createElement("img");
+        twitchIcon.src = "/images/twitch.png";
+        twitchIcon.alt = "Twitch";
+        twitchIcon.className = "twitch-icon";
+        twitchIcon.style.width = "22px";
+        twitchIcon.style.height = "22px";
+        twitchLink.appendChild(twitchIcon);
+
+        nameContainer.appendChild(twitchLink);
+      }
+
+      nameContainer.appendChild(playerLink);
+
+      // Append trophy if exists (still after the name, unchanged)
+      if (trophyImg) {
+        const trophyWrapper = document.createElement("span");
+        trophyWrapper.innerHTML = trophyImg;
+        nameContainer.appendChild(trophyWrapper);
+      }
+
+      card.appendChild(nameContainer);
+
+      // Shiny list
+      const shinyList = document.createElement("div");
+      shinyList.className = "shiny-list";
+      Object.values(playerData.shinies).forEach((s) =>
+        shinyList.appendChild(createShinyItem(s)),
+      );
+      card.appendChild(shinyList);
+
+      fragment.appendChild(card);
+    });
+
+  container.appendChild(fragment);
+  setupInfoBoxFlip();
+};
+
+
 
   window.renderPlayerPage = async (playerName) => {
     const container = showcaseContainer();

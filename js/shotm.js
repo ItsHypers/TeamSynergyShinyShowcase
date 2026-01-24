@@ -2,7 +2,7 @@ async function initSHOTM(targetMonth, targetYear) {
   const container = document.getElementById("showcase");
   if (!container) return;
 
-  const JSON_FILE = "https://adminpage.hypersmmo.workers.dev/api/shiny-database";
+  const JSON_FILE = "https://adminpage.hypersmmo.workers.dev/admin/database";
   const JSON_VERSION = "v18";
   let cachedData = null;
 

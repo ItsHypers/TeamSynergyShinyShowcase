@@ -10,7 +10,7 @@ function normalizePokemonName(name) {
 
 // Load JSON data
 async function loadData() {
-  const shinyData = await fetch('https://adminpage.hypersmmo.workers.dev/api/shiny-database').then(res => res.json());
+  const shinyData = await fetch('https://adminpage.hypersmmo.workers.dev/admin/database').then(res => res.json());
   const generationData = await fetch('./json/generation.json').then(res => res.json());
   return { shinyData, generationData };
 }
