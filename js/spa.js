@@ -151,3 +151,4 @@ async function handleHashChange() {
 
 window.addEventListener("hashchange", handleHashChange);
 document.addEventListener("DOMContentLoaded", handleHashChange);
+
