@@ -206,7 +206,7 @@ async function initShowcase() {
   const searchInput = document.getElementById("playerSearch");
   if (!pageContainer) return;
 
-  const JSON_FILE = "./shiny_database.json";
+  const WORKER_URL = "https://adminpage.hypersmmo.workers.dev/api/shiny-database";
   const JSON_VERSION = "v30";
   let cachedData = null;
 
@@ -214,7 +214,7 @@ async function initShowcase() {
     if (cachedData) return cachedData;
     try {
       const res = await fetch(
-        `${JSON_FILE}?v=${JSON_VERSION}&t=${Date.now()}`,
+        `${WORKER_URL}?v=${JSON_VERSION}&t=${Date.now()}`,
         { cache: "no-store" },
       );
       if (!res.ok) throw new Error("Failed to fetch JSON");

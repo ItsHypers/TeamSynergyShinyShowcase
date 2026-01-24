@@ -1,0 +1,162 @@
+.admin-login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  background-color: #f8f8f8;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+#admin-text {
+  color: black !important;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#admin-password {
+  margin-bottom: 20px;
+  font-family: sans-serif;
+  color: green;
+  font-size: 1.5rem;
+}
+
+#admin-password {
+  width: 80%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  margin-bottom: 10px;
+}
+
+#admin-login-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #2d8cf0;
+  color: white;
+  cursor: pointer;
+}
+
+#admin-login-btn:hover {
+  background-color: #1c6ed0;
+}
+
+.admin-message {
+  margin-top: 10px;
+  color: red;
+  font-weight: bold;
+}
+
+
+/* ---- Admin Panel Container ---- */
+.admin-panel {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px 30px;
+  background-color: #1e1e2f;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ---- Headings ---- */
+.admin-panel h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #f0f0f0;
+}
+
+.admin-panel h2 {
+  margin-top: 30px;
+  font-size: 1.5rem;
+  color: #f0f0f0;
+  border-bottom: 1px solid #444;
+  padding-bottom: 5px;
+}
+
+/* ---- Labels ---- */
+.admin-panel label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #dcdcdc;
+}
+
+/* ---- Inputs and Selects ---- */
+.admin-panel input[type="text"],
+.admin-panel input[type="password"],
+.admin-panel select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #2b2b3b;
+  color: #f0f0f0;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.admin-panel input::placeholder {
+  color: #aaa;
+}
+
+/* ---- Button ---- */
+.admin-panel button {
+  margin-top: 20px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.admin-panel button:hover {
+  background-color: #45a049;
+}
+
+/* ---- Message ---- */
+.admin-panel #message {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.admin-panel .info {
+  background-color: #333;
+  color: #fff;
+}
+
+.admin-panel .success {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.admin-panel .error {
+  background-color: #e53935;
+  color: #fff;
+}
+
+/* ---- Preview JSON ---- */
+.admin-panel #preview {
+  margin-top: 20px;
+  background-color: #2b2b3b;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 15px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: "Courier New", Courier, monospace;
+  max-height: 400px;
+  overflow-y: auto;
+  color: #f0f0f0;
+}

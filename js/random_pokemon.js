@@ -9,7 +9,7 @@ const ODDS = {
 };
 
 async function initRandomPokemon() {
-  const SHINY_DB_FILE = "shiny_database.json"; 
+  const SHINY_DB_FILE = "https://adminpage.hypersmmo.workers.dev/api/shiny-database"; 
   const shinyboardBaseURL = "https://shinyboard.net/api/users/";
   let shiny_database = null;
   fetch(SHINY_DB_FILE)
