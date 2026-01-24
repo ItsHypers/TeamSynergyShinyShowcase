@@ -30,6 +30,10 @@ async function loadPage(tabName = "shiny-showcase") {
       path: "/pages/pokedex.html",
       init: "initPokeDex",
     },
+    "streamers": {
+      path: "/pages/streamers.html",
+      init: "initStreamers",
+    },
     shotm: { path: "/pages/SHOTM.html", init: "initSHOTM" },
     "trophy-board": { init: "initTrophyBoard" },
     trophies: { init: "initTrophyBoard" },
