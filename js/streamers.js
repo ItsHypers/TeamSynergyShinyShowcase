@@ -18,51 +18,60 @@ async function initStreamers() {
 function displayStreamers(data) {
   const liveEl = document.getElementById('live-streamers');
   const offlineEl = document.getElementById('offline-streamers');
+  const liveSection = document.getElementById('live-section');
 
-  liveEl.innerHTML = '';
+  // Remove the "Loading..." message
+  const loadingMessage = document.getElementById('loading-message');
+  if (loadingMessage) loadingMessage.remove();
+
+  // Clear offline streamers
   offlineEl.innerHTML = '';
 
   // Live streamers
-  data.live.forEach(stream => {
-    const link = document.createElement('a');
-    link.href = `https://www.twitch.tv/${stream.user_login}`;
-    link.target = '_blank';
-    link.style.textDecoration = 'none';
+  if (!data.live.length) {
+    // Remove the whole live section if no live streamers
+    if (liveSection) liveSection.remove();
+  } else {
+    liveEl.innerHTML = '';
+    data.live.forEach(stream => {
+      const link = document.createElement('a');
+      link.href = `https://www.twitch.tv/${stream.user_name.toLowerCase()}`;
+      link.target = '_blank';
+      link.style.textDecoration = 'none';
 
-    const div = document.createElement('div');
-    div.className = 'streamer-card live';
-    div.innerHTML = `
-      <img src="${stream.thumbnail_url.replace('{width}', '320').replace('{height}', '180')}" alt="${stream.user_name} thumbnail" />
-      <p class="player-name">${stream.user_name}</p>
-      <p class="stream-title">${stream.title}</p>
-      <p class="viewer-count">${stream.viewer_count} viewers</p>
-    `;
+      const li = document.createElement('li');
+      li.className = 'streamer-card live';
+      li.innerHTML = `
+        <img src="${stream.thumbnail_url}" alt="${stream.user_name} thumbnail" />
+        <p class="player-name">${stream.user_name}</p>
+        <p class="stream-title">${stream.title}</p>
+        <p class="viewer-count">${stream.viewer_count} viewers</p>
+      `;
 
-    link.appendChild(div);
-    liveEl.appendChild(link);
-  });
+      link.appendChild(li);
+      liveEl.appendChild(link);
+    });
+  }
 
   // Offline streamers
+  offlineEl.innerHTML = '';
   data.offline.forEach(user => {
     const link = document.createElement('a');
-    link.href = `https://www.twitch.tv/${user.login}`;
+    link.href = `https://www.twitch.tv/${user.user_name.toLowerCase()}`;
     link.target = '_blank';
     link.style.textDecoration = 'none';
 
-    const div = document.createElement('div');
-    div.className = 'streamer-card';
-    div.innerHTML = `
-      <img src="${user.profile_image_url}" alt="${user.display_name} profile" class="offline-profile" />
-      <p class="player-name">${user.display_name}</p>
+    const li = document.createElement('li');
+    li.className = 'streamer-card';
+    li.innerHTML = `
+      <img src="${user.profile_image_url}" alt="${user.user_name} profile" class="offline-profile" />
+      <p class="player-name">${user.user_name}</p>
     `;
 
-    link.appendChild(div);
+    link.appendChild(li);
     offlineEl.appendChild(link);
   });
 }
-
-
-
 
   async function init() {
     try {
