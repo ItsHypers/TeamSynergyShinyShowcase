@@ -158,17 +158,16 @@
 
 /* ---- Preview JSON ---- */
 .admin-panel #preview {
-  margin-top: 20px;
-  background-color: #2b2b3b;
-  border: 1px solid #555;
-  border-radius: 8px;
-  padding: 15px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  font-family: "Courier New", Courier, monospace;
-  max-height: 400px;
-  overflow-y: auto;
-  color: #f0f0f0;
+  width: 100%;          /* full width or adjust as needed */
+  max-width: 100%;      
+  min-width: 200px;     /* optional minimum size */
+  max-height: 500px;    /* optional max height */
+  overflow: auto;       /* scrollbars if content overflows */
+  resize: both;         /* enables resizing by dragging corner */
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-family: monospace;
+  white-space: pre-wrap; /* wraps long lines */
 }
 
 /* ---- Admin Log Preview ---- */

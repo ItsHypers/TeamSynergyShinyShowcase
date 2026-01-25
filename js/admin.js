@@ -1,3 +1,15 @@
+
+// Put this at the very top of your JS, outside initAdminPanel()
+window.reloadAdminData = async () => {
+  if (window.initAdminPanel) {
+    // If database not loaded yet, just call init
+    if (typeof window.loadDatabaseGlobal === "function") {
+      await window.loadDatabaseGlobal(); // reloads DB + log
+    }
+  }
+};
+
+
 async function initAdminPanel() {
   const modeSelect = document.getElementById("mode");
   const pokemonForm = document.getElementById("pokemon-form");
@@ -21,6 +33,216 @@ async function initAdminPanel() {
   function renderPreview(db) {
     previewEl.textContent = JSON.stringify(db, null, 2);
   }
+
+  // Allow popup to tell the main page to reload DB + preview
+    window.refreshDatabase = async () => {
+      await loadDatabase();
+    };
+
+previewEl.addEventListener("click", () => {
+  const jsonText = previewEl.textContent;
+  const dbType = modeSelect.value === "pokemon" ? "pokemon" : "streamer";
+  const endpoint =
+    dbType === "pokemon"
+      ? `${WORKER_BASE}/update-database`
+      : `${WORKER_BASE}/update-streamers`;
+
+  const adminName = window.ADMIN_AUTH?.name || "";
+  const adminPassword = window.ADMIN_AUTH?.password || "";
+
+  const win = window.open("", "_blank", "width=1000,height=700,resizable=yes,scrollbars=yes");
+  const doc = win.document;
+  doc.open();
+  doc.write("<!DOCTYPE html><html><head><title>Editable JSON</title></head><body></body></html>");
+  doc.close();
+
+  // Escape JSON safely
+  const safeJSON = JSON.stringify(jsonText).replace(/\\/g, "\\\\").replace(/`/g, "\\`");
+
+  const style = doc.createElement("style");
+  style.textContent = `
+  body {
+    background:#1e1e2f;
+    color:#fff;
+    font-family:monospace;
+    margin:0;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  h2 { margin:10px; }
+  textarea {
+    flex:1;
+    margin:10px;
+    background:#2b2b3b;
+    color:#fff;
+    border:1px solid #555;
+    padding:10px;
+    resize:both;
+    border-radius:6px;
+  }
+  .footer {
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:10px;
+    background:#1a1a2a;
+    border-top:1px solid #444;
+  }
+  button {
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    background:#4caf50;
+    color:white;
+    font-size:1rem;
+  }
+  #status { font-weight:bold; color:#fff; }
+  `;
+  doc.head.appendChild(style);
+
+  const h2 = doc.createElement("h2");
+  h2.textContent = "Editable JSON (" + dbType.toUpperCase() + ")";
+  doc.body.appendChild(h2);
+
+  const textarea = doc.createElement("textarea");
+  textarea.id = "jsonEditor";
+  textarea.value = jsonText;
+  doc.body.appendChild(textarea);
+
+  const footer = doc.createElement("div");
+  footer.className = "footer";
+
+  // Save button
+  const saveBtn = doc.createElement("button");
+  saveBtn.textContent = "Save Changes";
+  footer.appendChild(saveBtn);
+
+  const status = doc.createElement("div");
+  status.id = "status";
+  status.style.marginLeft = "10px"; // add some spacing from the button
+  footer.appendChild(status);
+
+  // Close button
+  const closeBtn = doc.createElement("button");
+  closeBtn.textContent = "Close";
+  closeBtn.style.marginLeft = "auto"; 
+  footer.appendChild(closeBtn);
+
+  doc.body.appendChild(footer);
+
+  // Close button functionality
+  closeBtn.onclick = () => {
+    win.close();
+  };
+
+  // Store original data safely
+  let originalObj;
+  try {
+    originalObj = JSON.parse(jsonText);
+  } catch (err) {
+    originalObj = {};
+  }
+
+  function formatPath(path) {
+    const parts = path.split(".");
+    let player = parts[0] || "";
+    let shinyId = parts[2] || "";
+    let field = parts.slice(3).join(".");
+    return `Player "${player}" → Shiny ID ${shinyId} → ${field}`;
+  }
+
+  function findChanges(oldObj, newObj, path = "") {
+    let changes = [];
+
+    for (let key in oldObj) {
+      const p = path ? path + "." + key : key;
+      if (!(key in newObj)) {
+        changes.push(`Removed ${formatPath(p)}`);
+      } else if (
+        typeof oldObj[key] === "object" &&
+        typeof newObj[key] === "object" &&
+        oldObj[key] !== null &&
+        newObj[key] !== null
+      ) {
+        changes = changes.concat(findChanges(oldObj[key], newObj[key], p));
+      } else if (oldObj[key] !== newObj[key]) {
+        changes.push(`${formatPath(p)}\n  "${oldObj[key]}" → "${newObj[key]}"`);
+      }
+    }
+
+    for (let key in newObj) {
+      const p = path ? path + "." + key : key;
+      if (!(key in oldObj)) {
+        changes.push(`Added ${formatPath(p)}: "${newObj[key]}"`);
+      }
+    }
+    return changes;
+  }
+
+  saveBtn.onclick = async () => {
+
+    let updatedData;
+    try {
+      updatedData = JSON.parse(textarea.value);
+    } catch (e) {
+      status.textContent = "Invalid JSON: " + e.message;
+      status.style.color = "#e53935";
+      return;
+    }
+
+    const changes = findChanges(originalObj, updatedData);
+    const changesSummary = changes.length
+      ? changes.slice(0, 20).join("\n") +
+        (changes.length > 20 ? `\n...and ${changes.length - 20} more changes` : "")
+      : "No changes detected";
+
+    status.textContent = "Saving...";
+    status.style.color = "#fff";
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: adminName,
+          password: adminPassword,
+          data: updatedData,
+          action: `Manual JSON edit (via popup)\nChanges:\n${changesSummary}`
+        })
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        status.textContent = "Saved successfully!";
+        status.style.color = "#4caf50";
+
+        // Force main panel to fully reload DB and log
+        if (window.opener && typeof window.opener.loadDatabase === "function") {
+          await window.opener.loadDatabase(); // fully reloads DB + logs
+        } else if (window.opener && typeof window.opener.refreshDatabase === "function") {
+          await window.opener.refreshDatabase(); // fallback
+        }
+      } else {
+        status.textContent = "Failed to save changes.";
+        status.style.color = "#e53935";
+      }
+    } catch (err) {
+      status.textContent = "Error: " + err.message;
+      status.style.color = "#e53935";
+    }
+    if (window.opener && typeof window.opener.loadDatabaseGlobal === "function") {
+    await window.opener.loadDatabaseGlobal(); // reload DB + logs
+  }
+  };
+});
+
+
+
+
+
   function renderLog(logData) {
     if (!logPreviewEl) return;
 
@@ -65,7 +287,7 @@ async function initAdminPanel() {
     updateMessageEl.textContent = "";
   });
 
-  // --------------------- Load Database ---------------------
+    // --------------------- Load Database ---------------------
   async function loadDatabase() {
     try {
       const res = await fetch(`${WORKER_BASE}/database`);
@@ -77,23 +299,27 @@ async function initAdminPanel() {
       const res3 = await fetch(`${WORKER_BASE}/log`);
       const logData = await res3.json();
 
-       for (const player in database) {
-      updateShinyCount(player);
-    }
+      // Update counts
+      for (const player in database) updateShinyCount(player);
 
+      // Render preview
       if (modeSelect.value === "pokemon") renderPreview(database);
       else renderPreview(streamersDB);
 
+      // Render log
       renderLog(logData);
 
       // After DB is loaded, initialize autocomplete
       initAutocomplete();
-
     } catch (err) {
       messageEl.textContent = "Error loading database: " + err.message;
       messageEl.className = "error";
     }
   }
+
+  // Make loadDatabase global so popup can access
+  window.loadDatabaseGlobal = loadDatabase;
+
 
 function setupAutocomplete(inputEl, suggestionsEl, getOptions) {
   let currentFocus = -1;
