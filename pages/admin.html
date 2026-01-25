@@ -110,8 +110,22 @@
     <input type="checkbox" id="overrideDuplicate" />
     Override Duplicate
   </label>
+
+
 </div>
 
+  <div id="delete-form-container">
+  <h3>Delete Data</h3>
+  <label for="deletePlayer">Player:</label>
+  <input type="text" id="deletePlayer" placeholder="Enter player name" autocomplete="off">
+  <div id="deletePlayer-suggestions" class="autocomplete-suggestions"></div>
+
+  <label for="deleteId">Pokémon ID:</label>
+  <input type="number" id="deleteId" placeholder="Enter Pokémon ID (Optional)">
+
+  <button id="deleteBtn">Delete Pokémon</button>
+  <p id="deleteMessage"></p>
+</div>
 
   <h3>Preview JSON:</h3>
   <pre id="preview" contenteditable="true" class="preview-box"></pre>

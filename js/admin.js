@@ -178,6 +178,13 @@ function setupAutocomplete(inputEl, suggestionsEl, getOptions) {
       () => Object.keys(database)
     );
 
+    setupAutocomplete(
+      document.getElementById("deletePlayer"),
+      document.getElementById("deletePlayer-suggestions"),
+      () => Object.keys(database)
+    );
+
+
     // Pokémon autocomplete
     setupAutocomplete(
       document.getElementById("pokemon"),
@@ -425,6 +432,120 @@ addBtn.addEventListener("click", async () => {
       updateMessageEl.className = "error";
     }
   });
+
+   // --------------------- Delete Button ---------------------
+  const deleteBtn = document.getElementById("deleteBtn");
+  const deleteMessage = document.getElementById("deleteMessage");
+
+  deleteBtn.addEventListener("click", async () => {
+  const player = document.getElementById("deletePlayer").value.trim();
+  const idToDelete = document.getElementById("deleteId").value.trim(); // optional
+
+  if (!isAuthorized()) {
+    deleteMessage.textContent = "Unauthorized: Log in first.";
+    deleteMessage.className = "error";
+    return;
+  }
+
+  if (!player) {
+    deleteMessage.textContent = "Player is required.";
+    deleteMessage.className = "error";
+    return;
+  }
+
+  if (!database[player]) {
+    deleteMessage.textContent = `No data found for player ${player}.`;
+    deleteMessage.className = "error";
+    return;
+  }
+
+  const admin = window.ADMIN_AUTH.name;
+  const password = window.ADMIN_AUTH.password;
+
+  // Determine deletion type
+  if (!idToDelete) {
+    // Delete entire player
+    delete database[player];
+    try {
+      const res = await fetch(`${WORKER_BASE}/update-database`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: admin,
+          password,
+          data: database,
+          action: `Deleted all data for player ${player}`,
+        }),
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        deleteMessage.textContent = `All data for ${player} deleted successfully!`;
+        deleteMessage.className = "success";
+        renderPreview(database);
+        await loadDatabase();
+      } else {
+        deleteMessage.textContent = "Failed to delete player.";
+        deleteMessage.className = "error";
+      }
+    } catch (err) {
+      deleteMessage.textContent = "Error updating database: " + err.message;
+      deleteMessage.className = "error";
+    }
+
+  } else {
+    // Delete specific Pokémon ID
+    if (!database[player].shinies[idToDelete]) {
+      deleteMessage.textContent = `No Pokémon found with ID ${idToDelete} for ${player}.`;
+      deleteMessage.className = "error";
+      return;
+    }
+
+    delete database[player].shinies[idToDelete];
+
+    // Reindex IDs
+    const newShinies = {};
+    Object.keys(database[player].shinies)
+      .sort((a, b) => parseInt(a) - parseInt(b)) // ascending
+      .forEach((key, index) => {
+        newShinies[index + 1] = database[player].shinies[key];
+      });
+    database[player].shinies = newShinies;
+
+    // Update shiny count
+    updateShinyCount(player);
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/update-database`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: admin,
+          password,
+          data: database,
+          action: `Deleted Pokémon ID ${idToDelete} for ${player}`,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        deleteMessage.textContent = `Pokémon ID ${idToDelete} deleted successfully!`;
+        deleteMessage.className = "success";
+        renderPreview(database);
+        await loadDatabase();
+      } else {
+        deleteMessage.textContent = "Failed to delete Pokémon.";
+        deleteMessage.className = "error";
+      }
+    } catch (err) {
+      deleteMessage.textContent = "Error updating database: " + err.message;
+      deleteMessage.className = "error";
+    }
+  }
+});
+
+
 
   // Initial load
   await loadDatabase();

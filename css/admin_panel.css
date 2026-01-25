@@ -99,6 +99,7 @@
 
 /* ---- Inputs and Selects ---- */
 .admin-panel input[type="text"],
+.admin-panel input[type="number"],
 .admin-panel input[type="password"],
 .admin-panel select {
   width: 100%;
