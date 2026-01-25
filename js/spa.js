@@ -14,24 +14,27 @@ async function loadPage(tabName = "shiny-showcase") {
   document.body.classList.remove("player-page-active");
   // ---- Admin page ----
     if (tabName === "admin") {
-  // show password input first
   pageContainer.innerHTML = `
     <div class="admin-login-container">
       <h2 id="admin-text">Admin Login</h2>
-      <input type="password" id="admin-password" placeholder="Enter password" />
+      <input type="text" id="admin-name" placeholder="Admin name" />
+      <input type="password" id="admin-password" placeholder="Password" />
       <button id="admin-login-btn">Login</button>
       <div id="admin-login-message" class="admin-message"></div>
     </div>
   `;
 
-  const input = pageContainer.querySelector("#admin-password");
+  const nameInput = pageContainer.querySelector("#admin-name");
+  const passInput = pageContainer.querySelector("#admin-password");
   const button = pageContainer.querySelector("#admin-login-btn");
   const message = pageContainer.querySelector("#admin-login-message");
 
   button.addEventListener("click", async () => {
-    const password = input.value.trim();
-    if (!password) {
-      message.textContent = "Please enter a password.";
+    const admin = nameInput.value.trim();
+    const password = passInput.value.trim();
+
+    if (!admin || !password) {
+      message.textContent = "Enter admin name and password.";
       return;
     }
 
@@ -39,29 +42,28 @@ async function loadPage(tabName = "shiny-showcase") {
       const res = await fetch("https://adminpage.hypersmmo.workers.dev/admin/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username: admin, password }),
       });
+
       const data = await res.json();
 
       if (!data.authorized) {
-        message.textContent = "Incorrect password!";
+        message.textContent = "Invalid admin credentials.";
         return;
       }
 
-      // password correct → store token
-      window.ADMIN_PASSWORD_TOKEN = password;
+      // store full auth globally
+      window.ADMIN_AUTH = { name: admin, password };
 
-      // ✅ Fetch admin.html
+      // load admin panel HTML
       const adminRes = await fetch("/pages/admin.html");
       if (!adminRes.ok) {
         pageContainer.innerHTML = "<div class='message'>Failed to load admin page</div>";
         return;
       }
 
-      // inject HTML
       pageContainer.innerHTML = await adminRes.text();
 
-     // make the admin form visible
       const adminForm = document.getElementById("admin-form-container");
       if (adminForm) adminForm.style.display = "block";
 
@@ -69,14 +71,14 @@ async function loadPage(tabName = "shiny-showcase") {
       if (typeof window.initAdminPanel === "function") {
         await window.initAdminPanel();
       }
-
     } catch (err) {
-      message.textContent = "Error verifying password.";
+      message.textContent = "Error contacting server.";
     }
   });
 
-  return; // stop normal SPA load
+  return;
 }
+
 
 
 

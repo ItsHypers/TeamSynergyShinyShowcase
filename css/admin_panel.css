@@ -21,6 +21,15 @@
   font-size: 1.5rem;
 }
 
+#admin-name {
+  width: 80%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  margin-bottom: 10px;
+}
+
 #admin-password {
   width: 80%;
   padding: 10px;
@@ -159,4 +168,105 @@
   max-height: 400px;
   overflow-y: auto;
   color: #f0f0f0;
+}
+
+/* ---- Admin Log Preview ---- */
+.admin-panel h3 {
+  margin-top: 30px;
+  font-size: 1.5rem;
+  color: #f0f0f0;
+  border-bottom: 1px solid #444;
+  padding-bottom: 5px;
+}
+
+#logPreview {
+  margin-top: 15px;
+  background-color: #2b2b3b;  /* matches admin-panel */
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 15px;
+  font-family: "Courier New", Courier, monospace;
+  color: #f0f0f0;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;  /* keeps line breaks */
+  word-wrap: break-word;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+/* Individual log entries */
+#logPreview span.log-entry {
+  display: block;
+  padding: 8px 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  background-color: #1f1f2d;
+  transition: background-color 0.2s ease;
+}
+
+/* Alternate row colors for readability */
+#logPreview span.log-entry:nth-child(odd) {
+  background-color: #272738;
+}
+
+#logPreview span.log-entry:nth-child(even) {
+  background-color: #1f1f2d;
+}
+
+/* Admin name bold, action normal, time smaller */
+#logPreview span.log-entry .admin-name {
+  font-weight: bold;
+  color: #4caf50;
+}
+
+#logPreview span.log-entry .action {
+  color: #f0f0f0;
+}
+
+#logPreview span.log-entry .time {
+  display: block;
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+/* Scrollbar style */
+#logPreview::-webkit-scrollbar {
+  width: 8px;
+}
+
+#logPreview::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+#logPreview::-webkit-scrollbar-track {
+  background-color: #2b2b3b;
+  border-radius: 4px;
+}
+
+.autocomplete-suggestions {
+  display: none; /* hide by default */
+  position: absolute;
+  background: rgb(219, 74, 255);
+  border: 1px solid #683664;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 9999;  
+  width: 200px;
+}
+
+.autocomplete-suggestions.show {
+  display: block; /* visible when active */
+}
+
+.autocomplete-suggestion {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.autocomplete-suggestion:hover, .autocomplete-suggestion.active {
+  background-color: #e8bfff;
 }

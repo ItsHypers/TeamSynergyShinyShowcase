@@ -9,11 +9,14 @@
 
   <!-- Pokémon Form -->
   <div id="pokemon-form">
-    <label for="player">Player Name:</label>
-    <input type="text" id="player" placeholder="AceZ" />
+  <label for="player">Player Name:</label>
+  <input type="text" id="player" placeholder="hyper" autocomplete="off" />
+  <div id="player-suggestions" class="autocomplete-suggestions"></div>
 
-    <label for="pokemon">Pokémon Name:</label>
-    <input type="text" id="pokemon" placeholder="Pikachu" />
+  <label for="pokemon">Pokémon Name:</label>
+  <input type="text" id="pokemon" placeholder="mew" autocomplete="off" />
+  <div id="pokemon-suggestions" class="autocomplete-suggestions"></div>
+
 
     <label for="month">Month:</label>
     <input type="text" id="month" value="January" placeholder="January" />
@@ -107,4 +110,8 @@
   <pre id="preview" contenteditable="true" class="preview-box"></pre>
   <button id="updateBtn">Update JSON</button>
   <div id="update-message" class="admin-message"></div>
+
+  <h3 id="adminlogmsg">Admin Log:</h3>
+<pre id="logPreview" class="preview-box"></pre>
+
 </div>
