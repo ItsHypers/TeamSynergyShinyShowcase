@@ -228,110 +228,127 @@ async function initShowcase() {
 
   const data = await getData();
 
+  // Render or filter the showcase
   const renderShowcase = async (filter = "") => {
-  const container = showcaseContainer();
-  if (!container) return;
+    const container = showcaseContainer();
+    if (!container) return;
 
-  container.textContent = "";
-  const fragment = document.createDocumentFragment();
-  const lowerFilter = filter.toLowerCase();
+    const lowerFilter = filter.toLowerCase();
 
-  // Fetch streamers data
-  let streamersData = {};
-  try {
-    const res = await fetch("https://adminpage.hypersmmo.workers.dev/admin/streamers");
-    streamersData = await res.json();
-  } catch (err) {
-    console.error("Failed to load streamers JSON:", err);
-  }
+    // Check if cards already exist
+    let cards = container.querySelectorAll(".player-card");
 
-  Object.entries(data)
-    .sort((a, b) => b[1].shiny_count - a[1].shiny_count)
-    .forEach(([player, playerData], index) => {
-      if (filter && !player.toLowerCase().includes(lowerFilter)) return;
+    if (!cards.length) {
+      // === FIRST LOAD: build all cards ===
+      const fragment = document.createDocumentFragment();
 
-      const card = document.createElement("div");
-      card.className = "player-card";
+      // Fetch streamers data
+      let streamersData = {};
+      try {
+        const res = await fetch("https://adminpage.hypersmmo.workers.dev/admin/streamers");
+        streamersData = await res.json();
+      } catch (err) {
+        console.error("Failed to load streamers JSON:", err);
+      }
 
-      const playerClass =
-        index < 5
-          ? "player-name top-player"
-          : index < 20
-            ? "player-name high-player"
-            : "player-name";
+      Object.entries(data)
+        .sort((a, b) => b[1].shiny_count - a[1].shiny_count)
+        .forEach(([player, playerData], index) => {
+          const card = document.createElement("div");
+          card.className = "player-card";
 
-      const trophyImg =
-        index === 0
-          ? '<img src="/images/Shiny Showcase/gold.png" class="player-trophy">'
-          : index === 1
-            ? '<img src="/images/Shiny Showcase/silver.png" class="player-trophy">'
-            : index === 2
+          const playerClass =
+            index < 5
+              ? "player-name top-player"
+              : index < 20
+              ? "player-name high-player"
+              : "player-name";
+
+          const trophyImg =
+            index === 0
+              ? '<img src="/images/Shiny Showcase/gold.png" class="player-trophy">'
+              : index === 1
+              ? '<img src="/images/Shiny Showcase/silver.png" class="player-trophy">'
+              : index === 2
               ? '<img src="/images/Shiny Showcase/bronze.png" class="player-trophy">'
               : "";
 
-      const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : "";
+          const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : "";
 
-      // Create the player link
-      const playerLink = document.createElement("a");
-      playerLink.href = `#player/${player.toLowerCase()}`;
-      playerLink.className = `${playerClass} player-link`;
-      playerLink.dataset.player = player.toLowerCase();
-      playerLink.innerHTML = `#${index + 1} ${player} (${playerData.shiny_count})${sparkle}`;
+          // Player link
+          const playerLink = document.createElement("a");
+          playerLink.href = `#player/${player.toLowerCase()}`;
+          playerLink.className = `${playerClass} player-link`;
+          playerLink.dataset.player = player.toLowerCase();
+          playerLink.innerHTML = `#${index + 1} ${player} (${playerData.shiny_count})${sparkle}`;
 
-      // Create a container for the name + optional Twitch icon
-      const nameContainer = document.createElement("div"); // changed from span
-      nameContainer.style.display = "inline-flex";
-      nameContainer.style.alignItems = "center";
-      nameContainer.style.justifyContent = "center"; // centers horizontally
-      nameContainer.style.gap = "4px";
-      nameContainer.style.width = "100%"; // take full width of card
+          // Name container
+          const nameContainer = document.createElement("div");
+          nameContainer.style.display = "inline-flex";
+          nameContainer.style.alignItems = "center";
+          nameContainer.style.justifyContent = "center";
+          nameContainer.style.gap = "4px";
+          nameContainer.style.width = "100%";
 
+          // Twitch icon
+          const twitchUser = streamersData[player]?.twitch_username;
+          if (twitchUser) {
+            const twitchLink = document.createElement("a");
+            twitchLink.href = `https://www.twitch.tv/${twitchUser}`;
+            twitchLink.target = "_blank";
+            twitchLink.style.display = "inline-flex";
+            twitchLink.style.alignItems = "center";
 
-      // Add Twitch icon if streamer exists
-      const twitchUser = streamersData[player]?.twitch_username;
-      if (twitchUser) {
-        const twitchLink = document.createElement("a");
-        twitchLink.href = `https://www.twitch.tv/${twitchUser}`;
-        twitchLink.target = "_blank";
-        twitchLink.style.display = "inline-flex";
-        twitchLink.style.alignItems = "center";
+            const twitchIcon = document.createElement("img");
+            twitchIcon.src = "/images/twitch.png";
+            twitchIcon.alt = "Twitch";
+            twitchIcon.className = "twitch-icon";
+            twitchIcon.style.width = "22px";
+            twitchIcon.style.height = "22px";
+            twitchLink.appendChild(twitchIcon);
 
-        const twitchIcon = document.createElement("img");
-        twitchIcon.src = "/images/twitch.png";
-        twitchIcon.alt = "Twitch";
-        twitchIcon.className = "twitch-icon";
-        twitchIcon.style.width = "22px";
-        twitchIcon.style.height = "22px";
-        twitchLink.appendChild(twitchIcon);
+            nameContainer.appendChild(twitchLink);
+          }
 
-        nameContainer.appendChild(twitchLink);
+          nameContainer.appendChild(playerLink);
+
+          // Trophy
+          if (trophyImg) {
+            const trophyWrapper = document.createElement("span");
+            trophyWrapper.innerHTML = trophyImg;
+            nameContainer.appendChild(trophyWrapper);
+          }
+
+          card.appendChild(nameContainer);
+
+          // Shiny list
+          const shinyList = document.createElement("div");
+          shinyList.className = "shiny-list";
+          Object.values(playerData.shinies).forEach((s) =>
+            shinyList.appendChild(createShinyItem(s)),
+          );
+          card.appendChild(shinyList);
+
+          fragment.appendChild(card);
+        });
+
+      container.appendChild(fragment);
+      setupInfoBoxFlip();
+
+      // Update cards reference
+      cards = container.querySelectorAll(".player-card");
+    }
+
+    // === FILTER: hide/show cards ===
+    cards.forEach((card) => {
+      const playerName = card.querySelector(".player-link").dataset.player;
+      if (playerName.includes(lowerFilter)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
       }
-
-      nameContainer.appendChild(playerLink);
-
-      // Append trophy if exists (still after the name, unchanged)
-      if (trophyImg) {
-        const trophyWrapper = document.createElement("span");
-        trophyWrapper.innerHTML = trophyImg;
-        nameContainer.appendChild(trophyWrapper);
-      }
-
-      card.appendChild(nameContainer);
-
-      // Shiny list
-      const shinyList = document.createElement("div");
-      shinyList.className = "shiny-list";
-      Object.values(playerData.shinies).forEach((s) =>
-        shinyList.appendChild(createShinyItem(s)),
-      );
-      card.appendChild(shinyList);
-
-      fragment.appendChild(card);
     });
-
-  container.appendChild(fragment);
-  setupInfoBoxFlip();
-};
+  };
 
 
 

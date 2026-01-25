@@ -64,6 +64,15 @@ h1:hover {
     0 0 12px rgba(74,144,226,0.35),
     0 0 18px rgba(74,144,226,0.25);
 }
+.invisible-link {
+  text-decoration: none;   
+  color: inherit;            
+  cursor: default;            
+}
+.invisible-link:hover {
+  text-decoration: none;      
+  color: inherit;          
+}
 
 .player-trophy {
   width: 20px;
@@ -87,6 +96,19 @@ h1:hover {
   width: 20px;  /* adjust size */
   height: 20px;
 }
+
+.video-container {
+  text-align: center; /* centers the content horizontally */
+  margin: 20px 0; /* optional spacing above/below */
+}
+
+.showcasevideo {
+  width: 300px; /* adjust the width to make it smaller */
+  max-width: 100%; /* ensures it doesn't overflow on small screens */
+  height: auto; /* keeps the image aspect ratio */
+  display: inline-block; /* makes centering consistent */
+}
+
 
 @media (min-width: 4000px) { 
   .player-card {
