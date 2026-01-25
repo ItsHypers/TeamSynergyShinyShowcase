@@ -77,6 +77,10 @@ async function initAdminPanel() {
       const res3 = await fetch(`${WORKER_BASE}/log`);
       const logData = await res3.json();
 
+       for (const player in database) {
+      updateShinyCount(player);
+    }
+
       if (modeSelect.value === "pokemon") renderPreview(database);
       else renderPreview(streamersDB);
 
@@ -184,129 +188,187 @@ function setupAutocomplete(inputEl, suggestionsEl, getOptions) {
           const shinies = database[player].shinies || {};
           for (const id in shinies) allPokemon.push(shinies[id].Pokemon);
         }
-        return [...new Set(allPokemon)]; // unique
+        // Make unique, ignoring case
+        const uniquePokemon = [...new Map(
+          allPokemon.map(p => [p.toLowerCase(), p])
+        ).values()];
+
+        // Capitalize first letter of each Pokemon
+        return uniquePokemon.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase());
       }
     );
+
   }
 
-  // --------------------- Add Button ---------------------
-  addBtn.addEventListener("click", async () => {
-    if (!isAuthorized()) {
-      messageEl.textContent = "Unauthorized: Please log in first.";
+  function updateShinyCount(player) {
+  if (!database[player] || !database[player].shinies) return;
+
+  const shinies = database[player].shinies;
+  let count = 0;
+  for (const id in shinies) {
+    if (shinies[id].Sold !== "Yes") {
+      count++;
+    }
+  }
+  database[player].shiny_count = count;
+}
+
+// --------------------- Add Button ---------------------
+addBtn.addEventListener("click", async () => {
+  if (!isAuthorized()) {
+    messageEl.textContent = "Unauthorized: Please log in first.";
+    messageEl.className = "error";
+    return;
+  }
+
+  const admin = window.ADMIN_AUTH.name;
+  const password = window.ADMIN_AUTH.password;
+
+  if (modeSelect.value === "pokemon") {
+    // ---- Get form values ----
+    const player = document.getElementById("player").value.trim();
+    const pokemonName = document.getElementById("pokemon").value.trim();
+    const month = document.getElementById("month").value.trim();
+    const year = document.getElementById("year").value.trim();
+    const egg = document.getElementById("egg").value;
+    const favourite = document.getElementById("favourite").value;
+
+    // Additional fields
+    const secretShiny = document.getElementById("secretShiny").value;
+    const alpha = document.getElementById("alpha").value;
+    const sold = document.getElementById("sold").value;
+    const eventVal = document.getElementById("event").value;
+    const reaction = document.getElementById("reaction").value;
+    const mysteriousBall = document.getElementById("mysteriousBall").value;
+    const safari = document.getElementById("safari").value;
+    const honeyTree = document.getElementById("honeyTree").value;
+    const legendary = document.getElementById("legendary").value;
+    const reactionLink = document.getElementById("reactionLink").value.trim();
+    const overrideDuplicate = document.getElementById("overrideDuplicate")?.checked || false;
+
+    if (!player || !pokemonName) {
+      messageEl.textContent = "Player and Pokémon are required.";
       messageEl.className = "error";
       return;
     }
 
-    const admin = window.ADMIN_AUTH.name;
-    const password = window.ADMIN_AUTH.password;
+    // ---- Duplicate prevention ----
+    if (!database[player]) database[player] = { shiny_count: 0, shinies: {} };
+    const playerShinies = database[player].shinies || {};
+    const last5Ids = Object.keys(playerShinies)
+      .map(id => parseInt(id))
+      .sort((a, b) => b - a) // newest first
+      .slice(0, 5);
 
-    if (modeSelect.value === "pokemon") {
-      const player = document.getElementById("player").value.trim();
-      const pokemonName = document.getElementById("pokemon").value.trim();
-      const month = document.getElementById("month").value.trim();
-      const year = document.getElementById("year").value.trim();
-      const egg = document.getElementById("egg").value;
-      const favourite = document.getElementById("favourite").value;
+    const overrideContainer = document.getElementById("override-container");
+    overrideContainer.style.display = "none"; // hide initially
 
-      // Additional fields
-      const secretShiny = document.getElementById("secretShiny").value;
-      const alpha = document.getElementById("alpha").value;
-      const sold = document.getElementById("sold").value;
-      const eventVal = document.getElementById("event").value;
-      const reaction = document.getElementById("reaction").value;
-      const mysteriousBall = document.getElementById("mysteriousBall").value;
-      const safari = document.getElementById("safari").value;
-      const honeyTree = document.getElementById("honeyTree").value;
-      const legendary = document.getElementById("legendary").value;
-      const reactionLink = document.getElementById("reactionLink").value.trim();
+    const duplicate = last5Ids.some(id => {
+      return playerShinies[id].Pokemon.toLowerCase() === pokemonName.toLowerCase();
+    });
 
-      if (!player || !pokemonName) {
-        messageEl.textContent = "Player and Pokémon are required.";
-        messageEl.className = "error";
-        return;
-      }
-
-      if (!database[player]) database[player] = { shiny_count: 0, shinies: {} };
-      const nextId = Object.keys(database[player].shinies).length + 1;
-
-      database[player].shinies[nextId] = {
-        Pokemon: pokemonName,
-        Month: month,
-        Year: year,
-        "Secret Shiny": secretShiny,
-        Egg: egg,
-        Alpha: alpha,
-        Sold: sold,
-        Event: eventVal,
-        Reaction: reaction,
-        MysteriousBall: mysteriousBall,
-        Safari: safari,
-        Favourite: favourite,
-        "Honey Tree": honeyTree,
-        Legendary: legendary,
-        "Reaction Link": reactionLink,
-      };
-      database[player].shiny_count += 1;
-      renderPreview(database);
-
-      try {
-        const res = await fetch(`${WORKER_BASE}/update-database`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: admin,
-            password,
-            data: database,
-            action: `Added ${pokemonName} for ${player}`,
-          }),
-        });
-        const result = await res.json();
-        if (result.success) {
-          messageEl.textContent = "Pokémon added successfully!";
-          messageEl.className = "success";
-          await loadDatabase();
-        }
-      } catch (err) {
-        messageEl.textContent = "Error updating database: " + err.message;
-        messageEl.className = "error";
-      }
-
-    } else {
-      const pokeName = document.getElementById("pokeName").value.trim();
-      const twitchName = document.getElementById("twitchName").value.trim();
-
-      if (!pokeName || !twitchName) {
-        messageEl.textContent = "Both PokeMMO Name and Twitch Name are required.";
-        messageEl.className = "error";
-        return;
-      }
-
-      streamersDB[pokeName] = { twitch_username: twitchName };
-
-      try {
-        const res = await fetch(`${WORKER_BASE}/update-streamers`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: admin,
-            password,
-            data: streamersDB,
-            action: `Added streamer ${pokeName}`,
-          }),
-        });
-
-        const result = await res.json();
-        if (result.success) {
-          messageEl.textContent = "Streamer added successfully!";
-          messageEl.className = "success";
-          await loadDatabase();
-        }
-      } catch (err) {
-        messageEl.textContent = "Error updating streamers: " + err.message;
-        messageEl.className = "error";
-      }
+    if (duplicate && !overrideDuplicate) {
+      messageEl.textContent = `Duplicate Pokémon Detected! Did they hit 2 ${pokemonName} or has it already been added? Check "Override Duplicate" to force add.`;
+      messageEl.className = "error";
+      overrideContainer.style.display = "block";
+      return; // stop submission unless override
     }
-  });
+    else
+    {
+      overrideContainer.style.display = "none";
+    }
+
+    // ---- Add Pokémon ----
+    const nextId = Object.keys(playerShinies).length + 1;
+    database[player].shinies[nextId] = {
+      Pokemon: pokemonName,
+      Month: month,
+      Year: year,
+      "Secret Shiny": secretShiny,
+      Egg: egg,
+      Alpha: alpha,
+      Sold: sold,
+      Event: eventVal,
+      Reaction: reaction,
+      MysteriousBall: mysteriousBall,
+      Safari: safari,
+      Favourite: favourite,
+      "Honey Tree": honeyTree,
+      Legendary: legendary,
+      "Reaction Link": reactionLink,
+    };
+    database[player].shiny_count += 1;
+    updateShinyCount(player);
+    renderPreview(database);
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/update-database`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: admin,
+          password,
+          data: database,
+          action: `Added ${pokemonName} for ${player}${duplicate ? " (Override)" : ""}`,
+        }),
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        messageEl.textContent = `Pokémon added successfully${duplicate && overrideDuplicate ? " (Override)" : ""}!`;
+        messageEl.className = "success";
+        document.getElementById("overrideDuplicate").checked = false; // reset checkbox
+        await loadDatabase(); // reload DB + log
+      } else {
+        messageEl.textContent = "Failed to add Pokémon.";
+        messageEl.className = "error";
+      }
+    } catch (err) {
+      messageEl.textContent = "Error updating database: " + err.message;
+      messageEl.className = "error";
+    }
+
+  } else {
+    // ---- Streamer Form ----
+    const pokeName = document.getElementById("pokeName").value.trim();
+    const twitchName = document.getElementById("twitchName").value.trim();
+
+    if (!pokeName || !twitchName) {
+      messageEl.textContent = "Both PokeMMO Name and Twitch Name are required.";
+      messageEl.className = "error";
+      return;
+    }
+
+    streamersDB[pokeName] = { twitch_username: twitchName };
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/update-streamers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: admin,
+          password,
+          data: streamersDB,
+          action: `Added streamer ${pokeName}`,
+        }),
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        messageEl.textContent = "Streamer added successfully!";
+        messageEl.className = "success";
+        await loadDatabase();
+      } else {
+        messageEl.textContent = "Failed to add streamer.";
+        messageEl.className = "error";
+      }
+    } catch (err) {
+      messageEl.textContent = "Error updating streamers: " + err.message;
+      messageEl.className = "error";
+    }
+  }
+});
+
 
   // --------------------- Update Button ---------------------
   updateBtn.addEventListener("click", async () => {
