@@ -10,16 +10,32 @@ async function initStreamers() {
     const data = await res.json();
 
     // Map KV JSON to an array of Twitch usernames
-    // data = { "BasilVT": { "twitch_username": "basilvt" }, ... }
     return Object.values(data).map((s) => s.twitch_username);
   }
 
+  // Fetch Twitch data in parallel for all streamers
   async function fetchTwitchData(streamers) {
     if (!streamers.length) return { live: [], offline: [] };
-    const query = streamers.map((s) => `user_login=${s}`).join("&");
-    const res = await fetch(`${TWITCH_WORKER_API}?${query}`);
-    if (!res.ok) throw new Error("Failed to fetch Twitch data");
-    return res.json();
+
+    // Create array of fetch promises, one per streamer
+    const fetchPromises = streamers.map((username) =>
+      fetch(`${TWITCH_WORKER_API}?user_login=${username}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .catch(() => null)
+    );
+
+    const results = await Promise.all(fetchPromises);
+
+    // Flatten results into live and offline arrays
+    const live = [];
+    const offline = [];
+    results.forEach((res) => {
+      if (!res) return;
+      if (res.live && res.live.length) live.push(...res.live);
+      if (res.offline && res.offline.length) offline.push(...res.offline);
+    });
+
+    return { live, offline };
   }
 
   function displayStreamers(data) {
@@ -56,7 +72,7 @@ async function initStreamers() {
       });
     }
 
-    // Offline streamers
+    // Offline streamers (render asynchronously after live)
     offlineEl.innerHTML = "";
     data.offline.forEach((user) => {
       const link = document.createElement("a");
@@ -79,7 +95,8 @@ async function initStreamers() {
   async function init() {
     try {
       const streamers = await fetchStreamersList(); // fetch from KV
-      const data = await fetchTwitchData(streamers); // fetch live/offline info
+      // Fetch Twitch data in parallel and render immediately
+      const data = await fetchTwitchData(streamers);
       displayStreamers(data);
     } catch (err) {
       console.error(err);
