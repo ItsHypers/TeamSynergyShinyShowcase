@@ -58,30 +58,30 @@ async function initSHOTM(targetMonth, targetYear) {
     localStorage.setItem(`shotm-ranks-${month}-${year}`, JSON.stringify(ranks));
 
   const calculateShinyPoints = (shiny) => {
-  if (
-    shiny.Sold?.toLowerCase() === "yes" ||
-    shiny.Flee?.toLowerCase() === "yes"
-  ) return 0;
+    if (
+      shiny.Sold?.toLowerCase() === "yes" ||
+      shiny.Flee?.toLowerCase() === "yes"
+    )
+      return 0;
 
-  let total = 0;
+    let total = 0;
 
-  const tier = getPokemonTier(shiny.Pokemon);
-  if (tier) {
-    total += tierPoints[tier] || 0;
-  } else {
-    console.warn("Tier not found for:", shiny.Pokemon);
-  }
-
-  Object.entries(shiny).forEach(([key, value]) => {
-    if (!value) return;
-    if (TRAIT_POINTS[key] && value.toLowerCase() === "yes") {
-      total += TRAIT_POINTS[key];
+    const tier = getPokemonTier(shiny.Pokemon);
+    if (tier) {
+      total += tierPoints[tier] || 0;
+    } else {
+      console.warn("Tier not found for:", shiny.Pokemon);
     }
-  });
 
-  return total;
-};
+    Object.entries(shiny).forEach(([key, value]) => {
+      if (!value) return;
+      if (TRAIT_POINTS[key] && value.toLowerCase() === "yes") {
+        total += TRAIT_POINTS[key];
+      }
+    });
 
+    return total;
+  };
 
   const getShinyHuntersOfMonth = (data, monthOverride, yearOverride) => {
     const { month, year } =
@@ -93,7 +93,6 @@ async function initSHOTM(targetMonth, targetYear) {
     const notFound = new Set();
 
     Object.entries(data).forEach(([player, playerData]) => {
-
       const monthShinies = Object.values(playerData.shinies).filter((s) => {
         const m = s.Month?.toLowerCase()?.trim();
         const y = String(s.Year || "").trim();
@@ -280,4 +279,3 @@ async function initSHOTM(targetMonth, targetYear) {
   saveCurrentRanks(month, year, currentRanks);
   setupInfoBoxFlip();
 }
-

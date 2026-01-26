@@ -396,12 +396,11 @@
   animation: slideDown 0.3s ease-out;
 }
 
-
 @keyframes slideDown {
   0% { opacity: 0; transform: translate(-50%, -20px); }
   100% { opacity: 1; transform: translate(-50%, 0); }
 }
-/* --- Tab Buttons --- */
+
 .tab-btn {
   padding: 10px 18px;
   border: none;
@@ -427,7 +426,6 @@
   transform: scale(1.08);
 }
 
-/* --- Generate Button --- */
 #generateBtn {
   margin: 18px 0;
   padding: 14px 32px;
@@ -453,7 +451,6 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.45);
 }
 
-/* --- Load Shinies Button --- */
 #loadShiniesBtn {
   margin-left: 8px;
   padding: 8px 16px;
@@ -479,7 +476,6 @@
   box-shadow: 0 3px 8px rgba(0,0,0,0.4);
 }
 
-/* --- Input Text Fields (Username) --- */
 #usernameInput {
   padding: 6px 12px;
   border-radius: 10px;
@@ -499,7 +495,7 @@
   box-shadow: 0 0 10px rgba(155, 89, 182, 0.7);
 }
 
-/* --- General Button Hover Effects --- */
 button {
   user-select: none;
 }
+

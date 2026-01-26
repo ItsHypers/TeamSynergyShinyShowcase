@@ -9,22 +9,22 @@ const ODDS = {
 };
 
 async function initRandomPokemon() {
-  const SHINY_DB_FILE = "https://adminpage.hypersmmo.workers.dev/admin/database"; 
+  const SHINY_DB_FILE =
+    "https://adminpage.hypersmmo.workers.dev/admin/database";
   const shinyboardBaseURL = "https://shinyboard.net/api/users/";
   let shiny_database = null;
   fetch(SHINY_DB_FILE)
-      .then(res => res.json())
-      .then(data => {
-          shiny_database = data;
-      })
-      .catch(err => console.error("Failed to load local shiny database:", err));
+    .then((res) => res.json())
+    .then((data) => {
+      shiny_database = data;
+    })
+    .catch((err) => console.error("Failed to load local shiny database:", err));
 
   const JSON_FILE = "./json/randomizer_tiers.json";
 
   const container = document.getElementById("showcase");
   if (!container) return;
 
-  // --- Globals ---
   let shinyData = null;
 
   let userShinies = [];
@@ -33,12 +33,33 @@ async function initRandomPokemon() {
   let bingoMilestone = 0;
   let currentTab = "bingo";
   const NATURES = [
-    "Lonely","Brave","Adamant","Naughty","Bold","Relaxed","Impish","Lax",
-    "Timid","Hasty","Jolly","Naive","Modest","Mild","Quiet","Rash","Calm",
-    "Gentle","Sassy","Careful","Hardy","Docile","Serious","Bashful","Quirky"
+    "Lonely",
+    "Brave",
+    "Adamant",
+    "Naughty",
+    "Bold",
+    "Relaxed",
+    "Impish",
+    "Lax",
+    "Timid",
+    "Hasty",
+    "Jolly",
+    "Naive",
+    "Modest",
+    "Mild",
+    "Quiet",
+    "Rash",
+    "Calm",
+    "Gentle",
+    "Sassy",
+    "Careful",
+    "Hardy",
+    "Docile",
+    "Serious",
+    "Bashful",
+    "Quirky",
   ];
 
-  // --- HTML Setup ---
   container.innerHTML = `
   <div class="random-pokemon-page" style="position:relative;">
     <h1>Random Pokémon Generator</h1>
@@ -117,9 +138,7 @@ async function initRandomPokemon() {
     </div>
   </div>
   `;
-  
 
-  // --- Element References ---
   const usernameInput = container.querySelector("#usernameInput");
   const loadShiniesBtn = container.querySelector("#loadShiniesBtn");
   const loadedShinyMessageDiv = container.querySelector("#loadedShinyMessage");
@@ -142,8 +161,6 @@ async function initRandomPokemon() {
   const bingoOverlay = container.querySelector("#bingoOverlay");
   const resultDiv = document.getElementById("result");
 
-
-  // --- Utility Functions ---
   const showWarning = (message) => {
     warningPopup.querySelector(".popup-content").textContent = message;
     warningPopup.style.display = "block";
@@ -154,7 +171,8 @@ async function initRandomPokemon() {
     name ? name.charAt(0).toUpperCase() + name.slice(1) : name;
 
   const getPokemonImageUrl = (name, isShiny = true) => {
-    let urlName = name.toLowerCase()
+    let urlName = name
+      .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[.']/g, "")
       .replace(/[♀]/g, "f")
@@ -163,11 +181,16 @@ async function initRandomPokemon() {
     return `https://img.pokemondb.net/sprites/black-white/anim/${isShiny ? "shiny" : "normal"}/${urlName}.gif`;
   };
 
-  const saveBingo = (data) => localStorage.setItem("bingoCard", JSON.stringify(data));
+  const saveBingo = (data) =>
+    localStorage.setItem("bingoCard", JSON.stringify(data));
   const loadBingo = () => {
     const saved = localStorage.getItem("bingoCard");
     if (!saved) return null;
-    try { return JSON.parse(saved); } catch { return null; }
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return null;
+    }
   };
 
   let shinyDataReady = false;
@@ -177,7 +200,7 @@ async function initRandomPokemon() {
       const res = await fetch(SHINY_DB_FILE, { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to load shiny database");
       shinyData = await res.json();
-      shinyDataReady = true; // mark as loaded
+      shinyDataReady = true;
     } catch (err) {
       console.error(err);
       shinyData = {};
@@ -199,145 +222,140 @@ async function initRandomPokemon() {
     }
   }
 
-
   await loadShinyDatabase();
   await loadGenerationData();
 
-  // --- Filter User Shinies ---
-async function fetchShinyBoardShinies(username) {
-  if (!username) return [];
+  async function fetchShinyBoardShinies(username) {
+    if (!username) return [];
 
-  let shinies = [];
-  let url = `https://shinyboard.net/api/users/${username}/shinies?page=1`;
+    let shinies = [];
+    let url = `https://shinyboard.net/api/users/${username}/shinies?page=1`;
 
-  try {
-    while (url) {
-      const res = await fetch(url);
-      if (!res.ok) {
-        throw new Error("Failed to fetch user"); // handle 404, 500, etc.
+    try {
+      while (url) {
+        const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error("Failed to fetch user");
+        }
+
+        const data = await res.json();
+        const ownedShinies = data.shinies
+          .filter((item) => item.status === "owned" && item.pokemon?.name)
+          .map((item) => item.pokemon.name.toLowerCase());
+
+        console.log("API shinies page:", ownedShinies);
+        shinies.push(...ownedShinies);
+
+        url = data.next_page_url || null;
       }
 
-      const data = await res.json();
-      const ownedShinies = data.shinies
-        .filter(item => item.status === "owned" && item.pokemon?.name)
-        .map(item => item.pokemon.name.toLowerCase());
+      return shinies;
+    } catch (err) {
+      console.error("Failed to fetch user");
 
-      console.log("API shinies page:", ownedShinies);
-      shinies.push(...ownedShinies);
-
-      url = data.next_page_url || null;
+      return null;
     }
-
-    return shinies; // return empty array if user has 0 shinies
-  } catch (err) {
-    console.error("Failed to fetch user"); // console log
-    return null; // null = fetch failed
   }
-}
 
+  async function filterUserShinies(username) {
+    userShinies = [];
 
-async function filterUserShinies(username) {
-    userShinies = []; // reset
-
-    // 1️⃣ Check local database first
     let localShinies = [];
     if (shinyData) {
-        const localUsernames = Object.keys(shinyData);
-        const match = localUsernames.find(u => u.toLowerCase() === username.toLowerCase());
-        if (match) {
-            const userShiniesObj = shinyData[match].shinies;
-            localShinies = Object.values(userShiniesObj).map(s => s.Pokemon.toLowerCase());
-        }
+      const localUsernames = Object.keys(shinyData);
+      const match = localUsernames.find(
+        (u) => u.toLowerCase() === username.toLowerCase(),
+      );
+      if (match) {
+        const userShiniesObj = shinyData[match].shinies;
+        localShinies = Object.values(userShiniesObj).map((s) =>
+          s.Pokemon.toLowerCase(),
+        );
+      }
     }
 
     if (localShinies.length > 0) {
-        userShinies = localShinies;
-        console.log(`Loaded ${userShinies.length} shinies from local database for ${username}`);
-        return;
+      userShinies = localShinies;
+      console.log(
+        `Loaded ${userShinies.length} shinies from local database for ${username}`,
+      );
+      return;
     }
 
-    // 2️⃣ Local database empty → fetch from Shinyboard
     try {
-        let page = 1;
-        let hasNext = true;
-        while (hasNext) {
-            const res = await fetch(`https://shinyboard.net/api/users/${username}/shinies?page=${page}`);
-            if (!res.ok) {
-                throw new Error("Failed to fetch user");
-            }
-            const data = await res.json();
-
-            // Filter only owned shinies and normalize to lowercase strings
-            const shinyNames = data.shinies
-                .filter(s => s.status === "owned" && s.pokemon?.name)
-                .map(s => s.pokemon.name.toLowerCase());
-
-            userShinies.push(...shinyNames);
-
-            if (data.next_page_url) {
-                page++;
-            } else {
-                hasNext = false;
-            }
+      let page = 1;
+      let hasNext = true;
+      while (hasNext) {
+        const res = await fetch(
+          `https://shinyboard.net/api/users/${username}/shinies?page=${page}`,
+        );
+        if (!res.ok) {
+          throw new Error("Failed to fetch user");
         }
+        const data = await res.json();
 
-        console.log(`Loaded ${userShinies.length} shinies from Shinyboard for ${username}`);
+        const shinyNames = data.shinies
+          .filter((s) => s.status === "owned" && s.pokemon?.name)
+          .map((s) => s.pokemon.name.toLowerCase());
+
+        userShinies.push(...shinyNames);
+
+        if (data.next_page_url) {
+          page++;
+        } else {
+          hasNext = false;
+        }
+      }
+
+      console.log(
+        `Loaded ${userShinies.length} shinies from Shinyboard for ${username}`,
+      );
     } catch (err) {
-        console.error(err);
-        userShinies = null; // indicate fetch failed
+      console.error(err);
+      userShinies = null;
     }
-}
+  }
 
-
-
-
-loadShiniesBtn.addEventListener("click", async () => {
+  loadShiniesBtn.addEventListener("click", async () => {
     const username = usernameInput.value.trim();
     if (!username) return;
 
     try {
-        // Run the merged search
-        await filterUserShinies(username); // populates userShinies if found locally or on Shinyboard
+      await filterUserShinies(username);
 
-        if (!userShinies || userShinies.length === 0) {
-            resultDiv.innerHTML = `Failed to fetch user <strong>${username}</strong>`;
-        } else {
-            resultDiv.innerHTML = `Loaded <strong>${userShinies.length}</strong> shiny Pokémon for <strong>${username}</strong>`;
-            console.log(userShinies)
-        }
-
-    } catch (error) {
-        console.error(error);
+      if (!userShinies || userShinies.length === 0) {
         resultDiv.innerHTML = `Failed to fetch user <strong>${username}</strong>`;
+      } else {
+        resultDiv.innerHTML = `Loaded <strong>${userShinies.length}</strong> shiny Pokémon for <strong>${username}</strong>`;
+        console.log(userShinies);
+      }
+    } catch (error) {
+      console.error(error);
+      resultDiv.innerHTML = `Failed to fetch user <strong>${username}</strong>`;
     }
-});
+  });
 
-
-
-
-
-function getExcludedPokemonWithSpecies(userShinies) {
+  function getExcludedPokemonWithSpecies(userShinies) {
     if (!generationData || !userShinies) return [];
 
     const excludeSet = new Set(userShinies);
 
-    Object.values(generationData).forEach(gen => {
-        gen.forEach(speciesLine => {
-            const speciesLower = speciesLine.map(p => p.toLowerCase());
-            if (speciesLower.some(p => excludeSet.has(p))) {
-                speciesLower.forEach(p => {
-                    if (!excludeSet.has(p)) {
-                        excludeSet.add(p);
-                    }
-                });
+    Object.values(generationData).forEach((gen) => {
+      gen.forEach((speciesLine) => {
+        const speciesLower = speciesLine.map((p) => p.toLowerCase());
+        if (speciesLower.some((p) => excludeSet.has(p))) {
+          speciesLower.forEach((p) => {
+            if (!excludeSet.has(p)) {
+              excludeSet.add(p);
             }
-        });
+          });
+        }
+      });
     });
 
     return Array.from(excludeSet);
-}
+  }
 
-  // --- Load Tier Data ---
   async function getTierData() {
     if (tierData) return tierData;
     try {
@@ -345,7 +363,10 @@ function getExcludedPokemonWithSpecies(userShinies) {
       if (!res.ok) throw new Error("Failed to fetch tier data");
       tierData = await res.json();
       return tierData;
-    } catch (err) { console.error(err); return null; }
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   }
 
   const rawData = await getTierData();
@@ -361,7 +382,6 @@ function getExcludedPokemonWithSpecies(userShinies) {
     "Tier 6": rawData["Tier 7"] || [],
   };
 
-  // --- Tier Filters ---
   function createTierFilters(tiers) {
     const wrapper = container.querySelector("#tierCheckboxes");
     wrapper.innerHTML = "";
@@ -410,7 +430,9 @@ function getExcludedPokemonWithSpecies(userShinies) {
   createTierFilters(normalizedTiers);
 
   function getTierWeights() {
-    const checkboxes = container.querySelectorAll("#tierCheckboxes input[type='checkbox']");
+    const checkboxes = container.querySelectorAll(
+      "#tierCheckboxes input[type='checkbox']",
+    );
     const weights = {};
     checkboxes.forEach((cb) => {
       if (!cb.checked) return;
@@ -423,15 +445,19 @@ function getExcludedPokemonWithSpecies(userShinies) {
   }
 
   function getEnabledTiers() {
-    const checkboxes = container.querySelectorAll("#tierCheckboxes input[type='checkbox']");
-    return Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+    const checkboxes = container.querySelectorAll(
+      "#tierCheckboxes input[type='checkbox']",
+    );
+    return Array.from(checkboxes)
+      .filter((cb) => cb.checked)
+      .map((cb) => cb.value);
   }
 
   function pickTierByWeight(enabledTiers) {
     const weights = getTierWeights();
     const tiersWithWeights = enabledTiers
-      .filter(t => weights[t] > 0)
-      .map(t => ({ tier: t, weight: weights[t] }));
+      .filter((t) => weights[t] > 0)
+      .map((t) => ({ tier: t, weight: weights[t] }));
     const totalWeight = tiersWithWeights.reduce((sum, t) => sum + t.weight, 0);
     let rnd = Math.random() * totalWeight;
     for (let t of tiersWithWeights) {
@@ -442,37 +468,46 @@ function getExcludedPokemonWithSpecies(userShinies) {
   }
 
   function generateBingoEntry(pokemonName, mode) {
-
-  const IV_LOWER_MIN = 60;   
-  const IV_LOWER_MAX = 80;   
-  const IV_HIGHER_MIN = 115;
-  const IV_HIGHER_MAX = 130; 
-  const IV_LOWER_CHANCE = 0.5; 
+    const IV_LOWER_MIN = 60;
+    const IV_LOWER_MAX = 80;
+    const IV_HIGHER_MIN = 115;
+    const IV_HIGHER_MAX = 130;
+    const IV_LOWER_CHANCE = 0.5;
 
     if (mode === "nature") {
-      return { name: pokemonName, type: "nature", nature: NATURES[Math.floor(Math.random() * NATURES.length)] };
+      return {
+        name: pokemonName,
+        type: "nature",
+        nature: NATURES[Math.floor(Math.random() * NATURES.length)],
+      };
     }
-  if (mode === "iv") {
-    // Decide if LOWER or HIGHER IV
-    const isLower = Math.random() < IV_LOWER_CHANCE;
-    const roll = isLower
-      ? Math.floor(Math.random() * (IV_LOWER_MAX - IV_LOWER_MIN + 1)) + IV_LOWER_MIN
-      : Math.floor(Math.random() * (IV_HIGHER_MAX - IV_HIGHER_MIN + 1)) + IV_HIGHER_MIN;
+    if (mode === "iv") {
+      const isLower = Math.random() < IV_LOWER_CHANCE;
+      const roll = isLower
+        ? Math.floor(Math.random() * (IV_LOWER_MAX - IV_LOWER_MIN + 1)) +
+          IV_LOWER_MIN
+        : Math.floor(Math.random() * (IV_HIGHER_MAX - IV_HIGHER_MIN + 1)) +
+          IV_HIGHER_MIN;
 
-    return { name: pokemonName, type: "iv", iv: { roll, target: isLower ? "LOWER" : "HIGHER" } };
+      return {
+        name: pokemonName,
+        type: "iv",
+        iv: { roll, target: isLower ? "LOWER" : "HIGHER" },
+      };
+    }
+
+    return { name: pokemonName, type: mode };
   }
-
-  // Default: shiny or normal Pokémon
-  return { name: pokemonName, type: mode };
-}
-
 
   function renderBingoCard(card, size, completed) {
     bingoCard.innerHTML = "";
     bingoCard.style.display = "grid";
     bingoCard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
 
-    const containerWidth = Math.min(bingoCard.clientWidth, window.innerWidth - 40);
+    const containerWidth = Math.min(
+      bingoCard.clientWidth,
+      window.innerWidth - 40,
+    );
     const gap = 6;
     const cellSize = (containerWidth - gap * (size - 1)) / size;
 
@@ -491,7 +526,8 @@ function getExcludedPokemonWithSpecies(userShinies) {
       const text = document.createElement("div");
       text.className = "bingo-text";
       if (entry.type === "nature") text.textContent = `Nature: ${entry.nature}`;
-      else if (entry.type === "iv") text.textContent = `IV ${entry.iv.target} than ${entry.iv.roll}`;
+      else if (entry.type === "iv")
+        text.textContent = `IV ${entry.iv.target} than ${entry.iv.roll}`;
       else if (entry.type === "normal") text.textContent = "Non-Shiny";
 
       const availableHeight = cellSize * 0.3;
@@ -505,41 +541,54 @@ function getExcludedPokemonWithSpecies(userShinies) {
       bingoCard.appendChild(div);
 
       div.addEventListener("click", () => {
-      const saved = loadBingo() || { card, size, completed: [] };
+        const saved = loadBingo() || { card, size, completed: [] };
 
-      if (div.classList.contains("completed")) {
-        saved.completed = saved.completed.filter(i => i !== idx);
-        div.classList.remove("completed");
-      } else {
-        saved.completed.push(idx);
-        div.classList.add("completed"); 
-      }
+        if (div.classList.contains("completed")) {
+          saved.completed = saved.completed.filter((i) => i !== idx);
+          div.classList.remove("completed");
+        } else {
+          saved.completed.push(idx);
+          div.classList.add("completed");
+        }
 
-      saveBingo(saved);
+        saveBingo(saved);
 
-      const totalLines = checkBingo(saved.completed, saved.size);
-      const allComplete = saved.completed.length === saved.card.length;
+        const totalLines = checkBingo(saved.completed, saved.size);
+        const allComplete = saved.completed.length === saved.card.length;
 
-      let milestone = 0;
-      if (allComplete && bingoMilestone < 3) milestone = 3;
-      else if (totalLines === 2 && bingoMilestone < 2) milestone = 2;
-      else if (totalLines === 1 && bingoMilestone < 1) milestone = 1;
+        let milestone = 0;
+        if (allComplete && bingoMilestone < 3) milestone = 3;
+        else if (totalLines === 2 && bingoMilestone < 2) milestone = 2;
+        else if (totalLines === 1 && bingoMilestone < 1) milestone = 1;
 
-      if (milestone > 0) {
-        bingoMilestone = milestone;
-        showBingoOverlay(milestone);
-      }
-    });
-
+        if (milestone > 0) {
+          bingoMilestone = milestone;
+          showBingoOverlay(milestone);
+        }
+      });
     });
   }
 
   function checkBingo(completed, size) {
     let lines = 0;
-    for (let r = 0; r < size; r++) if ([...Array(size).keys()].every(c => completed.includes(r*size+c))) lines++;
-    for (let c = 0; c < size; c++) if ([...Array(size).keys()].every(r => completed.includes(r*size+c))) lines++;
-    if ([...Array(size).keys()].every(i => completed.includes(i*size+i))) lines++;
-    if ([...Array(size).keys()].every(i => completed.includes(i*size+(size-1-i)))) lines++;
+    for (let r = 0; r < size; r++)
+      if (
+        [...Array(size).keys()].every((c) => completed.includes(r * size + c))
+      )
+        lines++;
+    for (let c = 0; c < size; c++)
+      if (
+        [...Array(size).keys()].every((r) => completed.includes(r * size + c))
+      )
+        lines++;
+    if ([...Array(size).keys()].every((i) => completed.includes(i * size + i)))
+      lines++;
+    if (
+      [...Array(size).keys()].every((i) =>
+        completed.includes(i * size + (size - 1 - i)),
+      )
+    )
+      lines++;
     return lines;
   }
 
@@ -555,272 +604,289 @@ function getExcludedPokemonWithSpecies(userShinies) {
 
     const ctx = canvas.getContext("2d");
     const particles = Array.from({ length: 150 }, () => ({
-      x: Math.random()*canvas.width,
-      y: Math.random()*canvas.height*0.5,
-      vx: (Math.random()-0.5)*2,
-      vy: Math.random()*-2-1,
-      radius: Math.random()*3+2,
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height * 0.5,
+      vx: (Math.random() - 0.5) * 2,
+      vy: Math.random() * -2 - 1,
+      radius: Math.random() * 3 + 2,
       alpha: 1,
-      color: `hsl(${Math.random()*360},100%,60%)`,
-      gravity: 0.03
+      color: `hsl(${Math.random() * 360},100%,60%)`,
+      gravity: 0.03,
     }));
 
     (function animate() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       let active = false;
-      particles.forEach(p=>{
-        if(p.alpha<=0)return;
-        active=true;
+      particles.forEach((p) => {
+        if (p.alpha <= 0) return;
+        active = true;
         ctx.beginPath();
-        ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
-        ctx.fillStyle=p.color;
-        ctx.globalAlpha=p.alpha;
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
         ctx.fill();
-        p.x+=p.vx; p.y+=p.vy; p.vy+=p.gravity; p.alpha-=0.003;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.alpha -= 0.003;
       });
-      if(active) requestAnimationFrame(animate);
-      else ctx.clearRect(0,0,canvas.width,canvas.height);
+      if (active) requestAnimationFrame(animate);
+      else ctx.clearRect(0, 0, canvas.width, canvas.height);
     })();
 
-    setTimeout(()=>bingoOverlay.style.display="none",4000);
+    setTimeout(() => (bingoOverlay.style.display = "none"), 4000);
   }
 
-    function getRandomPokemon(data, enabledTiers) {
-      const tier = pickTierByWeight(enabledTiers);
-      let allPokemon = data[tier] || [];
-      if (!allPokemon.length) return null;
+  function getRandomPokemon(data, enabledTiers) {
+    const tier = pickTierByWeight(enabledTiers);
+    let allPokemon = data[tier] || [];
+    if (!allPokemon.length) return null;
 
-      // Apply species-line filter for shiny mode
-      const allowShiny = container.querySelector("#enableShiny")?.checked;
-      if (allowShiny && userShinies.length) {
-        const excluded = getExcludedPokemonWithSpecies(userShinies);
-          pool = pool.filter(p => {
-          const lowerP = p.toLowerCase();
-          if (excluded.includes(lowerP)) {
-              console.log(`Excluded Pokémon due to species line: ${p}`);
-              return false; // remove from pool
-          }
-          return true; // keep
+    const allowShiny = container.querySelector("#enableShiny")?.checked;
+    if (allowShiny && userShinies.length) {
+      const excluded = getExcludedPokemonWithSpecies(userShinies);
+      pool = pool.filter((p) => {
+        const lowerP = p.toLowerCase();
+        if (excluded.includes(lowerP)) {
+          console.log(`Excluded Pokémon due to species line: ${p}`);
+          return false;
+        }
+        return true;
       });
-      }
-
-      if (!allPokemon.length) return null;
-      const poke = allPokemon[Math.floor(Math.random() * allPokemon.length)];
-      return { tier, pokemon: poke };
     }
 
-function updateSettingsVisibility() {
+    if (!allPokemon.length) return null;
+    const poke = allPokemon[Math.floor(Math.random() * allPokemon.length)];
+    return { tier, pokemon: poke };
+  }
+
+  function updateSettingsVisibility() {
     const bingoCheckboxes = document.getElementById("bingocheckBoxes");
     const bingoSettings = document.getElementById("bingoSettings");
 
     if (currentTab === "bingo") {
-        if (bingoCheckboxes) bingoCheckboxes.style.display = "block";
-        if (bingoSettings) bingoSettings.style.display = "block"; // show size select
-        if (bingoCard) bingoCard.style.display = "grid";
-        if (bingoModeSettingsDiv) bingoModeSettingsDiv.style.display = "block";
-        if (randomResultDiv) randomResultDiv.style.display = "none";
-        if (logDiv) logDiv.style.display = "none";
+      if (bingoCheckboxes) bingoCheckboxes.style.display = "block";
+      if (bingoSettings) bingoSettings.style.display = "block";
+
+      if (bingoCard) bingoCard.style.display = "grid";
+      if (bingoModeSettingsDiv) bingoModeSettingsDiv.style.display = "block";
+      if (randomResultDiv) randomResultDiv.style.display = "none";
+      if (logDiv) logDiv.style.display = "none";
     } else {
-        if (bingoCheckboxes) bingoCheckboxes.style.display = "none";
-        if (bingoSettings) bingoSettings.style.display = "none"; // hide in single mode
-        if (bingoCard) bingoCard.style.display = "none";
-        if (bingoModeSettingsDiv) bingoModeSettingsDiv.style.display = "block";
-        if (randomResultDiv) randomResultDiv.style.display = "block";
-        if (logDiv) logDiv.style.display = "block";
+      if (bingoCheckboxes) bingoCheckboxes.style.display = "none";
+      if (bingoSettings) bingoSettings.style.display = "none";
+
+      if (bingoCard) bingoCard.style.display = "none";
+      if (bingoModeSettingsDiv) bingoModeSettingsDiv.style.display = "block";
+      if (randomResultDiv) randomResultDiv.style.display = "block";
+      if (logDiv) logDiv.style.display = "block";
     }
 
-  // Show/hide Shiny Tier Filter only if Shiny is enabled
-  if (shinyTierFilterDiv)
-    shinyTierFilterDiv.style.display =
-      enableShinyCheckbox.checked && currentTab === "bingo" ? "block" : "block";
+    if (shinyTierFilterDiv)
+      shinyTierFilterDiv.style.display =
+        enableShinyCheckbox.checked && currentTab === "bingo"
+          ? "block"
+          : "block";
 
-  // Show/hide the percentage inputs based on their respective checkboxes
-  const modes = [
-    { cb: enableShinyCheckbox, div: document.querySelector("#pctShiny").parentElement },
-    { cb: allowNormalCheckbox, div: document.querySelector("#pctNormal").parentElement },
-    { cb: allowNatureCheckbox, div: document.querySelector("#pctNature").parentElement },
-    { cb: allowIVCheckbox, div: document.querySelector("#pctIV").parentElement },
-  ];
+    const modes = [
+      {
+        cb: enableShinyCheckbox,
+        div: document.querySelector("#pctShiny").parentElement,
+      },
+      {
+        cb: allowNormalCheckbox,
+        div: document.querySelector("#pctNormal").parentElement,
+      },
+      {
+        cb: allowNatureCheckbox,
+        div: document.querySelector("#pctNature").parentElement,
+      },
+      {
+        cb: allowIVCheckbox,
+        div: document.querySelector("#pctIV").parentElement,
+      },
+    ];
 
-  modes.forEach((m) => {
-    if (m.div) m.div.style.display = m.cb.checked && currentTab === "bingo" ? "block" : "none";
-  });
+    modes.forEach((m) => {
+      if (m.div)
+        m.div.style.display =
+          m.cb.checked && currentTab === "bingo" ? "block" : "none";
+    });
 
-  // Show Bingo Mode Settings only if 2 or more modes are enabled
-  const countChecked = modes.filter((m) => m.cb.checked).length;
-  if (bingoModeSettingsDiv)
-    bingoModeSettingsDiv.style.display =
-      currentTab === "bingo" && countChecked >= 2 ? "block" : "none";
-}
+    const countChecked = modes.filter((m) => m.cb.checked).length;
+    if (bingoModeSettingsDiv)
+      bingoModeSettingsDiv.style.display =
+        currentTab === "bingo" && countChecked >= 2 ? "block" : "none";
+  }
 
-
-  [enableShinyCheckbox,allowNormalCheckbox,allowNatureCheckbox,allowIVCheckbox].forEach(cb=>cb.addEventListener("change",updateSettingsVisibility));
+  [
+    enableShinyCheckbox,
+    allowNormalCheckbox,
+    allowNatureCheckbox,
+    allowIVCheckbox,
+  ].forEach((cb) => cb.addEventListener("change", updateSettingsVisibility));
   updateSettingsVisibility();
 
-  // --- Tab Switching ---
-  tabButtons.forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      if(currentTab===btn.dataset.tab) return;
-      tabButtons.forEach(b=>b.classList.remove("active"));
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (currentTab === btn.dataset.tab) return;
+      tabButtons.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       currentTab = btn.dataset.tab;
 
       const title = container.querySelector("h1");
-      if(currentTab==="single") {
-        randomResultDiv.style.display="block";
-        logDiv.style.display="block";
-        bingoCard.style.display="none";
-        title.textContent="Random Pokémon Generator";
+      if (currentTab === "single") {
+        randomResultDiv.style.display = "block";
+        logDiv.style.display = "block";
+        bingoCard.style.display = "none";
+        title.textContent = "Random Pokémon Generator";
       } else {
-        randomResultDiv.style.display="none";
-        logDiv.style.display="none";
-        bingoCard.style.display="grid";
-        title.textContent="Random Bingo Card Generator";
+        randomResultDiv.style.display = "none";
+        logDiv.style.display = "none";
+        bingoCard.style.display = "grid";
+        title.textContent = "Random Bingo Card Generator";
         const saved = loadBingo();
-        if(saved) renderBingoCard(saved.card, saved.size, saved.completed||[]);
+        if (saved)
+          renderBingoCard(saved.card, saved.size, saved.completed || []);
       }
       updateSettingsVisibility();
     });
   });
 
-generateBtn.addEventListener("click", () => {
-  const enabledTiers = getEnabledTiers();
-  if (!enabledTiers.length) return;
+  generateBtn.addEventListener("click", () => {
+    const enabledTiers = getEnabledTiers();
+    if (!enabledTiers.length) return;
 
-  const allowShiny = container.querySelector("#enableShiny").checked;
-  const allowNormal = container.querySelector("#allowNormal").checked;
-  const allowNature = container.querySelector("#allowNature").checked;
-  const allowIV = container.querySelector("#allowIV").checked;
+    const allowShiny = container.querySelector("#enableShiny").checked;
+    const allowNormal = container.querySelector("#allowNormal").checked;
+    const allowNature = container.querySelector("#allowNature").checked;
+    const allowIV = container.querySelector("#allowIV").checked;
 
-  const warningPopup = container.querySelector("#warningPopup");
-
-function showWarning(message) {
     const warningPopup = container.querySelector("#warningPopup");
-    warningPopup.querySelector(".popup-content").textContent = message;
 
-    // Position it over the bingo card
-    const rect = bingoCard.getBoundingClientRect();
-    warningPopup.style.position = "absolute";
-    warningPopup.style.top = `${rect.top + window.scrollY}px`; // use scrollY for page scroll
-    warningPopup.style.left = `${rect.left + window.scrollX}px`;
-    warningPopup.style.width = `${rect.width}px`;
-    warningPopup.style.textAlign = "center";
-    warningPopup.style.zIndex = 9999;
-    warningPopup.style.display = "block";
+    function showWarning(message) {
+      const warningPopup = container.querySelector("#warningPopup");
+      warningPopup.querySelector(".popup-content").textContent = message;
 
-    setTimeout(() => {
+      const rect = bingoCard.getBoundingClientRect();
+      warningPopup.style.position = "absolute";
+      warningPopup.style.top = `${rect.top + window.scrollY}px`;
+
+      warningPopup.style.left = `${rect.left + window.scrollX}px`;
+      warningPopup.style.width = `${rect.width}px`;
+      warningPopup.style.textAlign = "center";
+      warningPopup.style.zIndex = 9999;
+      warningPopup.style.display = "block";
+
+      setTimeout(() => {
         warningPopup.style.display = "none";
-    }, 4000);
-}
+      }, 4000);
+    }
 
+    if (!allowShiny && !allowNormal && !allowNature && !allowIV) {
+      showWarning(
+        "⚠️ Please select at least one mode (Shiny, Non-Shiny, Nature, or IV)!",
+      );
+      return;
+    }
 
-  // Require at least one mode
-  if (!allowShiny && !allowNormal && !allowNature && !allowIV) {
-    showWarning("⚠️ Please select at least one mode (Shiny, Non-Shiny, Nature, or IV)!");
-    return;
-  }
+    const modes = [];
+    if (allowShiny) modes.push("shiny");
+    if (allowNormal) modes.push("normal");
+    if (allowNature) modes.push("nature");
+    if (allowIV) modes.push("iv");
 
-  const modes = [];
-  if (allowShiny) modes.push("shiny");
-  if (allowNormal) modes.push("normal");
-  if (allowNature) modes.push("nature");
-  if (allowIV) modes.push("iv");
+    if (currentTab === "single") {
+      const tier = pickTierByWeight(enabledTiers);
+      let allPokemon = normalizedTiers[tier] || [];
+      if (!allPokemon.length) return;
 
-// ----- Single Pokémon Mode -----
-if (currentTab === "single") {
-    // Pick a tier
-    const tier = pickTierByWeight(enabledTiers);
-    let allPokemon = normalizedTiers[tier] || [];
-    if (!allPokemon.length) return;
-
-    // Apply species-line filtering for shiny mode
-    let pokeName = null;
-    if (allowShiny && userShinies.length) {
+      let pokeName = null;
+      if (allowShiny && userShinies.length) {
         const excluded = getExcludedPokemonWithSpecies(userShinies);
 
         let attempts = 0;
         do {
-            if (attempts++ > 50) break; // prevent infinite loop
-            const candidate = allPokemon[Math.floor(Math.random() * allPokemon.length)];
-            if (excluded.includes(candidate.toLowerCase())) {
-                console.log(`Excluded Pokémon due to species line: ${candidate}`);
-            } else {
-                pokeName = candidate; // found eligible Pokémon
-            }
+          if (attempts++ > 50) break;
+
+          const candidate =
+            allPokemon[Math.floor(Math.random() * allPokemon.length)];
+          if (excluded.includes(candidate.toLowerCase())) {
+            console.log(`Excluded Pokémon due to species line: ${candidate}`);
+          } else {
+            pokeName = candidate;
+          }
         } while (!pokeName);
 
         if (!pokeName) {
-            showWarning("No eligible Pokémon left for shiny mode in this tier!");
-            return;
+          showWarning("No eligible Pokémon left for shiny mode in this tier!");
+          return;
         }
-    } else {
-        // If shiny mode not active or no exclusions
+      } else {
         pokeName = allPokemon[Math.floor(Math.random() * allPokemon.length)];
-    }
+      }
 
+      const tierNumber = tier.replace("Tier ", "");
+      tierSpan.textContent = tierNumber;
+      pokemonSpan.innerHTML = "";
 
+      const nameEl = document.createElement("p");
+      nameEl.textContent = formatPokemonName(pokeName);
+      nameEl.style.fontWeight = "600";
+      nameEl.style.fontSize = "1.3rem";
+      nameEl.style.marginBottom = "6px";
+      nameEl.style.textAlign = "center";
+      pokemonSpan.appendChild(nameEl);
 
+      const mode = pickModeByWeight();
+      const img = document.createElement("img");
+      img.src = getPokemonImageUrl(pokeName, mode === "shiny");
+      img.alt = formatPokemonName(pokeName);
+      img.className = "pokemon-img";
+      pokemonSpan.appendChild(img);
 
-    // Display Pokémon
-    const tierNumber = tier.replace("Tier ", "");
-    tierSpan.textContent = tierNumber;
-    pokemonSpan.innerHTML = "";
-
-    const nameEl = document.createElement("p");
-    nameEl.textContent = formatPokemonName(pokeName);
-    nameEl.style.fontWeight = "600";
-    nameEl.style.fontSize = "1.3rem";
-    nameEl.style.marginBottom = "6px";
-    nameEl.style.textAlign = "center";
-    pokemonSpan.appendChild(nameEl);
-
-    // Pick mode randomly from enabled modes
-    const mode = pickModeByWeight();
-    const img = document.createElement("img");
-    img.src = getPokemonImageUrl(pokeName, mode === "shiny");
-    img.alt = formatPokemonName(pokeName);
-    img.className = "pokemon-img";
-    pokemonSpan.appendChild(img);
-
-    // Add to history
-    history.unshift(`${formatPokemonName(pokeName)} (Tier ${tierNumber})`);
-    if (history.length > 10) history.pop();
-    previousList.innerHTML = "";
-    history.forEach((entry) => {
+      history.unshift(`${formatPokemonName(pokeName)} (Tier ${tierNumber})`);
+      if (history.length > 10) history.pop();
+      previousList.innerHTML = "";
+      history.forEach((entry) => {
         const li = document.createElement("li");
         li.textContent = entry;
         previousList.appendChild(li);
-    });
-}
-
-
-// ----- Bingo Card Mode -----
-if (currentTab === "bingo") {
-    const size = parseInt(bingoSizeSelect.value);
-    const card = [];
-
-    // Precompute available Pokémon per tier to prevent infinite loops
-    const maxAttempts = 200; // max tries to fill the board
-    let attempts = 0;
-
-    // Flatten all eligible Pokémon by tier and mode
-    const flattenedPool = {};
-    enabledTiers.forEach(tier => {
-        let allPokemon = normalizedTiers[tier] || [];
-        if (allowShiny && userShinies.length) {
-            const excluded = getExcludedPokemonWithSpecies(userShinies);
-            allPokemon = allPokemon.filter(p => !excluded.includes(p.toLowerCase()));
-        }
-        flattenedPool[tier] = allPokemon;
-    });
-
-    const totalPoolSize = Object.values(flattenedPool).reduce((sum, arr) => sum + arr.length, 0);
-    if (totalPoolSize < size * size) {
-        showWarning("⚠️ Not enough eligible Pokémon to generate a full bingo card!");
-        return;
+      });
     }
 
-    while (card.length < size * size && attempts < maxAttempts) {
+    if (currentTab === "bingo") {
+      const size = parseInt(bingoSizeSelect.value);
+      const card = [];
+
+      const maxAttempts = 200;
+
+      let attempts = 0;
+
+      const flattenedPool = {};
+      enabledTiers.forEach((tier) => {
+        let allPokemon = normalizedTiers[tier] || [];
+        if (allowShiny && userShinies.length) {
+          const excluded = getExcludedPokemonWithSpecies(userShinies);
+          allPokemon = allPokemon.filter(
+            (p) => !excluded.includes(p.toLowerCase()),
+          );
+        }
+        flattenedPool[tier] = allPokemon;
+      });
+
+      const totalPoolSize = Object.values(flattenedPool).reduce(
+        (sum, arr) => sum + arr.length,
+        0,
+      );
+      if (totalPoolSize < size * size) {
+        showWarning(
+          "⚠️ Not enough eligible Pokémon to generate a full bingo card!",
+        );
+        return;
+      }
+
+      while (card.length < size * size && attempts < maxAttempts) {
         attempts++;
         const mode = pickModeByWeight();
         const tier = pickTierByWeight(enabledTiers);
@@ -830,59 +896,76 @@ if (currentTab === "bingo") {
 
         const pokeName = pool[Math.floor(Math.random() * pool.length)];
 
-        if (!card.some(e => e.name === pokeName)) {
-            card.push(generateBingoEntry(pokeName, mode));
+        if (!card.some((e) => e.name === pokeName)) {
+          card.push(generateBingoEntry(pokeName, mode));
         }
-    }
+      }
 
-    if (card.length < size * size) {
+      if (card.length < size * size) {
         showWarning("⚠️ Could not fill the bingo card with enough Pokémon!");
         return;
+      }
+
+      saveBingo({ card, size, completed: [] });
+      renderBingoCard(card, size, []);
+      bingoMilestone = 0;
     }
+    function pickModeByWeight() {
+      const modeData = [
+        {
+          checkbox: container.querySelector("#enableShiny"),
+          input: container.querySelector("#pctShiny"),
+          key: "shiny",
+        },
+        {
+          checkbox: container.querySelector("#allowNormal"),
+          input: container.querySelector("#pctNormal"),
+          key: "normal",
+        },
+        {
+          checkbox: container.querySelector("#allowNature"),
+          input: container.querySelector("#pctNature"),
+          key: "nature",
+        },
+        {
+          checkbox: container.querySelector("#allowIV"),
+          input: container.querySelector("#pctIV"),
+          key: "iv",
+        },
+      ];
 
-    saveBingo({ card, size, completed: [] });
-    renderBingoCard(card, size, []);
-    bingoMilestone = 0;
-}
-function pickModeByWeight() {
-    const modeData = [
-        { checkbox: container.querySelector("#enableShiny"), input: container.querySelector("#pctShiny"), key: "shiny" },
-        { checkbox: container.querySelector("#allowNormal"), input: container.querySelector("#pctNormal"), key: "normal" },
-        { checkbox: container.querySelector("#allowNature"), input: container.querySelector("#pctNature"), key: "nature" },
-        { checkbox: container.querySelector("#allowIV"), input: container.querySelector("#pctIV"), key: "iv" },
-    ];
-
-    // Build weighted list
-    const weightedModes = [];
-    modeData.forEach(m => {
+      const weightedModes = [];
+      modeData.forEach((m) => {
         if (m.checkbox.checked) {
-            const weight = parseInt(m.input.value) || 0;
-            if (weight > 0) weightedModes.push({ mode: m.key, weight });
+          const weight = parseInt(m.input.value) || 0;
+          if (weight > 0) weightedModes.push({ mode: m.key, weight });
         }
-    });
+      });
 
-    if (!weightedModes.length) return null;
+      if (!weightedModes.length) return null;
 
-    const totalWeight = weightedModes.reduce((sum, m) => sum + m.weight, 0);
-    let rnd = Math.random() * totalWeight;
+      const totalWeight = weightedModes.reduce((sum, m) => sum + m.weight, 0);
+      let rnd = Math.random() * totalWeight;
 
-    for (let m of weightedModes) {
+      for (let m of weightedModes) {
         if (rnd < m.weight) return m.mode;
         rnd -= m.weight;
+      }
+
+      return weightedModes[0].mode;
     }
 
-    return weightedModes[0].mode; // fallback
-}
+    const bingoExtraSettings = container.querySelector("#bingoExtraSettings");
+    if (bingoExtraSettings) bingoExtraSettings.style.display = "block";
+  });
 
-  // Keep bingoExtraSettings always visible
-  const bingoExtraSettings = container.querySelector("#bingoExtraSettings");
-  if (bingoExtraSettings) bingoExtraSettings.style.display = "block";
-});
-
-
-  // --- Load saved bingo if exists ---
   const savedBingo = loadBingo();
-  if(savedBingo) renderBingoCard(savedBingo.card,savedBingo.size,savedBingo.completed||[]);
+  if (savedBingo)
+    renderBingoCard(
+      savedBingo.card,
+      savedBingo.size,
+      savedBingo.completed || [],
+    );
 }
 
 initRandomPokemon();

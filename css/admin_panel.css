@@ -59,8 +59,6 @@
   font-weight: bold;
 }
 
-
-/* ---- Admin Panel Container ---- */
 .admin-panel {
   max-width: 600px;
   margin: 20px auto;
@@ -72,7 +70,6 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* ---- Headings ---- */
 .admin-panel h1 {
   text-align: center;
   margin-bottom: 20px;
@@ -88,7 +85,6 @@
   padding-bottom: 5px;
 }
 
-/* ---- Labels ---- */
 .admin-panel label {
   display: block;
   margin-top: 15px;
@@ -97,7 +93,6 @@
   color: #dcdcdc;
 }
 
-/* ---- Inputs and Selects ---- */
 .admin-panel input[type="text"],
 .admin-panel input[type="number"],
 .admin-panel input[type="password"],
@@ -116,7 +111,6 @@
   color: #aaa;
 }
 
-/* ---- Button ---- */
 .admin-panel button {
   margin-top: 20px;
   padding: 10px 15px;
@@ -133,7 +127,6 @@
   background-color: #45a049;
 }
 
-/* ---- Message ---- */
 .admin-panel #message {
   margin-top: 15px;
   padding: 10px;
@@ -156,21 +149,19 @@
   color: #fff;
 }
 
-/* ---- Preview JSON ---- */
 .admin-panel #preview {
-  width: 100%;          /* full width or adjust as needed */
+  width: 100%;          
   max-width: 100%;      
-  min-width: 200px;     /* optional minimum size */
-  max-height: 500px;    /* optional max height */
-  overflow: auto;       /* scrollbars if content overflows */
-  resize: both;         /* enables resizing by dragging corner */
+  min-width: 200px;     
+  max-height: 500px;    
+  overflow: auto;       
+  resize: both;         
   border: 1px solid #ccc;
   padding: 10px;
   font-family: monospace;
-  white-space: pre-wrap; /* wraps long lines */
+  white-space: pre-wrap; 
 }
 
-/* ---- Admin Log Preview ---- */
 .admin-panel h3 {
   margin-top: 30px;
   font-size: 1.5rem;
@@ -181,7 +172,7 @@
 
 #logPreview {
   margin-top: 15px;
-  background-color: #2b2b3b;  /* matches admin-panel */
+  background-color: #2b2b3b;  
   border: 1px solid #555;
   border-radius: 8px;
   padding: 15px;
@@ -189,14 +180,12 @@
   color: #f0f0f0;
   max-height: 300px;
   overflow-y: auto;
-  white-space: pre-wrap;  /* keeps line breaks */
+  white-space: pre-wrap;  
   word-wrap: break-word;
   width: 100%;
   box-sizing: border-box;
 }
 
-
-/* Individual log entries */
 #logPreview span.log-entry {
   display: block;
   padding: 8px 10px;
@@ -206,7 +195,6 @@
   transition: background-color 0.2s ease;
 }
 
-/* Alternate row colors for readability */
 #logPreview span.log-entry:nth-child(odd) {
   background-color: #272738;
 }
@@ -215,7 +203,6 @@
   background-color: #1f1f2d;
 }
 
-/* Admin name bold, action normal, time smaller */
 #logPreview span.log-entry .admin-name {
   font-weight: bold;
   color: #4caf50;
@@ -232,7 +219,6 @@
   margin-top: 2px;
 }
 
-/* Scrollbar style */
 #logPreview::-webkit-scrollbar {
   width: 8px;
 }
@@ -248,7 +234,7 @@
 }
 
 .autocomplete-suggestions {
-  display: none; /* hide by default */
+  display: none; 
   position: absolute;
   background: rgb(219, 74, 255);
   border: 1px solid #683664;
@@ -259,7 +245,7 @@
 }
 
 .autocomplete-suggestions.show {
-  display: block; /* visible when active */
+  display: block; 
 }
 
 .autocomplete-suggestion {
@@ -270,3 +256,4 @@
 .autocomplete-suggestion:hover, .autocomplete-suggestion.active {
   background-color: #e8bfff;
 }
+

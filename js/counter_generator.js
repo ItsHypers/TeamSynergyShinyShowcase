@@ -2,29 +2,27 @@ async function initEncounterCounter() {
   let frameFiles = [];
   window.extractedFrames = [];
 
-  const input = document.getElementById('zipFileInput');
-  const minimisedInput = document.getElementById('minimisedFile');
-  const generateBtn = document.getElementById('generateZip');
-  const zipNameInput = document.getElementById('zipName');
-  const zipStatus = document.getElementById('zipStatus');
-  const widthInput = document.getElementById('gifWidth');
-  const heightInput = document.getElementById('gifHeight');
-  const durationInput = document.getElementById('frameDuration');
+  const input = document.getElementById("zipFileInput");
+  const minimisedInput = document.getElementById("minimisedFile");
+  const generateBtn = document.getElementById("generateZip");
+  const zipNameInput = document.getElementById("zipName");
+  const zipStatus = document.getElementById("zipStatus");
+  const widthInput = document.getElementById("gifWidth");
+  const heightInput = document.getElementById("gifHeight");
+  const durationInput = document.getElementById("frameDuration");
   const miniWidthInput = document.getElementById("miniWidth");
   const miniHeightInput = document.getElementById("miniHeight");
 
   let loadedGifFile = null;
 
-  // --- File selection ---
   input.addEventListener("change", (e) => {
     loadedGifFile = e.target.files[0];
     zipStatus.textContent = "File loaded. Press Generate to process.";
     generateBtn.disabled = false;
   });
 
-  // --- Resize helper ---
   async function resizeToBlob(fileOrBlob, width, height) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const img = new Image();
       const url = URL.createObjectURL(fileOrBlob);
       img.onload = () => {
@@ -35,7 +33,7 @@ async function initEncounterCounter() {
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
         ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, width, height);
-        canvas.toBlob(blob => {
+        canvas.toBlob((blob) => {
           URL.revokeObjectURL(url);
           resolve(blob);
         }, "image/png");
@@ -48,7 +46,6 @@ async function initEncounterCounter() {
     });
   }
 
-  // --- Extract frames (GIF) or single image (PNG) ---
   async function extractFrames(file, targetWidth, targetHeight) {
     if (file.type === "image/gif") {
       const arrayBuffer = await file.arrayBuffer();
@@ -76,35 +73,47 @@ async function initEncounterCounter() {
         const rctx = resizedCanvas.getContext("2d");
         rctx.imageSmoothingEnabled = true;
         rctx.imageSmoothingQuality = "high";
-        rctx.drawImage(canvas, 0, 0, width, height, 0, 0, targetWidth, targetHeight);
+        rctx.drawImage(
+          canvas,
+          0,
+          0,
+          width,
+          height,
+          0,
+          0,
+          targetWidth,
+          targetHeight,
+        );
 
-        const blob = await new Promise(res => resizedCanvas.toBlob(res, "image/png"));
+        const blob = await new Promise((res) =>
+          resizedCanvas.toBlob(res, "image/png"),
+        );
 
-        // Use GIF frame duration if available (dims.delay in 1/100s)
-        const duration = (dims.delay || 10) * 10; // fallback 100ms
+        const duration = (dims.delay || 10) * 10;
+
         frames.push({
           name: `frame-${String(i + 1).padStart(5, "0")}.png`,
           blob,
-          duration
+          duration,
         });
       }
 
       return frames;
     } else if (file.type.startsWith("image/")) {
-      // PNG or JPG: single frame
       const blob = await resizeToBlob(file, targetWidth, targetHeight);
-      return [{
-        name: "frame-00001.png",
-        blob,
-        duration: 100
-      }];
+      return [
+        {
+          name: "frame-00001.png",
+          blob,
+          duration: 100,
+        },
+      ];
     } else {
       throw new Error("Unsupported file type. Please upload a GIF or PNG.");
     }
   }
 
-  // --- Generate counter XML ---
-  function generateCounterXML(frames, counterThemeBottom = '') {
+  function generateCounterXML(frames, counterThemeBottom = "") {
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<themes>\n\n`;
 
     frames.forEach((frame, index) => {
@@ -124,17 +133,15 @@ async function initEncounterCounter() {
     return xml;
   }
 
-  // --- Load XML templates ---
   async function loadXMLTemplates() {
     const [counterThemeBottom, themeXMLContent, infoXML] = await Promise.all([
-      fetch("/xml/counterThemeBottom.xml").then(r => r.text()),
-      fetch("/xml/themeContent.xml").then(r => r.text()),
-      fetch("/xml/info.xml").then(r => r.text())
+      fetch("/xml/counterThemeBottom.xml").then((r) => r.text()),
+      fetch("/xml/themeContent.xml").then((r) => r.text()),
+      fetch("/xml/info.xml").then((r) => r.text()),
     ]);
     return { counterThemeBottom, themeXMLContent, infoXML };
   }
 
-  // --- Generate ZIP ---
   generateBtn.addEventListener("click", async () => {
     if (!loadedGifFile) {
       zipStatus.textContent = "Please upload a GIF or PNG first.";
@@ -149,25 +156,23 @@ async function initEncounterCounter() {
     try {
       const frames = await extractFrames(loadedGifFile, w, h);
       window.extractedFrames = frames;
-      frameFiles = frames.map(f => f.name);
+      frameFiles = frames.map((f) => f.name);
 
       zipStatus.textContent = `Extracted ${frames.length} frames. Loading XML templates…`;
 
-      const { counterThemeBottom, themeXMLContent, infoXML } = await loadXMLTemplates();
+      const { counterThemeBottom, themeXMLContent, infoXML } =
+        await loadXMLTemplates();
 
       const zip = new JSZip();
       const base = "data/themes/default";
       const animFolder = zip.folder(`${base}/anim`);
 
-      // Add frames to anim/
-      frames.forEach(frame => animFolder.file(frame.name, frame.blob));
+      frames.forEach((frame) => animFolder.file(frame.name, frame.blob));
 
-      // Add root icon.png (first frame)
       if (frames.length > 0) {
         zip.file("icon.png", frames[0].blob);
       }
 
-      // --- Minimised image ---
       const minimisedFile = minimisedInput.files[0];
       const miniW = Number(miniWidthInput.value) || 100;
       const miniH = Number(miniHeightInput.value) || 100;
@@ -181,23 +186,24 @@ async function initEncounterCounter() {
 
       if (minimisedBlob) {
         const unexpandedFolder = zip.folder(`${base}/unexpanded`);
-        unexpandedFolder.file("minimised.png", minimisedBlob); // always minimised.png
+        unexpandedFolder.file("minimised.png", minimisedBlob);
       }
 
-      // --- Dynamic custom-counter.xml ---
-      zip.file(`${base}/custom-counter.xml`, generateCounterXML(frames, counterThemeBottom));
+      zip.file(
+        `${base}/custom-counter.xml`,
+        generateCounterXML(frames, counterThemeBottom),
+      );
 
-      // theme.xml
       zip.file(`${base}/theme.xml`, themeXMLContent);
 
-      // info.xml with themeName
       const zipNameValue = zipNameInput.value.trim() || "custom-counter";
-      const themeName = zipNameValue.replace(/\.zip$/i, '');
+      const themeName = zipNameValue.replace(/\.zip$/i, "");
       const infoXMLReplaced = infoXML.replace("${themeName}", themeName);
       zip.file("info.xml", infoXMLReplaced);
 
-      // --- Download ZIP ---
-      const outputZipName = zipNameValue.endsWith(".zip") ? zipNameValue : zipNameValue + ".zip";
+      const outputZipName = zipNameValue.endsWith(".zip")
+        ? zipNameValue
+        : zipNameValue + ".zip";
       const a = document.createElement("a");
       const content = await zip.generateAsync({ type: "blob" });
       a.href = URL.createObjectURL(content);

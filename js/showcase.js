@@ -193,7 +193,6 @@ async function renderTrophyBoard() {
   }
 }
 
-
 async function initShowcase() {
   const trophies = {
     "Team Darkrai Shiny Wars Winner": "./images/trophy/darkrai_trophy.png",
@@ -228,24 +227,22 @@ async function initShowcase() {
 
   const data = await getData();
 
-  // Render or filter the showcase
   const renderShowcase = async (filter = "") => {
     const container = showcaseContainer();
     if (!container) return;
 
     const lowerFilter = filter.toLowerCase();
 
-    // Check if cards already exist
     let cards = container.querySelectorAll(".player-card");
 
     if (!cards.length) {
-      // === FIRST LOAD: build all cards ===
       const fragment = document.createDocumentFragment();
 
-      // Fetch streamers data
       let streamersData = {};
       try {
-        const res = await fetch("https://adminpage.hypersmmo.workers.dev/admin/streamers");
+        const res = await fetch(
+          "https://adminpage.hypersmmo.workers.dev/admin/streamers",
+        );
         streamersData = await res.json();
       } catch (err) {
         console.error("Failed to load streamers JSON:", err);
@@ -261,28 +258,26 @@ async function initShowcase() {
             index < 5
               ? "player-name top-player"
               : index < 20
-              ? "player-name high-player"
-              : "player-name";
+                ? "player-name high-player"
+                : "player-name";
 
           const trophyImg =
             index === 0
               ? '<img src="/images/Shiny Showcase/gold.png" class="player-trophy">'
               : index === 1
-              ? '<img src="/images/Shiny Showcase/silver.png" class="player-trophy">'
-              : index === 2
-              ? '<img src="/images/Shiny Showcase/bronze.png" class="player-trophy">'
-              : "";
+                ? '<img src="/images/Shiny Showcase/silver.png" class="player-trophy">'
+                : index === 2
+                  ? '<img src="/images/Shiny Showcase/bronze.png" class="player-trophy">'
+                  : "";
 
           const sparkle = index >= 3 ? ' <span class="sparkle">✨</span>' : "";
 
-          // Player link
           const playerLink = document.createElement("a");
           playerLink.href = `#player/${player.toLowerCase()}`;
           playerLink.className = `${playerClass} player-link`;
           playerLink.dataset.player = player.toLowerCase();
           playerLink.innerHTML = `#${index + 1} ${player} (${playerData.shiny_count})${sparkle}`;
 
-          // Name container
           const nameContainer = document.createElement("div");
           nameContainer.style.display = "inline-flex";
           nameContainer.style.alignItems = "center";
@@ -290,7 +285,6 @@ async function initShowcase() {
           nameContainer.style.gap = "4px";
           nameContainer.style.width = "100%";
 
-          // Twitch icon
           const twitchUser = streamersData[player]?.twitch_username;
           if (twitchUser) {
             const twitchLink = document.createElement("a");
@@ -312,7 +306,6 @@ async function initShowcase() {
 
           nameContainer.appendChild(playerLink);
 
-          // Trophy
           if (trophyImg) {
             const trophyWrapper = document.createElement("span");
             trophyWrapper.innerHTML = trophyImg;
@@ -321,7 +314,6 @@ async function initShowcase() {
 
           card.appendChild(nameContainer);
 
-          // Shiny list
           const shinyList = document.createElement("div");
           shinyList.className = "shiny-list";
           Object.values(playerData.shinies).forEach((s) =>
@@ -335,11 +327,9 @@ async function initShowcase() {
       container.appendChild(fragment);
       setupInfoBoxFlip();
 
-      // Update cards reference
       cards = container.querySelectorAll(".player-card");
     }
 
-    // === FILTER: hide/show cards ===
     cards.forEach((card) => {
       const playerName = card.querySelector(".player-link").dataset.player;
       if (playerName.includes(lowerFilter)) {
@@ -349,8 +339,6 @@ async function initShowcase() {
       }
     });
   };
-
-
 
   window.renderPlayerPage = async (playerName) => {
     const container = showcaseContainer();
@@ -510,7 +498,6 @@ async function initShowcase() {
         tooltip.innerHTML = tooltipText;
         trophyImg.style.cursor = "pointer";
         trophyImg.addEventListener("click", () => {
-
           sessionStorage.setItem("lastPageHash", window.location.hash || "#");
 
           window.location.hash = `trophy/${encodeURIComponent(awardName.toLowerCase())}`;
@@ -536,4 +523,3 @@ async function initShowcase() {
 
   renderShowcase();
 }
-

@@ -1,6 +1,3 @@
-// ===============================
-// TROPHY PAGE
-// ===============================
 window.renderTrophyPage = async (trophyName, returnHash = "#") => {
   const container = document.getElementById("main-container");
   if (!container) return;
@@ -8,7 +5,7 @@ window.renderTrophyPage = async (trophyName, returnHash = "#") => {
   try {
     const [trophiesRes, shinyRes] = await Promise.all([
       fetch("./json/trophies.json"),
-      fetch("https://adminpage.hypersmmo.workers.dev/admin/database")
+      fetch("https://adminpage.hypersmmo.workers.dev/admin/database"),
     ]);
 
     if (!trophiesRes.ok) throw new Error("Failed to fetch trophies.json");
@@ -18,7 +15,7 @@ window.renderTrophyPage = async (trophyName, returnHash = "#") => {
     const shinyDatabase = await shinyRes.json();
 
     const trophyKey = Object.keys(trophies).find(
-      k => k.toLowerCase() === trophyName.toLowerCase()
+      (k) => k.toLowerCase() === trophyName.toLowerCase(),
     );
 
     if (!trophyKey) {
@@ -28,11 +25,11 @@ window.renderTrophyPage = async (trophyName, returnHash = "#") => {
 
     const trophyImg = trophies[trophyKey];
 
-    // Only show players that exist in shiny_database.json
-    const players = (trophyAssignments[trophyKey] || []).filter(player =>
-      Object.keys(shinyDatabase).some(dbKey => dbKey.toLowerCase() === player.toLowerCase())
+    const players = (trophyAssignments[trophyKey] || []).filter((player) =>
+      Object.keys(shinyDatabase).some(
+        (dbKey) => dbKey.toLowerCase() === player.toLowerCase(),
+      ),
     );
-
 
     let buttonText = "← Back";
     if (returnHash.startsWith("#player/")) {
@@ -54,7 +51,7 @@ window.renderTrophyPage = async (trophyName, returnHash = "#") => {
     `;
 
     const ul = container.querySelector(".trophy-players-list");
-    players.forEach(player => {
+    players.forEach((player) => {
       const li = document.createElement("li");
       li.innerHTML = `<a href="#player/${player.toLowerCase()}" style="color:#9b59b6;text-decoration:none;">${player}</a>`;
       ul.appendChild(li);
@@ -72,13 +69,11 @@ window.renderTrophyPage = async (trophyName, returnHash = "#") => {
         window.location.hash = target;
       }
     });
-
   } catch (err) {
     console.error(err);
     container.innerHTML = `<h2 style="color:white;">Error loading trophy page</h2>`;
   }
 };
-
 
 async function initTrophyBoard() {
   const container = document.getElementById("main-container");
@@ -105,7 +100,7 @@ async function initTrophyBoard() {
       trophyImg.src = imgSrc;
       trophyImg.alt = name;
       trophyImg.className = "trophy-board-img";
-      trophyImg.loading = 'lazy';
+      trophyImg.loading = "lazy";
 
       const trophyLabel = document.createElement("div");
       trophyLabel.className = "trophy-board-label";
@@ -120,7 +115,6 @@ async function initTrophyBoard() {
 
       grid.appendChild(trophyWrapper);
     });
-
   } catch (err) {
     console.error(err);
     container.innerHTML = `<h2 style="color:white;">Failed to load Trophy Board</h2>`;
