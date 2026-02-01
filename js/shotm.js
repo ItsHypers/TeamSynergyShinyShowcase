@@ -1,4 +1,32 @@
 async function initSHOTM(targetMonth, targetYear) {
+
+  const shiftMonth = (month, year, delta) => {
+    const date = new Date(`${month} 1, ${year}`);
+    date.setMonth(date.getMonth() + delta);
+
+    return {
+      month: date.toLocaleString("default", { month: "long" }).toLowerCase(),
+      year: date.getFullYear()
+    };
+  };
+
+  const hasMonthData = (data, month, year) => {
+    return Object.values(data).some(player =>
+      Object.values(player.shinies || {}).some(s =>
+        s.Month?.toLowerCase()?.trim() === month &&
+        String(s.Year || "").trim() === String(year)
+      )
+    );
+  };
+
+  const isCurrentMonth = (month, year) => {
+    const now = new Date();
+    return (
+      now.toLocaleString("default", { month: "long" }).toLowerCase() === month &&
+      String(now.getFullYear()) === String(year)
+    );
+  };
+
   const container = document.getElementById("showcase");
   if (!container) return;
 
@@ -24,6 +52,36 @@ async function initSHOTM(targetMonth, targetYear) {
     names.forEach(name => tierLookup[name.toLowerCase()] = tier);
   });
   const getPokemonTier = name => tierLookup[name.toLowerCase()] || null;
+
+  const getTieredPokemonHitsThisMonth = shotmData => {
+    const tiers = {};
+  Object.entries(shotmData).forEach(([player, info]) => {
+    info.shinies.forEach(s => {
+
+      if (s.Sold?.toLowerCase() === "yes" || s.Flee?.toLowerCase() === "yes") return;
+
+      let tier = getPokemonTier(s.Pokemon);
+      if (!tier) return;
+
+      if (!["Tier 3","Tier 2","Tier 1","Tier 0"].includes(tier)) return;
+
+      const pokemonName = s.Pokemon.charAt(0).toUpperCase() + s.Pokemon.slice(1).toLowerCase();
+
+      if (!tiers[tier]) tiers[tier] = {};
+      if (!tiers[tier][pokemonName]) tiers[tier][pokemonName] = new Set();
+
+      tiers[tier][pokemonName].add(player);
+    });
+  });
+
+    Object.keys(tiers).forEach(tier => {
+      Object.keys(tiers[tier]).forEach(pokemon => {
+        tiers[tier][pokemon] = [...tiers[tier][pokemon]].sort();
+      });
+    });
+
+    return tiers;
+  };
 
   const getCurrentMonthYear = () => {
     const now = new Date();
@@ -93,19 +151,105 @@ async function initSHOTM(targetMonth, targetYear) {
 
   const { result: shotmData, month, year, notFound } = getShinyHuntersOfMonth(data, targetMonth, targetYear);
 
+  const tieredPokemonHits = getTieredPokemonHitsThisMonth(shotmData);
+  const hasTierData = Object.keys(tieredPokemonHits).length > 0;
+
   container.innerHTML = `
     <div class="alltime-container">
       <button class="alltime-toggle">All-Time Leaderboard ▼</button>
       <div class="alltime-list"></div>
       <div class="points-container"></div>
+      ${hasTierData ? `
+      <div class="tier-dropdown-container">
+        <button class="tier-dropdown-toggle">
+          ✨ Tier 3+ Shiny Highlights ✨ ▼
+        </button>
+        <div class="tier-dropdown-list tier-columns"></div>
+      </div>
+    ` : ""}
     </div>
     <div class="shotm-page">
       <h1>Shiny Hunters of the Month</h1>
-      <h2>${month.charAt(0).toUpperCase() + month.slice(1)} ${year}</h2>
+
+      <div class="month-nav">
+        <h2 class="month-title">
+          ${month.charAt(0).toUpperCase() + month.slice(1)} ${year}
+        </h2>
+
+        <div class="month-buttons">
+          <button class="month-prev">◀ Previous</button>
+          <button class="month-next">Next ▶</button>
+        </div>
+      </div>
+
       <div class="error-messages"></div>
       <div class="shotm-list"></div>
     </div>
   `;
+
+  if (hasTierData) {
+    const toggle = container.querySelector(".tier-dropdown-toggle");
+    const list = container.querySelector(".tier-dropdown-list");
+
+    const sortedTiers = Object.keys(tieredPokemonHits)
+      .filter(t => ["Tier 3", "Tier 2", "Tier 1", "Tier 0"].includes(t))
+      .sort((a, b) => Number(b.replace(/\D/g, "")) - Number(a.replace(/\D/g, "")));
+
+    list.innerHTML = sortedTiers.map(tier => {
+
+  const pokemonHTML = Object.entries(tieredPokemonHits[tier])
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([pokemon, players]) => `
+      <div class="tier-pokemon">
+        <div class="pokemon-name">${pokemon}</div>
+        <div class="pokemon-hunters">
+          ${players.map(p => `
+            <a href="https://synergymmo.com/#player/${p}" target="_blank" style="color:inherit; text-decoration:none;">
+              ${p}
+            </a>
+          `).join("")}
+        </div>
+      </div>
+    `)
+    .join("");
+
+      return `
+        <div class="tier-column">
+          <h3>${tier}</h3>
+          ${pokemonHTML}
+        </div>
+      `;
+    }).join("");
+
+    toggle.addEventListener("click", () => {
+      list.classList.toggle("show");
+      toggle.textContent = list.classList.contains("show")
+        ? "✨ Tier 3+ Shiny Highlights ✨ ▲"
+        : "✨ Tier 3+ Shiny Highlights ✨ ▼";
+    });
+  }
+
+  const prevBtn = container.querySelector(".month-prev");
+  const nextBtn = container.querySelector(".month-next");
+
+  const prev = shiftMonth(month, year, -1);
+  const next = shiftMonth(month, year, 1);
+
+  if (isCurrentMonth(month, year)) {
+    nextBtn.remove();
+  } else {
+    nextBtn.addEventListener("click", () => {
+      initSHOTM(next.month, next.year);
+    });
+  }
+
+  if (!hasMonthData(data, prev.month, prev.year)) {
+    prevBtn.remove();
+  } else {
+    prevBtn.addEventListener("click", () => {
+      initSHOTM(prev.month, prev.year);
+    });
+  }
 
   if (notFound.size) {
     container.querySelector(".error-messages").textContent =
