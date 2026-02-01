@@ -125,10 +125,15 @@ function attachHoverInfo(ownerMap) {
     if (target.tagName !== "IMG" || !target.classList.contains("complete")) return;
 
     const pokemonName = target.alt.toLowerCase();
-    const owners = ownerMap.get(pokemonName) || [];
-    const text = owners.length ? `Owned by: ${owners.join(", ")}` : "Owned by: Sold";
+const owners = ownerMap.get(pokemonName) || [];
 
-    infoBox.textContent = text;
+  if (!owners.length) {
+    infoBox.style.opacity = 0;
+    return;
+  }
+
+  infoBox.textContent = `Owned by: ${owners.join(", ")}`;
+
 
     const rect = target.getBoundingClientRect();
     const padding = 8;
