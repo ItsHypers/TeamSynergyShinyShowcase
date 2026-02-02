@@ -229,9 +229,16 @@
   transition: transform 0.3s ease, background 0.3s ease;
 }
 
-.bingo-cell.completed {
-  background: rgba(70, 180, 70, 0.85);
+#team1 {
+  border: 2px solid rgb(255, 117, 117);
+  background-color: rgba(179, 32, 32, 0.678);
 }
+
+#team2 {
+  border: 2px solid rgb(101, 255, 242);
+  background-color: rgba(35, 103, 204, 0.623);
+}
+
 
 .bingo-img {
   width: 100%;
@@ -499,3 +506,47 @@ button {
   user-select: none;
 }
 
+#team-toggle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+#team-toggle {
+  position: relative;
+  display: flex;
+  width: 180px;
+  border-radius: 25px;
+  background-color: #4d0e66; 
+  border: 2px solid #1a1a1a;
+  cursor: pointer;
+  overflow: hidden;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+#team-slider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background-color: #e63b3b; /* default Team 1 color */
+  border-radius: 25px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  z-index: 0;
+}
+
+.team-option {
+  flex: 1;
+  text-align: center;
+  padding: 12px 0;
+  color: #fff;
+  z-index: 1;
+  transition: color 0.3s;
+  user-select: none;
+}
+
+.team-option.active {
+  color: #000;
+}
