@@ -109,6 +109,10 @@ const GIF_BASE_PATH = "./pokemon_gifs";
 
 window.ShinyGifLoader = (() => {
   const TIER_JSON_PATH = "./json/tier_pokemon.json";
+<<<<<<< HEAD
+=======
+  const GIF_BASE_PATH = "./pokemon_gifs";
+>>>>>>> origin/main
   const VERSION = "v1";
 
   let tierMap = null;
@@ -119,6 +123,10 @@ window.ShinyGifLoader = (() => {
     return tierName.toLowerCase().replace(/\s+/g, "_");
   }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
   async function loadTierData() {
     if (tierMap) return tierMap;
     if (tierPromise) return tierPromise;
@@ -149,6 +157,10 @@ window.ShinyGifLoader = (() => {
     return tierPromise;
   }
 
+<<<<<<< HEAD
+=======
+  
+>>>>>>> origin/main
   async function getShinyGifPath(pokemonName) {
     if (!pokemonName) return "";
 
