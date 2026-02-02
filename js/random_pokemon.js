@@ -76,7 +76,9 @@ async function initRandomPokemon() {
 
     <div class="tab-container">
       <button class="tab-btn" data-tab="single">Random Pokémon</button>
-      <button class="tab-btn active" data-tab="bingo">Bingo Card</button>
+      <button class="tab-btn active" data-tab="bingo">Random Bingo Card</button>
+      <button class="tab-btn" data-tab="custom">Custom Bingo</button>
+
     </div>
 
     <div id="bingocheckBoxes">
@@ -169,9 +171,6 @@ async function initRandomPokemon() {
 
   const formatPokemonName = (name) =>
     name ? name.charAt(0).toUpperCase() + name.slice(1) : name;
-async function getLocalGif(pokemonName, isShiny = true) {
-  return ShinyGifLoader.getShinyGifPath(pokemonName);
-}
 
   const saveBingo = (data) =>
     localStorage.setItem("bingoCard", JSON.stringify(data));
@@ -217,37 +216,29 @@ async function getLocalGif(pokemonName, isShiny = true) {
   await loadShinyDatabase();
   await loadGenerationData();
 
-  async function fetchShinyBoardShinies(username) {
-    if (!username) return [];
+bingoSizeSelect.addEventListener("change", () => {
+  const size = parseInt(bingoSizeSelect.value);
 
-    let shinies = [];
-    let url = `https://shinyboard.net/api/users/${username}/shinies?page=1`;
-
-    try {
-      while (url) {
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error("Failed to fetch user");
-        }
-
-        const data = await res.json();
-        const ownedShinies = data.shinies
-          .filter((item) => item.status === "owned" && item.pokemon?.name)
-          .map((item) => item.pokemon.name.toLowerCase());
-
-        console.log("API shinies page:", ownedShinies);
-        shinies.push(...ownedShinies);
-
-        url = data.next_page_url || null;
-      }
-
-      return shinies;
-    } catch (err) {
-      console.error("Failed to fetch user");
-
-      return null;
-    }
+  if (currentTab === "custom") {
+    renderCustomBingoEditor();
+    return;
   }
+
+  const saved = loadBingo();
+  if (!saved) return;
+
+  saved.size = size;
+
+  const totalCells = size * size;
+  saved.card = saved.card.slice(0, totalCells);
+
+  while (saved.card.length < totalCells) {
+    saved.card.push({ name: "", type: "shiny" });
+  }
+
+  saveBingo(saved);
+  renderBingoCard(saved.card, size, saved.completed || []);
+});
 
   async function filterUserShinies(username) {
     userShinies = [];
@@ -516,43 +507,90 @@ function getRandomPokemon(data, enabledTiers) {
 }
 
 async function renderBingoCard(card, size, completed) {
+  const bingoCard = document.getElementById("bingoCard");
   bingoCard.innerHTML = "";
   bingoCard.style.display = "grid";
   bingoCard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+  bingoCard.style.gap = "6px";
+  bingoCard.style.placeItems = "center";
 
   const containerWidth = Math.min(bingoCard.clientWidth, window.innerWidth - 40);
   const gap = 6;
   const cellSize = (containerWidth - gap * (size - 1)) / size;
 
   card.forEach((entry, idx) => {
+
     const div = document.createElement("div");
     div.className = "bingo-cell";
+    div.style.position = "relative";
     div.style.width = `${cellSize}px`;
     div.style.height = `${cellSize}px`;
+    div.style.borderRadius = "6px";
+    div.style.overflow = "hidden";
+    div.style.cursor = "pointer";
     if (completed.includes(idx)) div.classList.add("completed");
 
     const img = document.createElement("img");
     img.alt = formatPokemonName(entry.name);
     img.className = "bingo-img";
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "contain";
+    img.style.position = "absolute";
+    img.style.top = 0;
+    img.style.left = 0;
+    img.style.pointerEvents = "none"; 
 
-    window.lazyLoadGif(img, entry.name, entry.type === "shiny");
+    if (currentTab === "custom" || entry.type === "shiny") {
 
-    const text = document.createElement("div");
-    text.className = "bingo-text";
+        window.lazyLoadGif(img, entry.name, true);
+    } else if (entry.type === "normal" || entry.type === "nature" || entry.type === "iv") {
+
+        img.src = `https://img.pokemondb.net/sprites/black-white/anim/normal/${entry.name.toLowerCase()}.gif`;
+    }
+const text = document.createElement("div");
+text.className = "bingo-text";
+text.style.position = "absolute";
+text.style.bottom = "4px";
+text.style.left = "50%";
+text.style.transform = "translateX(-50%)";
+text.style.textAlign = "center";
+text.style.lineHeight = 1.2;
+text.style.wordBreak = "break-word";
+text.style.color = "#fff"; 
+
+text.style.fontWeight = "600";
+text.style.textShadow = "1px 1px 2px rgba(0,0,0,0.7)";
+text.style.maxWidth = "90%"; 
+
+text.style.overflow = "hidden";
+text.style.whiteSpace = "nowrap";
 
     if (entry.type === "nature") text.textContent = `Nature: ${entry.nature}`;
     else if (entry.type === "iv")
       text.textContent = `IV ${entry.iv.target} than ${entry.iv.roll}`;
     else if (entry.type === "normal") text.textContent = "Non-Shiny";
 
-    const availableHeight = cellSize * 0.3;
-    text.style.fontSize = `${Math.max(availableHeight * 0.5, 6)}px`;
-    text.style.lineHeight = 1.1;
-    text.style.textAlign = "center";
-    text.style.wordBreak = "break-word";
+    const adjustFont = () => {
+      const parentWidth = div.clientWidth * 0.9; 
+
+      let fontSize = 16; 
+
+      text.style.fontSize = fontSize + "px";
+
+      while (text.scrollWidth > parentWidth && fontSize > 6) {
+        fontSize -= 1;
+        text.style.fontSize = fontSize + "px";
+      }
+    };
+
+    setTimeout(adjustFont, 0);
+
+    div.appendChild(text);
 
     div.appendChild(img);
     if (text.textContent) div.appendChild(text);
+
     bingoCard.appendChild(div);
 
     div.addEventListener("click", () => {
@@ -582,7 +620,6 @@ async function renderBingoCard(card, size, completed) {
       }
     });
   });
-
   function checkBingo(completed, size) {
     let lines = 0;
 
@@ -747,7 +784,7 @@ async function renderBingoCard(card, size, completed) {
     const bingoCheckboxes = document.getElementById("bingocheckBoxes");
     const bingoSettings = document.getElementById("bingoSettings");
 
-    if (currentTab === "bingo") {
+    if (currentTab === "bingo" || currentTab === "custom") {
       if (bingoCheckboxes) bingoCheckboxes.style.display = "block";
       if (bingoSettings) bingoSettings.style.display = "block";
 
@@ -810,33 +847,76 @@ async function renderBingoCard(card, size, completed) {
   ].forEach((cb) => cb.addEventListener("change", updateSettingsVisibility));
   updateSettingsVisibility();
 
-  tabButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (currentTab === btn.dataset.tab) return;
-      tabButtons.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentTab = btn.dataset.tab;
+tabButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    if (currentTab === btn.dataset.tab) return;
 
-      const title = container.querySelector("h1");
-      if (currentTab === "single") {
-        randomResultDiv.style.display = "block";
-        logDiv.style.display = "block";
-        bingoCard.style.display = "none";
-        title.textContent = "Random Pokémon Generator";
-      } else {
-        randomResultDiv.style.display = "none";
-        logDiv.style.display = "none";
-        bingoCard.style.display = "grid";
-        title.textContent = "Random Bingo Card Generator";
-        const saved = loadBingo();
-        if (saved)
-          renderBingoCard(saved.card, saved.size, saved.completed || []);
-      }
-      updateSettingsVisibility();
-    });
+    tabButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentTab = btn.dataset.tab;
+
+    const title = container.querySelector("h1");
+
+    generateBtn.textContent = "Generate";
+
+    if (currentTab === "single") {
+      randomResultDiv.style.display = "block";
+      logDiv.style.display = "block";
+      bingoCard.style.display = "none";
+      title.textContent = "Random Pokémon Generator";
+    } else if (currentTab === "bingo") {
+      randomResultDiv.style.display = "none";
+      logDiv.style.display = "none";
+      bingoCard.style.display = "grid";
+      title.textContent = "Random Bingo Card Generator";
+
+      const saved = loadBingo();
+      if (saved) renderBingoCard(saved.card, saved.size, saved.completed || []);
+    } else if (currentTab === "custom") {
+      randomResultDiv.style.display = "none";
+      logDiv.style.display = "none";
+      bingoCard.style.display = "grid";
+      bingoCard.innerHTML = ""; 
+
+      bingoCard.style.gridTemplateColumns = `repeat(${parseInt(bingoSizeSelect.value)}, 1fr)`;
+      title.textContent = "Custom Bingo Card";
+
+      generateBtn.textContent = "Save";
+      renderCustomBingoEditor();
+    }
+
+    updateSettingsVisibility();
   });
+});
 
-  generateBtn.addEventListener("click", () => {
+generateBtn.addEventListener("click", () => {
+  if (currentTab === "custom") {
+
+    const size = parseInt(bingoSizeSelect.value);
+    const card = Array.from(bingoCard.querySelectorAll(".bingo-cell")).map(cell => {
+      const img = cell.querySelector("img");
+      const input = cell.querySelector("input");
+
+      if (img) {
+
+        return { name: img.alt.trim(), type: "shiny" };
+      } else if (input) {
+
+        return { name: input.value.trim(), type: "shiny" };
+      } else {
+        return { name: "", type: "shiny" }; 
+
+      }
+    });
+
+    saveCustomBingo();
+
+    bingoCard.innerHTML = "";
+    renderBingoCard(card, size, []); 
+
+    showWarning("✅ Custom Bingo saved!");
+  }
+
     const enabledTiers = getEnabledTiers();
     if (!enabledTiers.length) return;
 
@@ -923,9 +1003,13 @@ async function renderBingoCard(card, size, completed) {
 
       const mode = pickModeByWeight();
       const img = document.createElement("img");
-      window.lazyLoadGif(img, pokeName, mode === "shiny");
       img.alt = formatPokemonName(pokeName);
       img.className = "pokemon-img";
+
+      window.lazyLoadGif(img, pokeName);
+
+      pokemonSpan.appendChild(img);
+
       pokemonSpan.appendChild(img);
 
       history.unshift(`${formatPokemonName(pokeName)} (Tier ${tierNumber})`);
@@ -1049,6 +1133,155 @@ async function renderBingoCard(card, size, completed) {
       savedBingo.size,
       savedBingo.completed || [],
     );
+
+function renderCustomBingoEditor() {
+  const bingoCard = document.getElementById("bingoCard");
+  const bingoSizeSelect = document.getElementById("bingoSize");
+  if (!bingoCard || !bingoSizeSelect) return;
+
+  const size = parseInt(bingoSizeSelect.value);
+  bingoCard.innerHTML = ""; 
+
+  bingoCard.style.display = "grid";
+  bingoCard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+  bingoCard.style.gap = "6px";
+  bingoCard.style.placeItems = "center";
+
+  function createCell(pokemonName = "") {
+    const div = document.createElement("div");
+    div.className = "bingo-cell";
+    div.style.width = "100%";
+    div.style.paddingTop = "100%";
+    div.style.position = "relative";
+    div.style.border = "1px solid #aaa";
+    div.style.borderRadius = "6px";
+    div.style.boxSizing = "border-box";
+
+    const input = document.createElement("input");
+input.type = "text";
+input.placeholder = "Pokémon";
+input.value = pokemonName;
+
+input.style.position = "absolute";
+input.style.top = "50%";
+input.style.left = "50%";
+input.style.transform = "translate(-50%, -50%)";
+
+input.style.width = "72%";
+input.style.textAlign = "center";
+input.style.fontSize = "0.85rem";
+input.style.fontWeight = "600";
+
+input.style.padding = "4px 6px";
+input.style.borderRadius = "8px";
+input.style.border = "1px solid rgba(155, 89, 182, 0.9)";
+
+input.style.background = "rgba(60, 40, 90, 0.9)";
+input.style.color = "#ffffff";
+
+input.style.boxShadow = "0 2px 6px rgba(0,0,0,0.4)";
+input.style.outline = "none";
+input.style.caretColor = "#ffffff";
+
+input.style.textShadow = "0 0 4px rgba(0,0,0,0.6)";
+
+    input.addEventListener("blur", () => {
+      const name = input.value.trim();
+      if (!name) return;
+
+      input.remove();
+
+      const imgWrapper = document.createElement("div");
+      imgWrapper.style.position = "absolute";
+      imgWrapper.style.top = 0;
+      imgWrapper.style.left = 0;
+      imgWrapper.style.width = "100%";
+      imgWrapper.style.height = "100%";
+      imgWrapper.style.display = "flex";
+      imgWrapper.style.justifyContent = "center";
+      imgWrapper.style.alignItems = "center";
+
+      const img = document.createElement("img");
+      img.className = "bingo-img";
+      img.alt = name;
+      img.style.maxWidth = "100%";
+      img.style.maxHeight = "100%";
+      img.style.objectFit = "contain";
+
+      window.lazyLoadGif(img, name);
+
+      imgWrapper.appendChild(img);
+      div.appendChild(imgWrapper);
+
+      const editInput = document.createElement("input");
+      editInput.type = "text";
+      editInput.placeholder = "Edit Pokémon";
+
+      editInput.style.position = "absolute";
+      editInput.style.bottom = "4px";
+      editInput.style.left = "50%";
+      editInput.style.transform = "translateX(-50%)";
+
+      editInput.style.width = "62%";
+      editInput.style.fontSize = "0.75rem";
+      editInput.style.fontWeight = "600";
+
+      editInput.style.padding = "3px 6px";
+      editInput.style.borderRadius = "8px";
+      editInput.style.border = "1px solid rgba(155, 89, 182, 0.9)";
+
+      editInput.style.background = "rgba(60, 40, 90, 0.9)";
+      editInput.style.color = "#ffffff";
+
+      editInput.style.textAlign = "center";
+      editInput.style.boxShadow = "0 2px 5px rgba(0,0,0,0.4)";
+      editInput.style.outline = "none";
+      editInput.style.caretColor = "#ffffff";
+      editInput.style.textShadow = "0 0 3px rgba(0,0,0,0.6)";
+
+      editInput.addEventListener("blur", () => {
+        const newName = editInput.value.trim();
+        if (!newName) return;
+        img.alt = newName;
+        window.lazyLoadGif(img, newName);
+        editInput.value = "";
+      });
+
+      div.appendChild(editInput);
+    });
+
+    div.appendChild(input);
+    return div;
+  }
+
+  for (let i = 0; i < size * size; i++) {
+    bingoCard.appendChild(createCell());
+  }
+}
+
+function saveCustomBingo() {
+  const bingoCard = document.getElementById("bingoCard");
+  if (!bingoCard) return;
+
+  const cells = bingoCard.querySelectorAll(".bingo-cell");
+  const size = Math.sqrt(cells.length);
+  const savedCard = [];
+
+  cells.forEach((cell) => {
+    let name = "";
+
+    const input = cell.querySelector("input");
+    const img = cell.querySelector("img");
+
+    if (input && input.value.trim()) name = input.value.trim();
+    else if (img && img.alt) name = img.alt;
+
+    savedCard.push({ name, type: "shiny" });
+  });
+
+  saveBingo({ card: savedCard, size, completed: [] });
+}
+
 }
 
 initRandomPokemon();
