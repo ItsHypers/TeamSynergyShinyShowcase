@@ -104,7 +104,7 @@ async function fetchJSON(url) {
 window.ShinyGifLoader = (() => {
   const TIER_JSON_PATH = "./json/tier_pokemon.json";
   const GIF_BASE_PATH = "./pokemon_gifs";
-  const VERSION = "v1"; // Increment when you update files
+  const VERSION = "v1";
 
   let tierMap = null;
   let tierPromise = null;
@@ -114,7 +114,7 @@ window.ShinyGifLoader = (() => {
     return tierName.toLowerCase().replace(/\s+/g, "_");
   }
 
-  // Load tier JSON with caching
+
   async function loadTierData() {
     if (tierMap) return tierMap;
     if (tierPromise) return tierPromise;
@@ -145,7 +145,7 @@ window.ShinyGifLoader = (() => {
     return tierPromise;
   }
 
-  // Get GIF path with cache-busting
+  
   async function getShinyGifPath(pokemonName) {
     if (!pokemonName) return "";
 
@@ -171,7 +171,6 @@ window.ShinyGifLoader = (() => {
   };
 })();
 
-// Lazy-load a GIF <img> element
 window.lazyLoadGif = function(img, pokemonName) {
   if (!img || !pokemonName) return;
 
