@@ -50,7 +50,11 @@ function createShinyItem(s, points) {
   }
 
   const img = document.createElement("img");
-  img.src = `https://img.pokemondb.net/sprites/black-white/anim/shiny/${urlName}.gif`;
+  img.alt = s.Pokemon;
+  img.className = "shiny-gif";
+
+  window.lazyLoadGif(img, s.Pokemon);
+
   img.alt = s.Pokemon;
   img.className = "shiny-gif";
   if (s.Sold?.toLowerCase() === "yes") img.classList.add("sold-pokemon");

@@ -100,3 +100,100 @@ async function fetchJSON(url) {
     return null;
   }
 }
+
+window.ShinyGifLoader = (() => {
+  const TIER_JSON_PATH = "./json/tier_pokemon.json";
+  const GIF_BASE_PATH = "./pokemon_gifs";
+
+  let tierMap = null;
+  let tierPromise = null;
+
+  // Memory cache for loaded GIF URLs
+  const gifCache = new Map();
+
+  function normalizeTier(tierName) {
+    return tierName.toLowerCase().replace(/\s+/g, "_");
+  }
+
+  async function loadTierData() {
+    if (tierMap) return tierMap;
+    if (tierPromise) return tierPromise;
+
+    tierPromise = (async () => {
+      try {
+        const res = await fetch(TIER_JSON_PATH, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        const map = {};
+
+        Object.entries(data).forEach(([tierName, pokemonList]) => {
+          const normalizedTier = normalizeTier(tierName);
+          pokemonList.forEach((name) => {
+            map[name.toLowerCase()] = normalizedTier;
+          });
+        });
+
+        tierMap = map;
+        return tierMap;
+      } catch (err) {
+        console.error("Error loading tier data:", err);
+        tierMap = {};
+        return tierMap;
+      }
+    })();
+
+    return tierPromise;
+  }
+
+  async function getShinyGifPath(pokemonName) {
+    if (!pokemonName) return "";
+
+    const key = pokemonName.toLowerCase();
+    if (gifCache.has(key)) return gifCache.get(key); // ✅ return cached path
+
+    const map = await loadTierData();
+    const tier = map[key] || "tier_0";
+    const fileName = key.replace(/[^a-z0-9-]/g, "-") + ".gif";
+    const path = `${GIF_BASE_PATH}/${tier}/${fileName}`;
+
+    gifCache.set(key, path); // ✅ store in memory cache
+    return path;
+  }
+
+  function preload() {
+    loadTierData();
+  }
+
+  return {
+    getShinyGifPath,
+    preload,
+  };
+})();
+
+window.lazyLoadGif = function (img, pokemonName) {
+  if (!img || !pokemonName) return;
+
+  // Initially hide the image
+  img.style.visibility = "hidden";
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(async (entry) => {
+      if (!entry.isIntersecting) return;
+
+      const path = await ShinyGifLoader.getShinyGifPath(pokemonName);
+
+      // Preload the GIF
+      const tempImg = new Image();
+      tempImg.src = path;
+      tempImg.onload = () => {
+        img.src = path;                 // set GIF
+        img.style.visibility = "visible"; // show once loaded
+      };
+
+      obs.unobserve(img); // stop observing
+    });
+  }, { rootMargin: "200px" });
+
+  observer.observe(img);
+};

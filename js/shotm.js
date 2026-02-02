@@ -33,12 +33,15 @@ async function initSHOTM(targetMonth, targetYear) {
   const JSON_FILE = "https://adminpage.hypersmmo.workers.dev/admin/database";
 
   const TRAIT_POINTS = {
-    Alpha: 50,
     "Secret Shiny": 10,
     Egg: 5,
     Safari: 5,
     Event: 5,
     "Honey Tree": 5,
+  };
+
+  const FLAT_TRAITS = {
+  Alpha: 50,
   };
 
   const [data, tierPokemon, tierPoints] = await Promise.all([
@@ -100,14 +103,22 @@ async function initSHOTM(targetMonth, targetYear) {
     if (shiny.Sold?.toLowerCase() === "yes" || shiny.Flee?.toLowerCase() === "yes")
       return 0;
 
+    for (const [trait, pts] of Object.entries(FLAT_TRAITS)) {
+      if (shiny[trait]?.toLowerCase() === "yes") {
+        return pts; 
+      }
+    }
+
     let total = tierPoints[getPokemonTier(shiny.Pokemon)] || 0;
 
     total += Object.entries(TRAIT_POINTS).reduce((acc, [trait, pts]) => {
+      if (trait in FLAT_TRAITS) return acc;
       return acc + (shiny[trait]?.toLowerCase() === "yes" ? pts : 0);
     }, 0);
 
     return total;
   };
+
 
   const getShinyHuntersOfMonth = (data, monthOverride, yearOverride) => {
     const { month, year } =

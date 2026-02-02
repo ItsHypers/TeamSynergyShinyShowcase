@@ -169,17 +169,9 @@ async function initRandomPokemon() {
 
   const formatPokemonName = (name) =>
     name ? name.charAt(0).toUpperCase() + name.slice(1) : name;
-
-  const getPokemonImageUrl = (name, isShiny = true) => {
-    let urlName = name
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[.']/g, "")
-      .replace(/[♀]/g, "f")
-      .replace(/[♂]/g, "m")
-      .replace(/\[.*\]/, "");
-    return `https://img.pokemondb.net/sprites/black-white/anim/${isShiny ? "shiny" : "normal"}/${urlName}.gif`;
-  };
+async function getLocalGif(pokemonName, isShiny = true) {
+  return ShinyGifLoader.getShinyGifPath(pokemonName);
+}
 
   const saveBingo = (data) =>
     localStorage.setItem("bingoCard", JSON.stringify(data));
@@ -499,75 +491,173 @@ async function initRandomPokemon() {
     return { name: pokemonName, type: mode };
   }
 
-  function renderBingoCard(card, size, completed) {
-    bingoCard.innerHTML = "";
-    bingoCard.style.display = "grid";
-    bingoCard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+function getRandomPokemon(data, enabledTiers) {
+  const tier = pickTierByWeight(enabledTiers);
+  let allPokemon = data[tier] || [];
+  if (!allPokemon.length) return null;
 
-    const containerWidth = Math.min(
-      bingoCard.clientWidth,
-      window.innerWidth - 40,
-    );
-    const gap = 6;
-    const cellSize = (containerWidth - gap * (size - 1)) / size;
+  const allowShiny = container.querySelector("#enableShiny")?.checked;
 
-    card.forEach((entry, idx) => {
-      const div = document.createElement("div");
-      div.className = "bingo-cell";
-      div.style.width = `${cellSize}px`;
-      div.style.height = `${cellSize}px`;
-      if (completed.includes(idx)) div.classList.add("completed");
-
-      const img = document.createElement("img");
-      img.src = getPokemonImageUrl(entry.name, entry.type === "shiny");
-      img.alt = formatPokemonName(entry.name);
-      img.className = "bingo-img";
-
-      const text = document.createElement("div");
-      text.className = "bingo-text";
-      if (entry.type === "nature") text.textContent = `Nature: ${entry.nature}`;
-      else if (entry.type === "iv")
-        text.textContent = `IV ${entry.iv.target} than ${entry.iv.roll}`;
-      else if (entry.type === "normal") text.textContent = "Non-Shiny";
-
-      const availableHeight = cellSize * 0.3;
-      text.style.fontSize = `${Math.max(availableHeight * 0.5, 6)}px`;
-      text.style.lineHeight = 1.1;
-      text.style.textAlign = "center";
-      text.style.wordBreak = "break-word";
-
-      div.appendChild(img);
-      if (text.textContent) div.appendChild(text);
-      bingoCard.appendChild(div);
-
-      div.addEventListener("click", () => {
-        const saved = loadBingo() || { card, size, completed: [] };
-
-        if (div.classList.contains("completed")) {
-          saved.completed = saved.completed.filter((i) => i !== idx);
-          div.classList.remove("completed");
-        } else {
-          saved.completed.push(idx);
-          div.classList.add("completed");
-        }
-
-        saveBingo(saved);
-
-        const totalLines = checkBingo(saved.completed, saved.size);
-        const allComplete = saved.completed.length === saved.card.length;
-
-        let milestone = 0;
-        if (allComplete && bingoMilestone < 3) milestone = 3;
-        else if (totalLines === 2 && bingoMilestone < 2) milestone = 2;
-        else if (totalLines === 1 && bingoMilestone < 1) milestone = 1;
-
-        if (milestone > 0) {
-          bingoMilestone = milestone;
-          showBingoOverlay(milestone);
-        }
-      });
+  if (allowShiny && userShinies.length) {
+    const excluded = getExcludedPokemonWithSpecies(userShinies);
+    allPokemon = allPokemon.filter((p) => {
+      const lowerP = p.toLowerCase();
+      if (excluded.includes(lowerP)) {
+        console.log(`Excluded Pokémon due to species line: ${p}`);
+        return false;
+      }
+      return true;
     });
   }
+
+  if (!allPokemon.length) return null;
+  const poke = allPokemon[Math.floor(Math.random() * allPokemon.length)];
+  return { tier, pokemon: poke };
+}
+
+async function renderBingoCard(card, size, completed) {
+  bingoCard.innerHTML = "";
+  bingoCard.style.display = "grid";
+  bingoCard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+
+  const containerWidth = Math.min(bingoCard.clientWidth, window.innerWidth - 40);
+  const gap = 6;
+  const cellSize = (containerWidth - gap * (size - 1)) / size;
+
+  card.forEach((entry, idx) => {
+    const div = document.createElement("div");
+    div.className = "bingo-cell";
+    div.style.width = `${cellSize}px`;
+    div.style.height = `${cellSize}px`;
+    if (completed.includes(idx)) div.classList.add("completed");
+
+    const img = document.createElement("img");
+    img.alt = formatPokemonName(entry.name);
+    img.className = "bingo-img";
+
+    // Use global lazy loader
+    window.lazyLoadGif(img, entry.name, entry.type === "shiny");
+
+    const text = document.createElement("div");
+    text.className = "bingo-text";
+
+    if (entry.type === "nature") text.textContent = `Nature: ${entry.nature}`;
+    else if (entry.type === "iv")
+      text.textContent = `IV ${entry.iv.target} than ${entry.iv.roll}`;
+    else if (entry.type === "normal") text.textContent = "Non-Shiny";
+
+    const availableHeight = cellSize * 0.3;
+    text.style.fontSize = `${Math.max(availableHeight * 0.5, 6)}px`;
+    text.style.lineHeight = 1.1;
+    text.style.textAlign = "center";
+    text.style.wordBreak = "break-word";
+
+    div.appendChild(img);
+    if (text.textContent) div.appendChild(text);
+    bingoCard.appendChild(div);
+
+    // handle click for marking completed
+    div.addEventListener("click", () => {
+      const saved = loadBingo() || { card, size, completed: [] };
+
+      if (div.classList.contains("completed")) {
+        saved.completed = saved.completed.filter((i) => i !== idx);
+        div.classList.remove("completed");
+      } else {
+        saved.completed.push(idx);
+        div.classList.add("completed");
+      }
+
+      saveBingo(saved);
+
+      const totalLines = checkBingo(saved.completed, saved.size);
+      const allComplete = saved.completed.length === saved.card.length;
+
+      let milestone = 0;
+      if (allComplete && bingoMilestone < 3) milestone = 3;
+      else if (totalLines === 2 && bingoMilestone < 2) milestone = 2;
+      else if (totalLines === 1 && bingoMilestone < 1) milestone = 1;
+
+      if (milestone > 0) {
+        bingoMilestone = milestone;
+        showBingoOverlay(milestone);
+      }
+    });
+  });
+
+  function checkBingo(completed, size) {
+    let lines = 0;
+
+    // Rows
+    for (let r = 0; r < size; r++) {
+      if ([...Array(size).keys()].every((c) => completed.includes(r * size + c)))
+        lines++;
+    }
+
+    // Columns
+    for (let c = 0; c < size; c++) {
+      if ([...Array(size).keys()].every((r) => completed.includes(r * size + c)))
+        lines++;
+    }
+
+    // Diagonal top-left to bottom-right
+    if ([...Array(size).keys()].every((i) => completed.includes(i * size + i)))
+      lines++;
+
+    // Diagonal top-right to bottom-left
+    if ([...Array(size).keys()].every((i) => completed.includes(i * size + (size - 1 - i))))
+      lines++;
+
+    return lines;
+  }
+
+  function showBingoOverlay(milestone) {
+    const messages = ["", "1st Line!", "2nd Line!", "Bingo!!"];
+    const message = bingoOverlay.querySelector(".bingo-message");
+    message.textContent = messages[milestone];
+    bingoOverlay.style.display = "flex";
+
+    const canvas = bingoOverlay.querySelector("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const ctx = canvas.getContext("2d");
+    const particles = Array.from({ length: 150 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height * 0.5,
+      vx: (Math.random() - 0.5) * 2,
+      vy: Math.random() * -2 - 1,
+      radius: Math.random() * 3 + 2,
+      alpha: 1,
+      color: `hsl(${Math.random() * 360},100%,60%)`,
+      gravity: 0.03,
+    }));
+
+    (function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let active = false;
+      particles.forEach((p) => {
+        if (p.alpha <= 0) return;
+        active = true;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.fill();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.alpha -= 0.003;
+      });
+      if (active) requestAnimationFrame(animate);
+      else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    })();
+
+    setTimeout(() => (bingoOverlay.style.display = "none"), 4000);
+  }
+}
+
+
 
   function checkBingo(completed, size) {
     let lines = 0;
@@ -643,9 +733,10 @@ async function initRandomPokemon() {
     if (!allPokemon.length) return null;
 
     const allowShiny = container.querySelector("#enableShiny")?.checked;
+
     if (allowShiny && userShinies.length) {
       const excluded = getExcludedPokemonWithSpecies(userShinies);
-      pool = pool.filter((p) => {
+      allPokemon = allPokemon.filter((p) => {
         const lowerP = p.toLowerCase();
         if (excluded.includes(lowerP)) {
           console.log(`Excluded Pokémon due to species line: ${p}`);
@@ -840,7 +931,7 @@ async function initRandomPokemon() {
 
       const mode = pickModeByWeight();
       const img = document.createElement("img");
-      img.src = getPokemonImageUrl(pokeName, mode === "shiny");
+      window.lazyLoadGif(img, pokeName, mode === "shiny");
       img.alt = formatPokemonName(pokeName);
       img.className = "pokemon-img";
       pokemonSpan.appendChild(img);

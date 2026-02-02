@@ -42,7 +42,7 @@ function buildPokemonOwnerMap(shinyData) {
   return map;
 }
 
-function renderPokeDex(generationData, globalShinies, ownerMap, mode = "shiny", hideComplete = false) {
+async function renderPokeDex(generationData, globalShinies, ownerMap, mode = "shiny", hideComplete = false) {
   const container = document.getElementById("showcase");
   if (!container) return;
   container.innerHTML = "";
@@ -59,7 +59,6 @@ function renderPokeDex(generationData, globalShinies, ownerMap, mode = "shiny", 
     genGrid.classList.add("pokedex-grid");
 
     const speciesCompleteSet = new Set();
-
     if (mode === "shiny") {
       speciesGroups.forEach(group => {
         if (group.some(p => globalShinies.has(p.toLowerCase()))) {
@@ -68,18 +67,16 @@ function renderPokeDex(generationData, globalShinies, ownerMap, mode = "shiny", 
       });
     }
 
-    speciesGroups.flat().forEach(pokemon => {
-      const normalized = normalizePokemonName(pokemon);
+    const allSpecies = speciesGroups.flat();
+
+    allSpecies.forEach((pokemon) => {
       const lowerName = pokemon.toLowerCase();
       const isComplete = mode === "shiny" ? speciesCompleteSet.has(lowerName) : globalShinies.has(lowerName);
 
-      if (hideComplete && isComplete) return;
-
       const img = document.createElement("img");
-      img.src = `https://img.pokemondb.net/sprites/black-white/anim/shiny/${normalized}.gif`;
       img.alt = pokemon;
       img.className = `pokedex-pokemon ${isComplete ? "complete" : "incomplete"}`;
-      img.loading = "lazy";
+      window.lazyLoadGif(img, pokemon);
 
       genGrid.appendChild(img);
     });
@@ -88,9 +85,60 @@ function renderPokeDex(generationData, globalShinies, ownerMap, mode = "shiny", 
   }
 
   container.appendChild(fragment);
-
   attachHoverInfo(ownerMap);
+
+  // Animate completed / incomplete Pokémon if hideComplete
+  if (hideComplete) {
+    animateHideComplete(container);
+  } else {
+    // reset
+    container.querySelectorAll(".pokedex-pokemon").forEach(p => {
+      p.classList.remove("hide");
+      p.style.transform = "";
+      p.style.transition = "";
+    });
+  }
 }
+
+
+function animateHideComplete(container) {
+  const pokes = Array.from(container.querySelectorAll(".pokedex-pokemon"));
+
+  // 1️⃣ Separate completed and remaining Pokémon
+  const completed = pokes.filter(p => p.classList.contains("complete"));
+  const remaining = pokes.filter(p => !p.classList.contains("complete"));
+
+  // 2️⃣ Record initial positions of remaining Pokémon
+  const firstRects = remaining.map(p => p.getBoundingClientRect());
+
+  // 3️⃣ Fade out completed Pokémon
+  completed.forEach(p => p.classList.add("hide"));
+
+  // 4️⃣ After fade, remove completed Pokémon and animate remaining
+  setTimeout(() => {
+    completed.forEach(p => p.remove());
+
+    // 5️⃣ Record new positions
+    const lastRects = remaining.map(p => p.getBoundingClientRect());
+
+    // 6️⃣ Apply FLIP transform for smooth transition
+    remaining.forEach((p, i) => {
+      const dx = firstRects[i].left - lastRects[i].left;
+      const dy = firstRects[i].top - lastRects[i].top;
+
+      p.style.transform = `translate(${dx}px, ${dy}px)`;
+      p.style.transition = "transform 0s"; // set instantly
+
+      requestAnimationFrame(() => {
+        p.style.transition = "transform 0.25s ease-out, opacity 0.25s ease-out";
+        p.style.transform = "translate(0,0)";
+        p.style.opacity = "1";
+      });
+    });
+  }, 500); // match fade duration
+}
+
+
 
 function attachHoverInfo(ownerMap) {
   const container = document.getElementById("showcase");
