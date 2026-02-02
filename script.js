@@ -120,7 +120,7 @@ window.ShinyGifLoader = (() => {
 
     tierPromise = (async () => {
       try {
-        const res = await fetch(TIER_JSON_PATH, { cache: "no-store" });
+        const res = await fetch(TIER_JSON_PATH, { cache: "force-cache" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = await res.json();
