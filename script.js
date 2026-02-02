@@ -104,28 +104,28 @@ async function fetchJSON(url) {
 window.ShinyGifLoader = (() => {
   const TIER_JSON_PATH = "./json/tier_pokemon.json";
   const GIF_BASE_PATH = "./pokemon_gifs";
+  const VERSION = "v1"; // Increment when you update files
 
   let tierMap = null;
   let tierPromise = null;
-
   const gifCache = new Map();
 
   function normalizeTier(tierName) {
     return tierName.toLowerCase().replace(/\s+/g, "_");
   }
 
+  // Load tier JSON with caching
   async function loadTierData() {
     if (tierMap) return tierMap;
     if (tierPromise) return tierPromise;
 
     tierPromise = (async () => {
       try {
-        const res = await fetch(TIER_JSON_PATH, { cache: "force-cache" });
+        const res = await fetch(`${TIER_JSON_PATH}?v=${VERSION}`, { cache: "force-cache" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
         const data = await res.json();
-        const map = {};
 
+        const map = {};
         Object.entries(data).forEach(([tierName, pokemonList]) => {
           const normalizedTier = normalizeTier(tierName);
           pokemonList.forEach((name) => {
@@ -145,19 +145,19 @@ window.ShinyGifLoader = (() => {
     return tierPromise;
   }
 
+  // Get GIF path with cache-busting
   async function getShinyGifPath(pokemonName) {
     if (!pokemonName) return "";
 
     const key = pokemonName.toLowerCase();
-    if (gifCache.has(key)) return gifCache.get(key); 
+    if (gifCache.has(key)) return gifCache.get(key);
 
     const map = await loadTierData();
     const tier = map[key] || "tier_0";
     const fileName = key.replace(/[^a-z0-9-]/g, "-") + ".gif";
-    const path = `${GIF_BASE_PATH}/${tier}/${fileName}`;
+    const path = `${GIF_BASE_PATH}/${tier}/${fileName}?v=${VERSION}`;
 
-    gifCache.set(key, path); 
-
+    gifCache.set(key, path);
     return path;
   }
 
@@ -171,31 +171,28 @@ window.ShinyGifLoader = (() => {
   };
 })();
 
-window.lazyLoadGif = function (img, pokemonName) {
+// Lazy-load a GIF <img> element
+window.lazyLoadGif = function(img, pokemonName) {
   if (!img || !pokemonName) return;
 
   img.style.visibility = "hidden";
 
-  const observer = new IntersectionObserver((entries, obs) => {
-    entries.forEach(async (entry) => {
-      if (!entry.isIntersecting) return;
+  const observer = new IntersectionObserver(async (entries, obs) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
 
       const path = await ShinyGifLoader.getShinyGifPath(pokemonName);
 
       const tempImg = new Image();
       tempImg.src = path;
       tempImg.onload = () => {
-        img.src = path;                 
-
-        img.style.visibility = "visible"; 
-
+        img.src = path;
+        img.style.visibility = "visible";
       };
 
-      obs.unobserve(img); 
-
-    });
+      obs.unobserve(img);
+    }
   }, { rootMargin: "200px" });
 
   observer.observe(img);
 };
-
