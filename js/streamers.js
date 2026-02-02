@@ -3,21 +3,17 @@ async function initStreamers() {
   const TWITCH_WORKER_API =
     "https://twitch-api.hypersmmo.workers.dev/api/streamers";
 
-  // Fetch streamers from the cloud KV database
   async function fetchStreamersList() {
     const res = await fetch(WORKER_API);
     if (!res.ok) throw new Error("Failed to load streamer list");
     const data = await res.json();
 
-    // Map KV JSON to an array of Twitch usernames
     return Object.values(data).map((s) => s.twitch_username);
   }
 
-  // Fetch Twitch data in parallel for all streamers
   async function fetchTwitchData(streamers) {
     if (!streamers.length) return { live: [], offline: [] };
 
-    // Create array of fetch promises, one per streamer
     const fetchPromises = streamers.map((username) =>
       fetch(`${TWITCH_WORKER_API}?user_login=${username}`)
         .then((res) => (res.ok ? res.json() : null))
@@ -26,7 +22,6 @@ async function initStreamers() {
 
     const results = await Promise.all(fetchPromises);
 
-    // Flatten results into live and offline arrays
     const live = [];
     const offline = [];
     results.forEach((res) => {
@@ -43,11 +38,9 @@ async function initStreamers() {
     const offlineEl = document.getElementById("offline-streamers");
     const liveSection = document.getElementById("live-section");
 
-    // Remove the "Loading..." message
     const loadingMessage = document.getElementById("loading-message");
     if (loadingMessage) loadingMessage.remove();
 
-    // Live streamers
     if (!data.live.length) {
       if (liveSection) liveSection.remove();
     } else {
@@ -72,7 +65,6 @@ async function initStreamers() {
       });
     }
 
-    // Offline streamers (render asynchronously after live)
     offlineEl.innerHTML = "";
     data.offline.forEach((user) => {
       const link = document.createElement("a");
@@ -94,8 +86,8 @@ async function initStreamers() {
 
   async function init() {
     try {
-      const streamers = await fetchStreamersList(); // fetch from KV
-      // Fetch Twitch data in parallel and render immediately
+      const streamers = await fetchStreamersList(); 
+
       const data = await fetchTwitchData(streamers);
       displayStreamers(data);
     } catch (err) {
@@ -105,3 +97,4 @@ async function initStreamers() {
 
   init();
 }
+

@@ -535,7 +535,6 @@ async function renderBingoCard(card, size, completed) {
     img.alt = formatPokemonName(entry.name);
     img.className = "bingo-img";
 
-    // Use global lazy loader
     window.lazyLoadGif(img, entry.name, entry.type === "shiny");
 
     const text = document.createElement("div");
@@ -556,7 +555,6 @@ async function renderBingoCard(card, size, completed) {
     if (text.textContent) div.appendChild(text);
     bingoCard.appendChild(div);
 
-    // handle click for marking completed
     div.addEventListener("click", () => {
       const saved = loadBingo() || { card, size, completed: [] };
 
@@ -588,23 +586,19 @@ async function renderBingoCard(card, size, completed) {
   function checkBingo(completed, size) {
     let lines = 0;
 
-    // Rows
     for (let r = 0; r < size; r++) {
       if ([...Array(size).keys()].every((c) => completed.includes(r * size + c)))
         lines++;
     }
 
-    // Columns
     for (let c = 0; c < size; c++) {
       if ([...Array(size).keys()].every((r) => completed.includes(r * size + c)))
         lines++;
     }
 
-    // Diagonal top-left to bottom-right
     if ([...Array(size).keys()].every((i) => completed.includes(i * size + i)))
       lines++;
 
-    // Diagonal top-right to bottom-left
     if ([...Array(size).keys()].every((i) => completed.includes(i * size + (size - 1 - i))))
       lines++;
 
@@ -656,8 +650,6 @@ async function renderBingoCard(card, size, completed) {
     setTimeout(() => (bingoOverlay.style.display = "none"), 4000);
   }
 }
-
-
 
   function checkBingo(completed, size) {
     let lines = 0;
@@ -1060,3 +1052,4 @@ async function renderBingoCard(card, size, completed) {
 }
 
 initRandomPokemon();
+

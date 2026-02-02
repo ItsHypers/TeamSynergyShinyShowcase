@@ -6,7 +6,6 @@ function normalizePokemonName(name) {
     .replace(/\s+/g, "-"); 
 }
 
-
 async function loadData() {
   const shinyData = await (await fetch("https://adminpage.hypersmmo.workers.dev/admin/database")).json();
   const generationData = await (await fetch("./json/generation.json")).json();
@@ -87,11 +86,10 @@ async function renderPokeDex(generationData, globalShinies, ownerMap, mode = "sh
   container.appendChild(fragment);
   attachHoverInfo(ownerMap);
 
-  // Animate completed / incomplete Pokémon if hideComplete
   if (hideComplete) {
     animateHideComplete(container);
   } else {
-    // reset
+
     container.querySelectorAll(".pokedex-pokemon").forEach(p => {
       p.classList.remove("hide");
       p.style.transform = "";
@@ -100,34 +98,27 @@ async function renderPokeDex(generationData, globalShinies, ownerMap, mode = "sh
   }
 }
 
-
 function animateHideComplete(container) {
   const pokes = Array.from(container.querySelectorAll(".pokedex-pokemon"));
 
-  // 1️⃣ Separate completed and remaining Pokémon
   const completed = pokes.filter(p => p.classList.contains("complete"));
   const remaining = pokes.filter(p => !p.classList.contains("complete"));
 
-  // 2️⃣ Record initial positions of remaining Pokémon
   const firstRects = remaining.map(p => p.getBoundingClientRect());
 
-  // 3️⃣ Fade out completed Pokémon
   completed.forEach(p => p.classList.add("hide"));
 
-  // 4️⃣ After fade, remove completed Pokémon and animate remaining
   setTimeout(() => {
     completed.forEach(p => p.remove());
 
-    // 5️⃣ Record new positions
     const lastRects = remaining.map(p => p.getBoundingClientRect());
 
-    // 6️⃣ Apply FLIP transform for smooth transition
     remaining.forEach((p, i) => {
       const dx = firstRects[i].left - lastRects[i].left;
       const dy = firstRects[i].top - lastRects[i].top;
 
       p.style.transform = `translate(${dx}px, ${dy}px)`;
-      p.style.transition = "transform 0s"; // set instantly
+      p.style.transition = "transform 0s"; 
 
       requestAnimationFrame(() => {
         p.style.transition = "transform 0.25s ease-out, opacity 0.25s ease-out";
@@ -135,10 +126,9 @@ function animateHideComplete(container) {
         p.style.opacity = "1";
       });
     });
-  }, 500); // match fade duration
+  }, 500); 
+
 }
-
-
 
 function attachHoverInfo(ownerMap) {
   const container = document.getElementById("showcase");
@@ -181,7 +171,6 @@ const owners = ownerMap.get(pokemonName) || [];
   }
 
   infoBox.textContent = `Owned by: ${owners.join(", ")}`;
-
 
     const rect = target.getBoundingClientRect();
     const padding = 8;
@@ -243,3 +232,4 @@ async function initPokeDex() {
 }
 
 window.initPokeDex = initPokeDex;
+
