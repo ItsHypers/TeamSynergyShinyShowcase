@@ -811,6 +811,7 @@ function updateSettingsVisibility() {
   const bingoSettings = document.getElementById("bingoSettings");
   const bingoFilter = document.getElementsByClassName("tier-filters");
   const bingoExtraSettings = document.getElementById("bingoExtraSettings");
+  const customInputs = document.getElementById("customInputHelp");
 
   if (currentTab === "bingo") {
     if (bingoCheckboxes) bingoCheckboxes.style.display = "block";
@@ -819,6 +820,7 @@ function updateSettingsVisibility() {
     if (bingoCard) bingoCard.style.display = "grid";
     if (bingoModeSettingsDiv) bingoModeSettingsDiv.style.display = "block";
     if (randomResultDiv) randomResultDiv.style.display = "none";
+    if (customInputs) customInputs.style.display = "none";
     if (logDiv) logDiv.style.display = "none";
     if (bingoFilter) [...bingoFilter].forEach(f => f.style.display = "block");
   } else if (currentTab === "custom") {
