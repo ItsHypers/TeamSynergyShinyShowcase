@@ -101,10 +101,15 @@ async function fetchJSON(url) {
   }
 }
 
+window.addEventListener("DOMContentLoaded", () => {
+  ShinyGifLoader.preload();
+});
+
+const GIF_BASE_PATH = "./pokemon_gifs";
+
 window.ShinyGifLoader = (() => {
   const TIER_JSON_PATH = "./json/tier_pokemon.json";
-  const GIF_BASE_PATH = "./pokemon_gifs";
-  const VERSION = "v1"; // Increment when you update files
+  const VERSION = "v1";
 
   let tierMap = null;
   let tierPromise = null;
@@ -114,7 +119,6 @@ window.ShinyGifLoader = (() => {
     return tierName.toLowerCase().replace(/\s+/g, "_");
   }
 
-  // Load tier JSON with caching
   async function loadTierData() {
     if (tierMap) return tierMap;
     if (tierPromise) return tierPromise;
@@ -128,7 +132,7 @@ window.ShinyGifLoader = (() => {
         const map = {};
         Object.entries(data).forEach(([tierName, pokemonList]) => {
           const normalizedTier = normalizeTier(tierName);
-          pokemonList.forEach((name) => {
+          pokemonList.forEach(name => {
             map[name.toLowerCase()] = normalizedTier;
           });
         });
@@ -145,7 +149,6 @@ window.ShinyGifLoader = (() => {
     return tierPromise;
   }
 
-  // Get GIF path with cache-busting
   async function getShinyGifPath(pokemonName) {
     if (!pokemonName) return "";
 
@@ -153,7 +156,8 @@ window.ShinyGifLoader = (() => {
     if (gifCache.has(key)) return gifCache.get(key);
 
     const map = await loadTierData();
-    const tier = map[key] || "tier_0";
+    const tier = map[key] || "tier_7"; 
+
     const fileName = key.replace(/[^a-z0-9-]/g, "-") + ".gif";
     const path = `${GIF_BASE_PATH}/${tier}/${fileName}?v=${VERSION}`;
 
@@ -161,38 +165,59 @@ window.ShinyGifLoader = (() => {
     return path;
   }
 
+  function getFallbackPath(pokemonName) {
+    if (!pokemonName) return "";
+    const fileName = pokemonName.toLowerCase().replace(/[^a-z0-9-]/g, "-") + ".gif";
+    return `${GIF_BASE_PATH}/tier_7/${fileName}?v=${VERSION}`;
+  }
+
   function preload() {
     loadTierData();
   }
 
-  return {
-    getShinyGifPath,
-    preload,
-  };
+  return { getShinyGifPath, getFallbackPath, preload };
 })();
 
-// Lazy-load a GIF <img> element
 window.lazyLoadGif = function(img, pokemonName) {
   if (!img || !pokemonName) return;
 
   img.style.visibility = "hidden";
 
-  const observer = new IntersectionObserver(async (entries, obs) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
+  const loadImg = async () => {
+    const correctPath = await ShinyGifLoader.getShinyGifPath(pokemonName);
 
-      const path = await ShinyGifLoader.getShinyGifPath(pokemonName);
+    const temp = new Image();
+    temp.src = correctPath;
+    temp.onload = () => {
+      img.src = correctPath;
+      img.style.visibility = "visible";
+    };
+    temp.onerror = () => {
+      console.warn(`Failed to load GIF for ${pokemonName}: ${correctPath}`);
+    };
 
-      const tempImg = new Image();
-      tempImg.src = path;
-      tempImg.onload = () => {
-        img.src = path;
-        img.style.visibility = "visible";
-      };
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = correctPath;
+    document.head.appendChild(link);
+  };
 
-      obs.unobserve(img);
-    }
-  }, { rootMargin: "200px" });
+  const rect = img.getBoundingClientRect();
+  const isOnScreen = rect.top < window.innerHeight;
 
-  observer.observe(img);
+  if (isOnScreen) {
+
+    loadImg();
+  } else {
+
+    const observer = new IntersectionObserver(async (entries, obs) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        await loadImg();
+        obs.unobserve(img);
+      }
+    }, { rootMargin: "200px" });
+    observer.observe(img);
+  }
 };

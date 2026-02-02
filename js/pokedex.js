@@ -68,6 +68,7 @@ async function renderPokeDex(generationData, globalShinies, ownerMap, mode = "sh
 
     const allSpecies = speciesGroups.flat();
 
+    const batchFragment = document.createDocumentFragment();
     allSpecies.forEach((pokemon) => {
       const lowerName = pokemon.toLowerCase();
       const isComplete = mode === "shiny" ? speciesCompleteSet.has(lowerName) : globalShinies.has(lowerName);
@@ -75,11 +76,13 @@ async function renderPokeDex(generationData, globalShinies, ownerMap, mode = "sh
       const img = document.createElement("img");
       img.alt = pokemon;
       img.className = `pokedex-pokemon ${isComplete ? "complete" : "incomplete"}`;
+
       window.lazyLoadGif(img, pokemon);
 
-      genGrid.appendChild(img);
+      batchFragment.appendChild(img);
     });
 
+    genGrid.appendChild(batchFragment);
     fragment.appendChild(genGrid);
   }
 
@@ -89,7 +92,6 @@ async function renderPokeDex(generationData, globalShinies, ownerMap, mode = "sh
   if (hideComplete) {
     animateHideComplete(container);
   } else {
-
     container.querySelectorAll(".pokedex-pokemon").forEach(p => {
       p.classList.remove("hide");
       p.style.transform = "";
