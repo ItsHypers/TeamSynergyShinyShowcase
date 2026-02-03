@@ -110,10 +110,22 @@ const GIF_BASE_PATH = "./pokemon_gifs";
 window.ShinyGifLoader = (() => {
   const TIER_JSON_PATH = "./json/tier_pokemon.json";
   const VERSION = "v1";
+  const GIF_BASE_PATH = "./pokemon_gifs";
 
   let tierMap = null;
   let tierPromise = null;
   const gifCache = new Map();
+
+  function normalizePokemonName(name) {
+    if (!name) return "";
+    return name
+      .toLowerCase()
+      .replace(/[\u0000-\u001F\u007F\u200B\uFEFF]/g, "")
+      .trim()
+      .replace(/[’'.]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
+  }
 
   function normalizeTier(tierName) {
     return tierName.toLowerCase().replace(/\s+/g, "_");
@@ -132,8 +144,15 @@ window.ShinyGifLoader = (() => {
         const map = {};
         Object.entries(data).forEach(([tierName, pokemonList]) => {
           const normalizedTier = normalizeTier(tierName);
-          pokemonList.forEach(name => {
-            map[name.toLowerCase()] = normalizedTier;
+
+          pokemonList.forEach(rawName => {
+            if (!rawName) return;
+            const cleaned = rawName.replace(/[\u0000-\u001F\u007F]/g, "").trim();
+            const normalizedName = normalizePokemonName(cleaned);
+
+            if (normalizedName && !map[normalizedName]) {
+              map[normalizedName] = normalizedTier;
+            }
           });
         });
 
@@ -151,14 +170,19 @@ window.ShinyGifLoader = (() => {
 
   async function getShinyGifPath(pokemonName) {
     if (!pokemonName) return "";
+    const key = normalizePokemonName(pokemonName);
 
-    const key = pokemonName.toLowerCase();
     if (gifCache.has(key)) return gifCache.get(key);
 
-    const map = await loadTierData();
-    const tier = map[key] || "tier_7"; 
+    let tier;
+    if (key === "porygon2" || key === "porygon-z") {
+      tier = "tier_0";
+    } else {
+      const map = await loadTierData();
+      tier = map[key] || "tier_7";
+    }
 
-    const fileName = key.replace(/[^a-z0-9-]/g, "-") + ".gif";
+    const fileName = key + ".gif";
     const path = `${GIF_BASE_PATH}/${tier}/${fileName}?v=${VERSION}`;
 
     gifCache.set(key, path);
@@ -167,8 +191,14 @@ window.ShinyGifLoader = (() => {
 
   function getFallbackPath(pokemonName) {
     if (!pokemonName) return "";
-    const fileName = pokemonName.toLowerCase().replace(/[^a-z0-9-]/g, "-") + ".gif";
-    return `${GIF_BASE_PATH}/tier_7/${fileName}?v=${VERSION}`;
+    const key = normalizePokemonName(pokemonName);
+
+    // Hard-coded override for Porygon line
+    if (key === "porygon" || key === "porygon2" || key === "porygon-z") {
+      return `${GIF_BASE_PATH}/tier_0/${key}.gif?v=${VERSION}`;
+    }
+
+    return `${GIF_BASE_PATH}/tier_7/${key}.gif?v=${VERSION}`;
   }
 
   function preload() {
@@ -194,8 +224,11 @@ window.lazyLoadGif = function(img, pokemonName) {
     };
     temp.onerror = () => {
       console.warn(`Failed to load GIF for ${pokemonName}: ${correctPath}`);
+      img.src = ShinyGifLoader.getFallbackPath(pokemonName);
+      img.style.visibility = "visible";
     };
 
+    // Preload
     const link = document.createElement("link");
     link.rel = "preload";
     link.as = "image";
@@ -207,10 +240,8 @@ window.lazyLoadGif = function(img, pokemonName) {
   const isOnScreen = rect.top < window.innerHeight;
 
   if (isOnScreen) {
-
     loadImg();
   } else {
-
     const observer = new IntersectionObserver(async (entries, obs) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
